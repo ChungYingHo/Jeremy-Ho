@@ -1,0 +1,218 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+/* -------------------------------------------------------------------------- */
+/*                            Infima variables                                */
+/* -------------------------------------------------------------------------- */
+:root {
+  --content-background: #f4f5f7;
+  --ifm-color-primary: #2e6f85;
+  --ifm-color-primary-dark: #296478;
+  --ifm-color-primary-darker: #275e71;
+  --ifm-color-primary-darkest: #204e5d;
+  --ifm-color-primary-light: #337a92;
+  --ifm-color-primary-lighter: #358099;
+  --ifm-color-primary-lightest: #3c90ad;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='dark'] {
+  --content-background: #1c1f24;
+  --ifm-color-primary: #25a2c1;
+  --ifm-color-primary-dark: #2192ae;
+  --ifm-color-primary-darker: #1f8aa4;
+  --ifm-color-primary-darkest: #1a7187;
+  --ifm-color-primary-light: #29b2d4;
+  --ifm-color-primary-lighter: #31b6d8;
+  --ifm-color-primary-lightest: #4ec1dd;
+  --ifm-hover-overlay: rgba(125, 195, 200, 0.08);
+  --ifm-code-background: rgba(125, 195, 200, 0.08);
+  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.05);
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                  Markdown                                  */
+/* -------------------------------------------------------------------------- */
+.markdown {
+  /* Style for the first H1 element */
+  h1:first-child {
+    font-size: 2.2rem;
+  }
+
+  /* Style for H2 headings */
+  > h2 {
+    font-size: 1.8em;
+    border-bottom: 1.25px solid var(--ifm-color-primary-light);
+    margin-top: 1rem;
+    padding: 5px 0;
+  }
+
+  /* Style for H3 headings */
+  > h3 {
+    font-size: 1.4rem;
+    border-left: 4px solid var(--ifm-color-primary-light);
+    padding: 5px 0 5px 10px;
+  }
+
+  /* Inline code style */
+  code {
+    border: 0.1rem solid transparent;
+  }
+
+  /* Link style excluding hash links */
+  a:not(.hash-link) {
+    text-decoration: none;
+    font-weight: inherit;
+    border-bottom: 1px solid rgba(125, 125, 125, 0.3);
+    transition: border 0.15s ease-in-out;
+  }
+
+  /* Link hover/focus state */
+  a:not(.hash-link):hover,
+  a:not(.hash-link):focus {
+    border-bottom: 1.5px solid var(--ifm-color-primary-light);
+  }
+
+  /* Image alignment and border radius */
+  img {
+    border-radius: 10px;
+    display: flex;
+    margin: 0 auto;
+  }
+}
+
+/* Override styles for strong elements in dark mode */
+:where(html[data-theme="dark"]) {
+  .markdown {
+    strong {
+      color: #fff;
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                   Navbar                                   */
+/* -------------------------------------------------------------------------- */
+.navbar {
+  .navbar__title {
+    margin-left: 12px;
+    font-weight: 520;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               粗體(標籤、日期)                               */
+/* -------------------------------------------------------------------------- */
+b {
+  font-weight: 520;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                 blog 標題                                  */
+/* -------------------------------------------------------------------------- */
+article header h1 {
+  font-size: 2.2em !important;
+}
+article header h2 {
+  font-size: 1.8em !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                 側邊欄邊線                                  */
+/* -------------------------------------------------------------------------- */
+.menu__list .menu__list {
+  border-bottom: 2px solid #ced9e3;
+  border-bottom-color: #ffffff00 !important;
+  border-left: 2px solid #ced9e3;
+  border-radius: 0 0 0 10px;
+  margin-left: 1rem;
+  padding-left: 0.3rem;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                               上下頁 Buttons                                */
+/* -------------------------------------------------------------------------- */
+.pagination-nav {
+  .pagination-nav__link {
+    display: inline-flex;
+    justify-content: center;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #fff;
+    background-color: var(--ifm-color-primary-lighter);
+    opacity: 0.8;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+
+    .pagination-nav__sublabel {
+      display: none;
+    }
+
+    &:hover {
+      background-color: var(--ifm-color-primary-dark);
+      border: 2px solid var(--ifm-link-color);
+      transform: translateY(-3px); // 懸浮時有輕微位移效果
+    }
+
+    &:active {
+      background-color: var(--ifm-color-primary-darker);
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                 TOC menu                                  */
+/* -------------------------------------------------------------------------- */
+.table-of-contents__link--active {
+  filter: none !important;
+  color: var(--ifm-color-primary) !important;
+  background-color: var(--ifm-menu-color-background-active) !important;
+  transform: scale(1.02) !important;
+  transform-origin: left;
+}
+
+.table-of-contents__link {
+  padding: 0.3rem 0 0.3rem 0.5rem;
+  border-radius: 10px;
+  transition: filter 0.08s ease-in-out, background-color 0.08s ease-in-out;
+  margin-top: -0.5rem;
+  transition: 0.25s !important;
+}
+
+.table-of-contents__link:hover {
+  filter: none;
+  background-color: var(--ifm-menu-color-background-active) !important;
+  color: var(--ifm-color-primary-dark) !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                             NavLink github css                             */
+/* -------------------------------------------------------------------------- */
+
+.header-github-link:hover {
+  opacity: 0.6;
+}
+
+.header-github-link:before {
+  background: url("data:image/svg+xml;charset=utf-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'/%3E%3C/svg%3E")
+    no-repeat;
+  content: "";
+  display: flex;
+  height: 24px;
+  width: 24px;
+}
+
+[data-theme="dark"] .header-github-link:before {
+  background: url("data:image/svg+xml;charset=utf-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23fff' d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'/%3E%3C/svg%3E")
+    no-repeat;
+}
+
+[data-theme="dark"] .medium-zoom-overlay {
+  background-color: var(--ifm-background-color) !important;
+}

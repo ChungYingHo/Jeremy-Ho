@@ -1,9 +1,7 @@
-import {themes as prismThemes} from 'prism-react-renderer'
 import type {Config} from '@docusaurus/types'
-import presets from './config/preset';
-import themeConfig from './config/theme';
-
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+import presets from './config/preset'
+import themeConfig from './config/theme'
+import plugins from './config/plugins'
 
 const config: Config = {
   // Metadata for the website
@@ -25,9 +23,10 @@ const config: Config = {
     locales: ['zh-Hant'],
   },
 
-  // Preset features and theme UI settings
+  // Preset features, theme UI and plugins settings
   presets,
-  themeConfig
+  themeConfig,
+  plugins
 }
 
 export default config
