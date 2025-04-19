@@ -13,9 +13,15 @@ const themeConfig = {
     items: [
       {
         type: 'docSidebar',
-        sidebarId: 'tutorialSidebar',
+        sidebarId: 'notes',
         position: 'left',
-        label: 'Tutorial',
+        label: '筆記',
+      },
+      {
+        type: 'docSidebar',
+        sidebarId: 'series',
+        position: 'left',
+        label: '系列',
       },
       {to: '/blog', label: 'Blog', position: 'left'},
       {
@@ -75,6 +81,7 @@ const themeConfig = {
   prism: {
     theme: prismThemes.github,
     darkTheme: prismThemes.dracula,
+    additionalLanguages: ['csharp', 'dart', 'powershell', 'scss']
   },
 } satisfies Preset.ThemeConfig
 

@@ -1,0 +1,99 @@
+---
+title: "[CSS] 元素置中的四種方法"
+sidebar_label: "[CSS] 元素置中的四種方法"
+tags: [css, center]
+keywords: [css, center]
+---
+
+CSS 元素如何置中，這是一個很常見的問題，不只實務上常用到，面試時有時也會被問到。這裡總結了幾種方法，包括：
+1. `flex` 置中。
+2. `grid` 置中。
+3. `margin` + `flex` 置中。
+4. `position` + `transform` 置中。
+
+## 前置作業 - 建立基礎 HTML
+```html title='基礎 HTML'
+<div class="parent flex">
+ <div></div>
+</div>
+
+<div class="parent grid">
+ <div></div>
+</div>
+
+<div class="parent margin">
+ <div></div>
+</div>
+
+<div class="parent position">
+ <div></div>
+</div>
+```
+```css title='基礎樣式'
+.parent {
+ border: black solid 3px;
+ width: 20vw;
+ aspect-ratio: 1;
+
+ div {
+  border: red solid 2px;
+  width: 5vw;
+  aspect-ratio: 1;
+  background-color: red;
+  border-radius: 50%;
+ }
+}
+```
+
+## 四種元素置中方法
+### `flex` 置中
+很基本的用法，這裡用 `align-items: center;` 和 `justify-content: center;` 來置中。
+```css
+.flex {
+ display: flex;
+ align-items: center;
+ justify-content: center;
+}
+```
+
+### `grid` 置中
+這裡用 `place-items: center;` 來置中。
+```css
+.grid {
+ display: grid;
+ place-items: center;
+}
+```
+
+### `margin` + `flex` 置中
+因為 `margin: auto;` 會將元素水平置中，所以這裡用 `display: flex;` 來垂直置中。
+```css
+.margin {
+ display: flex;
+
+ div {
+  margin: auto;
+ }
+}
+```
+
+### `position` + `transform` 置中
+這裡用 `position: relative;` 和 `position: absolute;` 來置中。
+```css
+.position {
+ position: relative;
+
+ div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+ }
+}
+```
+
+<iframe height="600" width="100%" title="[CSS] - 元素置中法" src="https://codepen.io/ChungYingHo/embed/xxNVqpa?default-tab=html%2Cresult" frameborder="no" loading="lazy" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href="https://codepen.io/ChungYingHo/pen/xxNVqpa">
+  [CSS] - 元素置中法</a> by ChungYingHo (<a href="https://codepen.io/ChungYingHo">@ChungYingHo</a>)
+  on <a href="https://codepen.io">CodePen</a>.
+</iframe>

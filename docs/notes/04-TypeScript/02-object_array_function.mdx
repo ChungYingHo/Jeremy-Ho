@@ -1,0 +1,128 @@
+---
+title: "[TS] 物件、陣列、函式的型別"
+sidebar_label: "[TS] 物件、陣列、函式的型別"
+tags: [typescript, object, array, function]
+keywords: [typescript, object, array, function]
+---
+
+## 物件的型別註記
+跟基本型別的註記不一樣，物件的型別註記會透過先建立介面 (interfaces) 這個模板來做型別的註記。
+
+### 介面 (interfaces)
+1. 先建個叫 Item 的介面：
+```ts
+interface Item {
+  name: string,
+  price: number
+}
+```
+
+2. 把這個介面作為型別註記在新的物件下：
+```ts
+let phone: Item = {
+  name: 'IPhone',
+  price: 34000
+}
+```
+這樣做的限制就是物件變數必須長得跟介面一致，不能少放一個屬性，也不能多放一個屬性。
+
+### 可選屬性
+用來解決不能少放屬性的問題。比如今天某個屬性可有可無，比如價格，可以在介面以可選屬性來為它做定義：
+```ts
+interface Item {
+  name: string,
+  price?: number
+}
+```
+
+### 任意屬性
+用來解決不能多放屬性的問題。
+```ts title='interface'
+interface Item {
+  name: string,
+  price?: number,
+  [propName: string]: any // 添加一個任意屬性
+}
+```
+
+這樣就能新增一個原先不存在的屬性了：
+```ts
+let phone: Item = {
+  name: 'IPhone',
+  date: '2023-11-13'
+}
+```
+
+### 唯讀屬性
+在屬性不想被更動時，可以在前面加上 `readonly` 讓它變成唯讀：
+```ts
+interface Item {
+  readonly name: string,
+  price?: number,
+  [propName: string]: any
+}
+```
+
+## 陣列的型別
+陣列的型別只要使用 `型別 + []` 就可以了：
+```ts
+const arr: number[] = [1, 2, 3]
+```
+
+陣列的型別是 `interface` + `[]` 的組合：
+```ts
+interface Item {
+  name: string
+  price: number
+}
+// highlight-next-line
+const shoppingCart: Item[] = [
+  { name: "Keyboard", price: 1200 },
+  { name: "Mouse", price: 800 },
+  { name: "Monitor", price: 4500 }
+]
+```
+
+## 函式的型別
+```ts title='典型例子'
+const sum = (x: number, y: number): number =>{
+  return x + y
+}
+```
+
+### 可選參數
+上述這樣寫就必須嚴格遵守 TypeScript 中的規範，定義多少參數就該給多少參數，一個不多、一個不少，但同樣我們也可以把參數定義為可選參數來決定是否可以不要傳入這個參數：
+```ts
+const sum = (x: number, y?: number):number =>{
+  return (x + y)
+}
+```
+:::warning
+這裡定義 y 為可選參數而不是 x 是有小規範的，那是因為可選參數後面不允許出現必須參數了，所以請記得可選參數永遠要寫在後面。
+:::
+
+也可以為參數代入預設值：
+```ts
+const sum = (x: number, y: number = 1):number =>{
+  return (x + y)
+}
+```
+
+:::info
+這時 y 會被自動當作是可選參數，但它不受 `可選參數後面不允許出現必須參數` 這條規則規範了。
+:::
+
+### 剩餘參數
+```ts
+function concatString(separator: string, ...strings: string[]): string {
+  return strings.join(separator);
+}
+
+const result = concatString(", ", "apple", "banana", "orange")
+console.log(result)  // apple, banana, orange
+```
+用 `...` 表示接收數量不定的參數，並存入到一組陣列中，以上面的範例就是把 apple、banana、orange 一一存入 strings 陣列。
+
+## Reference
+1. [TypeScript 新手指南](https://willh.gitbook.io/typescript-tutorial/)
+2. TypeScript 邁向專家之路 / Adam Freeman 著 / 許文達 譯 / 旗標出版

@@ -1,0 +1,139 @@
+---
+title: "[TS] 常用型別"
+sidebar_label: "[TS] 常用型別"
+tags: [typescript, literal, tuple, enum, generics]
+keywords: [typescript, literal, tuple, enum, generics]
+---
+
+## 型別別名
+函式的出現是為了把常用的邏輯包在一起以簡化程式碼增加維護與可讀性。型別的別名也是相同的道理，將常用的型別組合宣告成別名來簡化程式碼。例如：
+```ts title='未用型別別名前'
+const addNum = (x: number, y: number): number =>{
+  return x + y
+}
+
+const minusNum = (x: number, y: number): number =>{
+  return x - y
+}
+```
+
+兩個函式都需要為參數和回傳值指定同樣的型別，那這時就可以把相同的內容抽出來透過 `type` 來定義別名，並把這個別名作為型別給註記在函式下：
+```ts
+type NumType = (x: number, y: number)=> number
+
+const addNum: NumType = (x, y) =>{
+  return x + y
+}
+
+const minusNum: NumType = (x, y) =>{
+  return x - y
+}
+```
+
+## 字串字面量型別 (String Literal)
+也是使用 `type` 做定義，所以請把它跟型別別名一起看。
+
+字串字面量型別名字很長，它可以讓我們自己定義一組字串值，而這組字串值可以做為型別註記在變數底下。  
+像下面例子，當 heading 變數型別註記為 Direction 這個字串字面量型別，那它內部所帶的值就必須滿足 Direction 定義的內容：
+```ts
+type Direction = "north" | "south" | "east" | "west";
+
+let heading: Direction;
+
+heading = "north"; // 正確
+heading = "east";  // 正確
+heading = "up";    // 錯誤，因為 "up" 不是合法的值
+```
+:::tip
+字串字面量型別對以下情況特別有用：  
+1. 想限制變數、函式參數或物件屬性只能接受特定字串值時。
+2. 因為可以預期可能的值是哪些，所以提高了程式碼可讀性。
+:::
+
+## 元組 (tuple)
+他長得很像陣列，但比陣列嚴苛許多。元組一旦定義下去，它每個 `index` 該放什麼型別資料以及有多少 `index` 都必須完全符合定義。舉例來說：
+```ts
+let arr: [string, number, string]
+
+arr = ['hello', 100, 'world']
+```
+
+一旦定義了元組，後面賦值時就該滿足元組內定義的型別以及數量。  
+所以說元組在需要保持特定順序和型別的情境下非常有用。比方說，拿來存每個商品的的名稱、價格、購買數量，用這樣一組元組為基礎建立一個購物車函式內容：
+```ts
+type CartItem = [string, number, number] // 建立一個元組用來存商品名稱、數量以及價格
+
+// 創建購物車
+function createShoppingCart(): {
+  // 回傳內容型別宣告
+  items: CartItem[],
+  addItem: (item: CartItem) => void,
+  calculateTotal: () => number
+} {
+  const items: CartItem[] = [];
+
+  // 添加購物車項目
+  function addItem(item: CartItem): void {
+    items.push(item);
+  }
+
+  // 計算總價
+  function calculateTotal(): number {
+    return items.reduce((total, [_, price, quantity]) => total + price * quantity, 0);
+  }
+
+  return { items, addItem, calculateTotal };
+}
+
+// 使用購物車
+const shoppingCart = createShoppingCart();
+
+// 添加一些項目到購物車
+shoppingCart.addItem(["Laptop", 1000, 2]);
+shoppingCart.addItem(["Mouse", 20, 3]);
+shoppingCart.addItem(["Keyboard", 50, 1]);
+
+// 計算並輸出總價
+const totalPrice = shoppingCart.calculateTotal();
+console.log(`Total Price: $${totalPrice}`);
+```
+
+## 列舉 (enum)
+為抽象的數字賦予有意義的名字，來提高程式碼的可讀性。  
+
+舉例來說，要表示星期幾，可能會用數字，比如 1 代表星期一，2 代表星期二，以此類推。但是單純用數字寫對於閱讀程式碼的人來說可能不太直觀。
+```ts
+enum Days {Sun, Mon, Tue, Wed, Thu, Fri, Sat}
+
+console.log(Days.Mon) // 1
+```
+從 Sun 開始，這些`名字`會依序被賦值 0-7，換句話說，我們正在用有意義的名字來表示一組固定的值。現在，就可以使用 `Day.Monday` 來表示星期一，而不是使用不直觀的數字。
+
+## 泛型 (Generics)
+泛型說白話一點有些把型別當變數用，稍微形象一點形容可以把它想像成一個靈活的容器，允許我們使用不同的型別，而不失去型別安全性。
+
+比如有一個函式，希望傳入參數是 `string` 時回傳也是 `string`，就可以利用泛型：
+```ts
+function myFunc<T>(value: T): T {
+  return value;
+}
+
+let result = myFunc("Hello, TypeScript!");
+console.log(result); // "Hello, TypeScript!"
+```
+
+上面發生了什麼事呢？  
+1. "Hello, TypeScript!" 作為參數傳入函式。
+2. "Hello, TypeScript!" 型別推論為 `string`，`T` 因此表示型別為 `string`。
+
+
+:::info
+## 補充 tsconfig.json
+
+:::
+
+## 參考資料
+1. [TypeScript 新手指南](https://willh.gitbook.io/typescript-tutorial/)
+2. [【Day 12】TypeScript 資料型別 - 元組(Tuple) & 列舉(Enum)](https://ithelp.ithome.com.tw/articles/10221546)
+3. [第二週第一天：型別別名與字串字面量型別](https://blog.anna-yufeng.com/typescript-week2-day1-type-aliases-string-literal-types)
+4. [TypeScript | 善用 Enum 提高程式的可讀性 - 基本用法 feat. JavaScript](https://medium.com/enjoy-life-enjoy-coding/typescript-%E5%96%84%E7%94%A8-enum-%E6%8F%90%E9%AB%98%E7%A8%8B%E5%BC%8F%E7%9A%84%E5%8F%AF%E8%AE%80%E6%80%A7-%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95-feat-javascript-b20d6bbbfe00)
