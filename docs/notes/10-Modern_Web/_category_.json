@@ -1,0 +1,8 @@
+{
+  "label": "Modern Web",
+  "position": 10,
+  "link": {
+    "type": "generated-index",
+    "description": "紀錄前端開發一些瑣碎的知識"
+  }
+}

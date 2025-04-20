@@ -28,7 +28,7 @@ static void Main()
 - `static void Main()`：`Main` 方法是 C# 程式的進入點，C# 的執行流程會從這個方法開始執行，所以一個 C# 專案中至少需要有一個 Main 方法作為程式的起始點。
 
 :::tip
-現在用 VS 建 C# 專案，你會發現在最一開始的 `Program.cs`，也就是 VS 預設幫忙建有 `Main` 方法的檔案，它頂層不會有有 `using system`，但當我們自己在這個專案下又建立其它新的 cs file 來撰寫不同邏輯時，VS 卻又自己幫我們引進許多 namespace，這是因為 VS 幫我們初始化專案時會有一行這樣的設定：`<ImplicitUsings>enable</ImplicitUsings>`。這個設定會讓系統自動在我們的 Program.cs (專案的入口) 「隱式」做 `using...` 的動作，但其它 cs 檔案就沒享受到這個福利了。
+現在用 VS 建 C# 專案，你會發現在最一開始的 `Program.cs`，也就是 VS 預設幫忙建有 `Main` 方法的檔案，它頂層不會有有 `using system`，但當我們自己在這個專案下又建立其它新的 cs file 來撰寫不同邏輯時，VS 卻又自己幫我們引進許多 namespace，這是因為 VS 幫我們初始化專案時會有一行這樣的設定：`<ImplicitUsings>enable</ImplicitUsings>`。這個設定會讓系統自動在我們的 Program.cs (專案的入口) 隱式做 `using...` 的動作，但其它 cs 檔案就沒享受到這個福利了。
 :::
 
 :::warning
@@ -64,19 +64,19 @@ using test2;
 
 namespace test
 {
-  internal class Program
-  {
-    static void Main()
+    internal class Program
     {
-      Calculator calculator = new();
-      Greeting greeting = new();
-      HiFriend hiFriend = new();
+        static void Main()
+        {
+            Calculator calculator = new();
+            Greeting greeting = new();
+            HiFriend hiFriend = new();
 
-      Console.WriteLine(calculator.Add(1, 2));
-      greeting.SayHello();
-      hiFriend.SayHi();
+            Console.WriteLine(calculator.Add(1, 2));
+            greeting.SayHello();
+            hiFriend.SayHi();
+        }
     }
-  }
 }
 ```
 ```cs title="Calculator.cs"
@@ -88,13 +88,13 @@ using System.Threading.Tasks;
 
 namespace test
 {
-  internal class Calculator
-  {
-    public int Add(int a, int b)
+    internal class Calculator
     {
-      return a + b;
+        public int Add(int a, int b)
+        {
+            return a + b;
+        }
     }
-  }
 }
 ```
 ```cs title="Greeting.cs"
@@ -106,13 +106,13 @@ using System.Threading.Tasks;
 
 namespace test
 {
-  internal class Greeting
-  {
-    public void SayHello()
+    internal class Greeting
     {
-      Console.WriteLine("Hello, World!");
+        public void SayHello()
+        {
+            Console.WriteLine("Hello, World!");
+        }
     }
-  }
 }
 ```
 
@@ -120,13 +120,13 @@ namespace test
 ```cs title="Program.cs"
 namespace test2
 {
-  internal class Program
-  {
-    static void Main(string[] args)
+    internal class Program
     {
-      Console.WriteLine("Hello, World!");
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Hello, World!");
+        }
     }
-  }
 }
 ```
 ```cs title="HiFriend.cs"
@@ -138,13 +138,13 @@ using System.Threading.Tasks;
 
 namespace test2
 {
-  public class HiFriend
-  {
-    public void SayHi()
+    public class HiFriend
     {
-      Console.WriteLine("Hi, Friend!");
+        public void SayHi()
+        {
+            Console.WriteLine("Hi, Friend!");
+        }
     }
-  }
 }
 ```
 
@@ -154,25 +154,25 @@ using test2;
 
 namespace test
 {
-  internal class Program
-  {
-    static void Main()
+    internal class Program
     {
-      Calculator calculator = new();
-      Greeting greeting = new();
-      HiFriend hiFriend = new();
+        static void Main()
+        {
+            Calculator calculator = new();
+            Greeting greeting = new();
+            HiFriend hiFriend = new();
 
-      Console.WriteLine(calculator.Add(1, 2));
-      greeting.SayHello();
-      hiFriend.SayHi();
+            Console.WriteLine(calculator.Add(1, 2));
+            greeting.SayHello();
+            hiFriend.SayHi();
+        }
     }
-  }
 }
 ```
 已知 `Calculator` 跟 `Greeting` 都同樣是 test 專案下的其他 cs 檔案中的 class，在 `Program.cs` 中可以直接使用 `Calculator calculator = new();` 來在 `Main` 方法中實例化 `Calculator` 這個 class。  
 而 `HiFriend` 是 test2 專案下的 class，所以要先引用 `using test2;`，才能在 `Main` 方法中實例化 `HiFriend` 這個 class。
 
-有一個重點是，不是說直接 `using test2` 就能將 `test2` 專案的東西引入 `test` 專案中。首先必須在 VS 中在 test 專案上按右鍵，選擇「加入」，然後選擇「專案參考」，這時打開 `test.cs.prog` 會看到多一行 `<ProjectReference Include="..\test2\test2.csproj" />`，這樣才能在 test 專案中寫 `using test2;` ，然後使用 test2 專案的東西。
+有一個重點是，不是說直接 `using test2` 就能將 `test2` 專案的東西引入 `test` 專案中。首先必須在 VS 中在 test 專案上按右鍵，選擇`加入`，然後選擇`專案參考`，這時打開 `test.cs.prog` 會看到多一行 `<ProjectReference Include="..\test2\test2.csproj" />`，這樣才能在 test 專案中寫 `using test2;` ，然後使用 test2 專案的東西。
 
 ```cs title="test.csproj"
 <Project Sdk="Microsoft.NET.Sdk">
@@ -194,6 +194,8 @@ namespace test
 
 ![](./img/01-cs_project.png)
 
+---
+
 ## 判別式
 ### if-else
 最基本的判別式，如果條件為 `true` 則執行 `if` 的 code，否則執行 `else` 的 code：
@@ -202,11 +204,11 @@ int a = 1;
 int b = 2;
 if (a > b)
 {
-  Console.WriteLine("a > b");
+    Console.WriteLine("a > b");
 }
 else
 {
-  Console.WriteLine("a <= b");
+    Console.WriteLine("a <= b");
 }
 ```
 
@@ -216,33 +218,34 @@ else
 int day = 4;
 switch (day)
 {
-  case 1:
-    Console.WriteLine("Monday");
-    break;
-  case 2:
-    Console.WriteLine("Tuesday");
-    break;
-  case 3:
-    Console.WriteLine("Wednesday");
-    break;
-  case 4:
-    Console.WriteLine("Thursday");
-    break;
-  case 5:
-    Console.WriteLine("Friday");
-    break;
-  case 6:
-    Console.WriteLine("Saturday");
-    break;
-  case 7:
-    Console.WriteLine("Sunday");
-    break;
-  default:
-    Console.WriteLine("Invalid day");
-    break;
+    case 1:
+        Console.WriteLine("Monday");
+        break;
+    case 2:
+        Console.WriteLine("Tuesday");
+        break;
+    case 3:
+        Console.WriteLine("Wednesday");
+        break;
+    case 4:
+        Console.WriteLine("Thursday");
+        break;
+    case 5:
+        Console.WriteLine("Friday");
+        break;
+    case 6:
+        Console.WriteLine("Saturday");
+        break;
+    case 7:
+        Console.WriteLine("Sunday");
+        break;
+    default:
+        Console.WriteLine("Invalid day");
+        break;
 }
 ```
 
+---
 
 ## 迴圈
 ### while
