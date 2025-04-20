@@ -1,0 +1,404 @@
+---
+title: "[Vue3] 元件與資料傳遞"
+sidebar_label: "[Vue3] 元件與資料傳遞"
+tags: [vue3, component, props, emit, v-model, provide, inject]
+keywords: [vue3, component, props, emit, v-model, provide, inject]
+---
+
+## 元件 (Component)
+元件是 Vue (和 React) 的核心架構，它將可重複使用的邏輯、樣式和內容封裝在一起。  
+通過將這些元素打包到單獨的元件中，Vue 提高了 code 的複用性和開發效率。  
+簡單來說，Vue 創建的網頁是由許多這樣的元件組成，然後數據在這些元件之間傳遞，最後產生了我們眼前的畫面。
+
+### 元件的基本用法
+一個 `.vue` 檔案通常就構成一個元件，它包含了三個部分：`<script setup>`, `<template>`, `<style>`。
+```xml title='PeopleBlock.vue'
+<script setup>
+<!-- Javascript here -->
+</script>
+
+<template>
+  <h1>I am a component</h1>
+</template>
+
+<style>
+<!-- css here -->
+</style>
+```
+
+接著，我們可以將這個元件 (`PeopleBlock.vue`) 引入到 `App.vue` 中，這樣我們就可以稱 `App.vue` 為父元件，`PeopleBlock.vue` 為子元件。
+
+```xml title='App.vue'
+<script setup>
+import PeopleBlock from './components/PeopleBlock.vue';
+</script>
+
+<template>
+  <PeopleBlock />
+</template>
+```
+
+### 全域引用元件
+有時候呢 (真的是有時候)，會有一些元件需要在很多地方引入，這時候我們可以設定全局引入這些元件以避免要在很多檔案中寫很多 `import` 的語句。
+
+首先，我們需要在 `main.js` 中設定全局引入的元件。  
+以下是修改前的設定：
+```js title='還沒全域設定的 main.js'
+import './img/main.css'
+
+import { createApp } from 'vue'
+import App from './App.vue'
+
+createApp(App).mount('#app')
+```
+
+接著，我們設定應用程式全局引入 `PeopleBlock.vue`：
+```js title='全域設定的 main.js'
+import './img/main.css'
+
+import { createApp } from 'vue'
+import App from './App.vue'
+import PeopleBlock from './components/PeopleBlock.vue'
+
+const app = createApp(App)
+app.component('PeopleBlock', PeopleBlock)
+
+app.mount('#app')
+```
+
+### `<component :is>` - 動態元件
+在 Vue 中，我們可以使用 `<component :is>` 來動態切換元件，我最早碰到這玩意兒是我還在某家做 GIS 的公司時拿來切換地圖圖層元件，但事實上這真的是一個很方便的功能。  
+它的意義在於可以根據條件來決定要渲染哪個元件。  
+以下範例是我之前寫的一個 quasar demo 中的其中一段，可以觀察到 `<component :is>` 在這個應用中是透過 `switchComponentName` 來判斷要使用 `HandsonTableCrudComponent` 還是 `HandsonTableComponent` 這兩個元件。
+
+```xml
+<template>
+  <q-page class="row items-center justify-evenly">
+    <q-btn @click="switchComponent">Switch to {{ switchComponentName }}</q-btn>
+    <div>
+      <!-- highlight-next-line -->
+      <component :is="switchComponentName === 'Filter & Export' ? HandsonTableCrudComponent : HandsonTableComponent" ref="componentRef" />
+      <q-btn
+        v-if="switchComponentName === 'CRUD'"
+        color="warning"
+        class="q-mt-sm row"
+        @click="exportToCsv"
+      >
+        Export
+      </q-btn>
+    </div>
+</q-page>
+</template>
+```
+
+## 資料流
+### `props`
+`props` 是一種從父元件傳遞數據到子元件的機制。
+```xml title='App.vue (父元件)'
+<template>
+  <PeopleBlock name="Jeremy"/>
+</template>
+```
+```xml title='PeopleBlock.vue (子元件)'
+<script setup>
+const props = defineProps(['name'])
+</script>
+
+<template>
+  <h1>My name is: {{ props.name }}</h1>
+</template>
+```
+
+在 Vue 中，必須使用 `defineProps` 在子元件中定義要從父元件接收的 `props`。  
+這些 `props` 可以定義為陣列或物件：
+```js title='defineProps as an object'
+const props = defineProps({
+  name:{
+    type: String,
+    default: ''
+  }
+})
+```
+
+### `emit`
+> Props in, Events out.
+
+這是 Vue 一個很有名的口訣，指使用 `props` 從父元件傳遞數據到子元件，並使用 `emit` 從子元件發送事件到父元件進行數據修改。
+
+```xml title='PeopleBlock.vue (子元件)'
+<script setup>
+const props = defineProps({
+  name:{
+    type: String,
+    default: ''
+  }
+})
+defineEmits(['update-name'])
+</script>
+
+<template>
+  <h1>My name is: {{ props.name }}</h1>
+  <button @click="$emit('update-name')">click</button>
+</template>
+```
+
+```xml title='App.vue (父元件)'
+<script setup>
+import { ref } from 'vue';
+const name = ref('Jeremy')
+const changeName = (newName)=> name.value = newName
+</script>
+
+<template>
+  <PeopleBlock :name="name" @update-name="() => changeName('Joanna')"/>
+</template>
+```
+
+我們來看一下上面發生什麼事：
+1. 在這個範例中，`defineEmits` 在 `PeopleBlock.vue` (子元件) 義了一個名為 `update-name` 的自定義事件。
+2. 當子元件的模板中的按鈕被點擊時，使用 `$emit` 發送 `update-name` 事件到父元件。
+3. 在父元件 `App.vue` 中，使用 `@update-name` 監聽 `update-name` 事件，並將其綁定到 `changeName` 函數進行數據修改。
+
+:::info
+我們可以透過 `props` 傳遞 method 嗎？  
+會有這個疑問是因為我是先會 React 再來學 Vue 的。而在 React 中，透過 `props` 傳遞函數是很常見的事情。經過測試，我發現在 Vue 中也是可以透過 `props` 傳遞函數的。
+
+```xml title='parent'
+<script setup>
+import { ref } from 'vue';
+const name = ref('Jeremy')
+const changeName = (newName)=> name.value = newName
+</script>
+
+<template>
+  <PeopleBlock :name="name" :change-name="changeName"/>
+</template>
+```
+```xml title='child'
+<script setup>
+const props = defineProps({
+  name:{
+    type: String,
+    default: ''
+  },
+  changeName:{
+    type: Function,
+    default: () => {}
+  }
+})
+</script>
+
+<template>
+  <h1>My name is: {{ props.name }}</h1>
+  <button @click="changeName('Joanna')">click</button>
+</template>
+```
+
+然而，Vue 官方還是建議使用 `Props in, Events out` 的方式，說是這樣可以避免一些意外的錯誤，大家就還是乖乖遵守以免 debug 到天荒地老才發現問題。
+:::
+
+### `v-model`
+在 Vue 中，`v-model` 用於在表單輸入、文本區域和下拉列表...等元素上進行資料的「雙向綁定」。  
+當表單元素的值發生變化時，綁定的 Vue 實例數據會自動更新，反之亦然。這使得 Vue 在處理表單數據時更加地方便和效率。
+
+```xml
+<script setup>
+import { ref } from 'vue';
+const name = ref('Jeremy')
+</script>
+
+<template>
+  <input type="text" v-model="name">
+  <h1>{{ name }}</h1>
+</template>
+```
+
+此外，`v-model` 還提供了三個修飾符來幫助處理表單：
+1. `.lazy`: 改變 Vue 同步輸入和數據的方式，從在「每次輸入事件時更新」到在「更改事件完成時更新」。這換句話說就是當輸入字段失去焦點或輸入完成時，數據才會更新。
+2. `.number`: 嘗試將用戶的輸入轉換為數字。這對於數字輸入特別有用，避免在表單提交時進行額外的類型轉換。
+3. `.trim`: 自動刪除用戶輸入的前導和尾隨空格。這有助於處理用戶輸入，減少後端的額外字符串操作。
+
+
+
+### `provide`-`inject`
+在 Vue 中，當需要在遠端組件層級之間傳遞數據時 (例如從祖父組件到孫子組件)，使用 `props` 傳遞數據會需要傳很多多多多多...層，然後資料流就會變成一團糟。  
+所幸 Vue 提供了 `provide` 和 `inject` 來進行這種遠端的數據傳遞。
+
+在層級較高的組件 (如祖父組件) 中，使用 `provide` 函數提供數據。  
+這個函數接受兩個參數：第一個是提供數據的名稱，第二個是要提供的實際數據。
+
+在層級較低的組件 (如孫子組件) 中，使用 `inject` 函數來注入提供的數據。
+這個函數接受一個參數，即提供的數據的名稱。
+
+For example:
+```xml title='parent'
+<script setup>
+import { ref, provide } from 'vue';
+import HelloWorld from './components/HelloWorld.vue';
+const greeting = ref('hello world')
+provide('msg', greeting)
+</script>
+
+<template>
+  <HelloWorld />
+</template>
+```
+```xml title='child'
+<script setup>
+import { inject } from 'vue';
+
+const msg = inject('msg')
+</script>
+
+<template>
+  <h1>{{ msg }}</h1>
+</template>
+```
+
+### `defineExpose`
+這是一個把子組件的方法暴露給父組件的方法，這樣父組件就可以調用子組件的方法。  
+直接看我在 quasar demo 寫的範例會更好理解，這邊我要把 `exportToCsv` 方法暴露給父組件。
+
+```js title='子元件'
+const exportToCsv = () => {
+  // 略
+}
+
+// highlight-start
+defineExpose({
+  exportToCsv
+})
+// highlight-end
+```
+
+```xml title='父元件'
+<template>
+  <q-page class="row items-center justify-evenly">
+    <q-btn @click="switchComponent">Switch to {{ switchComponentName }}</q-btn>
+    <div>
+    <!-- highlight-start -->
+      <component :is="switchComponentName === 'Filter & Export' ? HandsonTableCrudComponent : HandsonTableComponent" ref="componentRef" />
+      <q-btn
+        v-if="switchComponentName === 'CRUD'"
+        color="warning"
+        class="q-mt-sm row"
+        @click="exportToCsv"
+      >
+        Export
+      </q-btn>
+      <!-- highlight-end -->
+    </div>
+</q-page>
+</template>
+
+<script setup lang="ts">
+import HandsonTableComponent from 'src/components/handsontable/HandsonTableComponent.vue'
+import HandsonTableCrudComponent from 'src/components/handsontable/HandsonTableCrudComponent.vue'
+import { ref } from 'vue'
+
+import type { ComponentPublicInstance } from 'vue'
+
+interface ExportableComponent extends ComponentPublicInstance {
+  exportToCsv: () => void
+}
+
+<!-- highlight-next-line -->
+const componentRef = ref<ExportableComponent | null>(null)
+const switchComponentName = ref('Filter & Export')
+
+const switchComponent = () => {
+  if (switchComponentName.value === 'Filter & Export') {
+    switchComponentName.value = 'CRUD'
+  } else {
+    switchComponentName.value = 'Filter & Export'
+  }
+}
+
+<!-- highlight-start -->
+const exportToCsv = () => {
+  if (switchComponentName.value === 'CRUD') {
+    if (componentRef.value) {
+      componentRef.value.exportToCsv()
+    }
+  }
+}
+<!-- highlight-end -->
+</script>
+```
+
+## 一些常見的疑問
+### 怎麼在組件間傳遞 `v-model`？
+在 Vue 中，要在組件之間傳遞 `v-model`，我們需要在子組件中定義一個名為 `modelValue` 的 prop 來接收父組件的值，並使用一個 emit event (如 `update:modelValue`) 來通知父組件子組件中的數據變化。  
+在子組件中，`<input>` 元素將其值綁定到 `modelValue`，並在其輸入事件中觸發 `update:modelValue event`，將更新的值發送回父組件。
+
+```xml title='父組件'
+<script setup>
+import { ref } from 'vue';
+import InputArea from './components/InputArea.vue'
+const name = ref('Jeremy')
+</script>
+
+<template>
+  <InputArea v-model="name"/>
+</template>
+```
+```xml title='子組件'
+<script setup >
+defineProps(['modelValue'])
+defineEmits(['update:modelValue'])
+</script>
+
+<template>
+  <input type="text" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)">
+  <h2>{{ modelValue }}</h2>
+</template>
+```
+
+### 可以把同一個 input 綁定複數 `v-model` 嗎？
+啊，當然可以，Vue 官方有提供範例：
+```xml title='App.vue (父元件)'
+<script setup>
+import { ref } from 'vue';
+import InputArea from './components/InputArea.vue'
+const first = ref('Jeremy')
+const last = ref('Ho')
+</script>
+
+<template>
+  <InputArea
+    v-model:first-name="first"
+    v-model:last-name="last"
+  />
+</template>
+```
+```xml title='InputArea.vue (子元件)'
+<script setup>
+defineProps({
+  firstName: String,
+  lastName: String
+})
+
+defineEmits(['update:firstName', 'update:lastName'])
+</script>
+
+<template>
+  <input
+    type="text"
+    :value="firstName"
+    @input="$emit('update:firstName', $event.target.value)"
+  />
+  <input
+    type="text"
+    :value="lastName"
+    @input="$emit('update:lastName', $event.target.value)"
+  />
+  <h1>{{ firstName }} {{ lastName }}</h1>
+</template>
+```
+
+## Reference
+1. [Vue.js](https://cn.vuejs.org/guide/quick-start.html)
+2. [Vue3 + Vite 快速上手 Get Startrd EP3 - components / props / emit](https://www.youtube.com/watch?v=ureFPVghH30&list=PLbOfcOk7bN42Kzp1wQsoLuU0vPUmFBe-X&index=5)
+3. [Vue3 + Vite 快速上手 Get Startrd EP4 - v-model 資料的雙向綁定 / 自訂義組件的資料綁定 / One-Way Data Flow 單向資料流](https://www.youtube.com/watch?v=firPRbhoX7o&list=PLbOfcOk7bN42Kzp1wQsoLuU0vPUmFBe-X&index=5)
+4. [Vue 中，如何将函数作为 props 传递给组件](https://blog.csdn.net/qq449245884/article/details/106066381)
+5. [父子組件資料傳遞 props、$emit](https://docs-99.vercel.app/Vue/props-emit.html)

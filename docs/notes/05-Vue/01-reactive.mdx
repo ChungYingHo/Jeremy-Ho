@@ -1,0 +1,184 @@
+---
+title: "[Vue3] 響應式資料"
+sidebar_label: "[Vue3] 響應式資料"
+tags: [vue3, ref, reactive, computed]
+keywords: [vue3, ref, reactive, computed]
+---
+
+## 建立 Vue3 專案
+1. 透過 npm 建立一個 Vue3 專案，指令如下：
+```powershell
+npm create vue@latest
+```
+
+2. `cd` 到專案位置，執行以下指令：
+```powershell
+npm install
+```
+
+3. 執行 `npm run dev` 即可啟動專案。
+
+## 語法
+Vue3 提供了強大的語法 - `composition api`，這和 Vue2 的 `options api` 有很大的不同。  
+雖然仍然可以在 Vue3 中使用 options api，但這通常只會在那些 Vue3 剛出來的專案中看到。所以本篇筆記會以 `composition api` 為主。
+
+```xml title='composition api'
+<script setup>
+<!-- put all your methods and variables here -->
+</script>
+
+<template>
+  <!-- the HTML structure -->
+</template>
+
+<style scoped>
+<!-- css style, use `scope` let the css command only work in this component ​ -->
+</style>
+```
+
+### 文本插值
+在 `template` 中若要使用變數，可以使用 `{{...}}`，如下：
+```xml
+<span>Message: {{ msg }}</span>
+```
+
+### Raw HTML
+如果變數包含 HTML 內容，則不應使用 `{{...}}`，因為它會將變數的內容視為純文本。這時應使用 `v-html` 指令插入 HTML 內容：
+```xml
+<!-- rawHtml = <span style="color: red">This should be red.</span> -->
+<p>Using v-html directive: <span v-html="rawHtml"></span></p>
+```
+
+### Attribute Bindings
+如果要綁定變數到 `attribute` 上，可以使用 `v-bind`。例如：
+```xml
+<h1 v-bind:class="{addColor: changed}">I will change my color</h1>
+```
+這個範例表示當 `changed` 為 `true` 時，`<h1>` 會加上 `addColor` 這個 class。  
+也可以使用 `v-bind` 的簡寫方式：
+```xml
+<h1 :class="{addColor: changed}">I will change my color</h1>
+```
+
+:::info
+Vue 還提供很多很好用的指令，例如：
+1. `v-for`:  這是用來在 `template` 中做迭代的指令
+2. `v-if` or `v-show`: 這是用來在 `template` 中做條件判斷的指令
+3. `v-on`: 這是用來在 `template` 中做事件綁定的指令
+:::
+
+## 響應式資料
+響應式是 Vue 中的一個重要概念。在 React 中會用 `useState` 來管理響應式數據。但在 Vue3 中，則使用 `ref`、`reactive` 和 `computed` 來達到響應式狀態的管理。
+
+### `ref`
+`ref` 可以儲存任何類型的數據。但有些人會偏好把 object 或 array 交給 `reactive` 來管理，但這裡還是先來講 `ref`。  
+`ref` 的使用上，當在 `<script setup>` 中使用 `ref` 的值時，應該在其後加上 `.value`。而在 `<template>` 中，則可以直接使用 `{{ref}}` 來取得值。
+```xml
+<script setup>
+import { ref } from 'vue';
+const num = ref(0)
+<!-- highlight-next-line -->
+const changeNum = () => num.value += 1
+</script>
+
+<template>
+ <!-- highlight-next-line -->
+  <h1>{{ num }}</h1>
+  <!-- these two lines of code do the same thing -->
+  <button @click="changeNum">Add one</button>
+  <button @click="num++">Add one</button>
+</template>
+```
+
+:::warning
+注意必須使用 `const` 來宣告 `ref`，不可使用 `let` 或 `var`！
+:::
+
+### `reactive`
+`reactive` 可以儲存 object 或 array。  
+使用 `reactive` 的值時，不需要在其後加上 `.value`。
+
+```xml
+<script setup>
+import { reactive } from 'vue';
+const people2 = reactive({
+  name: 'Jeremy',
+  gender: 'Male',
+  age: 20
+})
+
+const changePeople2 = () => {
+  people2.name = 'Lucy'
+  console.log('people2 changed')
+}
+</script>
+
+<template>
+  <h1>{{ people2.name }} / {{ people2.gender }}</h1>
+  <button @click="changePeople2">Change!</button>
+</template>
+```
+:::info
+### `ref` 與 `reactive` 之間的差異
+這兩者之間的差異不只體現在是否取值時需要加上 `.value`。  
+當 `ref` 用來儲存 object 時，object 內部的屬性變化可能不會被 `watch` 檢測到，因為 `ref` 主要是用來追蹤直接對其值的賦值。反之，使用 `reactive` 使得 object 內部屬性的變化更容易被檢測到。
+
+但是但是~ 實務上還是很喜歡直接無腦用 `ref` 來存 object 或 array，又想要 `watch` 能夠偵測到 object 內部屬性的變化怎麼辦？  
+這時可以在使用 `watch` 時加上第三個參數 `deep: true`，這樣 `watch` 就能夠偵測到 `ref` object 內部屬性的變化了。
+
+```js
+watch(people1, () => {
+  console.log('something changed')
+}, {deep : true})
+```
+:::
+
+### `computed`
+Vue 還提供了 `computed` 這個屬性，`computed` 會在其依賴的數據發生變化時自動重新計算。  
+`computed` 通常用於需要根據某些數據自動更新的複雜邏輯，實務上也挺常用在 i18n 切換語系。  
+以下範例示範未使用 `computed` 和使用 `computed` 的差異：
+
+```xml title='Before use computed'
+<script setup>
+import { ref } from 'vue';
+const num1 = ref(1)
+const num2 = ref(2)
+</script>
+
+<template>
+  <h1>Num1: {{ num1 }}</h1>
+  <h1>Num2: {{ num2 }}</h1>
+  <h1>Num1 + Num2 = {{ num1 + num2 }}</h1>
+</template>
+```
+
+```xml title='After use computed'
+<script setup>
+import { ref, computed } from 'vue';
+const num1 = ref(1)
+const num2 = ref(2)
+
+const numPlus = computed(()=>{
+  return num1.value  + num2.value
+})
+</script>
+
+<template>
+  <h1>Num1: {{ num1 }}</h1>
+  <h1>Num2: {{ num2 }}</h1>
+  <h1>Num1 + Num2 = {{ numPlus }}</h1>
+</template>
+```
+可以從上面的範例中觀察到，使用 `computed` 後可以把所有邏輯都放在 `<script setup>` 中。
+
+:::info
+### method 與 `computed` 的差異
+1. `computed` 只有在其依賴的數據發生變化時才會執行。
+2. `computed` 不可以傳參數。
+3. `computed` 預設只有 `getter`。
+:::
+
+## Reference
+1. [Vue.js](https://cn.vuejs.org/guide/quick-start.html)
+2. [Vue3 + Vite 快速上手 Get Startrd EP1 - 初探 Vite 專案 / Vue3 初學者應該要先知道的東西 / 剛開始寫 Composition API 會犯的錯誤 !](https://www.youtube.com/watch?v=rNQIA0Fe9KQ)
+3. [Vue3 + Vite 快速上手 Get Startrd EP2 - 定義資料 ref、reactive、computed 深度探討](https://www.youtube.com/watch?v=gJF5Cf2fz1A)

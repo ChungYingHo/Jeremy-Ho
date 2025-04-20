@@ -1,0 +1,121 @@
+---
+title: "[Quasar] 專案初始化"
+sidebar_label: "[Quasar] 專案初始化"
+tags: [vue3, quasar]
+keywords: [vue3, quasar]
+---
+
+:::info
+[Quasar 官方文件](https://quasar.dev/start/quick-start)
+:::
+
+## Create a Quasar Project
+1. 安裝 Quasar
+```powershell
+npm init quasar
+```
+
+```powershell
+√ What would you like to build? » App with Quasar CLI, let's go!
+√ Project folder: ... quasar_project
+√ Pick Quasar version: » Quasar v2 (Vue 3 | latest and greatest)
+√ Pick script type: » Typescript
+√ Pick Quasar App CLI variant: » Quasar App CLI with Vite 2 (stable | v1)
+√ Package name: ... quasar_project
+√ Project product name: (must start with letter if building mobile apps) ... quasar_project
+√ Project description: ... a quasar project
+√ Author: ... Jeremy
+√ Pick a Vue component style: » Composition API with <script setup>
+√ Pick your CSS preprocessor: » Sass with SCSS syntax
+√ Check the features needed for your project: » Linting (vite-plugin-checker + ESLint + vue-tsc), State Management (Pinia), axios, vue-i18n
+√ Pick an ESLint preset: » Standard
+```
+
+2. Global CLI (optional)
+裝了可以直接使用 `quasar` 指令。
+
+```powershell
+npm i -g @quasar/cli
+```
+
+3. `npm run dev` 或 `quasar dev` 啟動開發伺服器。
+
+## 調整 `quasar.config.js`
+這是 Quasar 的設定檔，可以在這裡設定專案的一些基本設定。  
+基本上這裡要調整的只有 `vueRouterMode`、`plugin` 跟 CSS 相關設定而已。  
+
+Plugin 的部分要添加較常用的彈出視窗和警告提示，置於為何這裡要添加 plugin，可以參考 Quasar 官方的說法：
+
+> The advantage of using Dialogs as Quasar Plugins as opposed to QDialog component is that the plugin can also be called from outside of Vue space and doesn’t require you to manage their templates.
+
+```javascript title="quasar.config.js"
+vueRouterMode: 'history', // 決定 url 顯示方式是否帶有 # 號，同時也影響 SEO
+plugins: [
+  'Dialog',
+  'Notify'
+],
+cssAddon: true // 啟用 Quasar CSS 預設樣式
+```
+
+## 其它設定調整
+視專案需求可以調整 `.eslintrc.cjs` 跟 `.vscode/settings.json`。  
+這裡紀錄比較重要跟 vue 相關的 eslint 設定。
+
+```json title=".eslintrc.cjs"
+'vue/comma-spacing': 'error', // 逗號前後的空格
+    'vue/key-spacing': 'error', // 冒號前後的空格
+    'vue/mustache-interpolation-spacing': ['error', 'always'], // {{ }} 內的空格
+    'vue/no-multi-spaces': 'error', // 多餘空格報錯
+    'vue/multiline-html-element-content-newline': 'error', // 多行 html 元素的內容應該換行
+    'vue/attribute-hyphenation': ['error', 'always'], // 屬性名應該使用連字符
+    'vue/attributes-order': ['error', {
+      order: [
+        'DEFINITION', // is, v-is
+        'LIST_RENDERING', // v-for
+        'CONDITIONALS', // v-if v-else-if v-else v-show v-cloak
+        'RENDER_MODIFIERS', // v-once v-pre
+        'TWO_WAY_BINDING', // v-model
+        'OTHER_DIRECTIVES', // v-custom-directive
+        'SLOT', // v-slot
+        'GLOBAL', // id
+        'UNIQUE', // key, ref
+        'ATTR_SHORTHAND_BOOL', // boolean-prop
+        'ATTR_STATIC', // prop=""
+        'ATTR_DYNAMIC', // :prop=""
+        'EVENTS', // v-on, @
+        'CONTENT' // v-text, v-html
+      ],
+      alphabetical: false // 不需要按字母排序
+    }],
+```
+
+## Vercel 部署
+:::danger
+Quasar 部署 vercel 雖然簡單，但沒有像 Nuxt 或 Next 那樣無腦。  
+請務必進行下列設定，不然 Vercel 會無法正確部署。
+:::
+### 建立 Vercel 帳號
+:::warning
+這裡默認已經有 GitHub 帳號並把之前的練習上傳到 GitHub repo 上了。
+:::
+[Vercel](https://vercel.com/signup) 選擇 `hobby` 免費方案，使用 GitHub 登入即可。
+
+### 調整 Quasar 專案設定
+```json title="package.json"
+"scripts": {
+  "build": "quasar build",
+  "deploy": "vercel"
+}
+```
+
+```json title="vercel.json"
+{
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/.*", "dest": "/index.html" }
+  ]
+}
+```
+
+### Vercel 部署
+辦完 Vercel 帳號後可以直接連通 GitHub repo，import 專案後，調整 `Output Directory` 為 `dist/spa`，然後就可以部署了。
