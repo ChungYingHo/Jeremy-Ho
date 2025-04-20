@@ -84,3 +84,40 @@
   background-color: var(--ifm-color-primary-darkest);
   transform: translateY(-3px); 
 }
+
+/* RWD */
+@media (max-width: 768px) {
+  .helloWrapper {
+    margin-top: 5rem;
+    font-size: 2.5rem; /* 原本是 5rem，縮小一半 */
+    flex-wrap: wrap;
+  }
+
+  .letter {
+    width: 1ch;
+    height: 2.2rem;
+  }
+
+  .intro {
+    margin-top: 2rem;
+  }
+
+  .name {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+  }
+
+  .buttons button {
+    width: 100%;
+    font-size: 0.75rem;
+  }
+}
