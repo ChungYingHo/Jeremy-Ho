@@ -1,0 +1,37 @@
+.helloWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 5rem;
+  color: #3c90ad;
+  font-family: monospace;
+  line-height: 1;
+}
+
+.letter {
+  position: relative;
+  display: inline-block;
+  width: 1.2ch;
+  height: 2.5rem;
+}
+
+.ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  opacity: 0.15;
+  pointer-events: none;
+  user-select: none;
+}
+
+.char {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  transform-origin: center bottom;
+}
