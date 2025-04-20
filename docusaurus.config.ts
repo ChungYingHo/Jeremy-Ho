@@ -5,10 +5,10 @@ import plugins from './config/plugins'
 
 const config: Config = {
   // Metadata for the website
-  title: 'CodeFictionist',
+  title: 'Jeremy Ho',
   tagline: 'Dinosaurs are cool',
   favicon: 'img/favicon.ico',
-  url: 'https://codefictionist.com', // Set the production url of your site here
+  url: 'https://jeremy-ho.com', // Set the production url of your site here
   baseUrl: '/',
 
   // GitHub pages deployment config.
