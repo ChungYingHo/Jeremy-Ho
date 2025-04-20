@@ -6,9 +6,9 @@ import plugins from './config/plugins'
 const config: Config = {
   // Metadata for the website
   title: 'Jeremy Ho',
-  tagline: 'Dinosaurs are cool',
+  tagline: '前端工程師 aka 遊戲開發設計師',
   favicon: 'img/favicon.ico',
-  url: 'https://jeremy-ho.com', // Set the production url of your site here
+  url: 'https://jeremyho.tw', // Set the production url of your site here
   baseUrl: '/',
 
   // GitHub pages deployment config.
