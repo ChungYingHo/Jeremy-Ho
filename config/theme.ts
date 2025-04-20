@@ -4,6 +4,11 @@ import { themes as prismThemes } from "prism-react-renderer"
 const themeConfig = {
   // Replace with your project's social card
   image: 'img/docusaurus-social-card.jpg',
+  docs: {
+    sidebar: {
+      autoCollapseCategories: true
+    },
+  },
   navbar: {
     title: 'Jeremy Ho',
     logo: {
