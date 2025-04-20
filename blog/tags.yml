@@ -1,19 +1,14 @@
-facebook:
-  label: Facebook
-  permalink: /facebook
-  description: Facebook tag description
+tech:
+  label: Tech
+  permalink: /tech
+  description: 與科技或技術相關，但就只是談談的程度
 
-hello:
-  label: Hello
-  permalink: /hello
-  description: Hello tag description
+life:
+  label: Life
+  permalink: /life
+  description: 與生活相關的文章
 
-docusaurus:
-  label: Docusaurus
-  permalink: /docusaurus
-  description: Docusaurus tag description
-
-hola:
-  label: Hola
-  permalink: /hola
-  description: Hola tag description
+book:
+  label: Book
+  permalink: /book
+  description: 書籍相關的文章
