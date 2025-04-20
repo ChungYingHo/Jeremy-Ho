@@ -3,7 +3,7 @@ import { themes as prismThemes } from "prism-react-renderer"
 
 const themeConfig = {
   // Replace with your project's social card
-  image: 'img/docusaurus-social-card.jpg',
+  image: 'img/social-card.png',
   docs: {
     sidebar: {
       autoCollapseCategories: true
@@ -42,46 +42,50 @@ const themeConfig = {
     style: 'dark',
     links: [
       {
-        title: 'Docs',
+        title: 'Site Navigation',
         items: [
           {
-            label: 'Tutorial',
-            to: '/docs/intro',
+            label: '筆記',
+            to: '/docs/notes',
           },
+          {
+            label: '系列',
+            to: '/docs/series',
+          },
+          {
+            label: 'Blog',
+            to: '/blog',
+          }
         ],
       },
       {
         title: 'Community',
         items: [
           {
-            label: 'Stack Overflow',
-            href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+            label: 'LinkedIn',
+            href: 'https://www.linkedin.com/in/chung-ying-ho',
           },
           {
-            label: 'Discord',
-            href: 'https://discordapp.com/invite/docusaurus',
-          },
-          {
-            label: 'X',
-            href: 'https://x.com/docusaurus',
-          },
+            label: 'iThome',
+            href: 'https://ithelp.ithome.com.tw/users/20157439',
+          }
         ],
       },
       {
         title: 'More',
         items: [
           {
-            label: 'Blog',
-            to: '/blog',
+            label: 'GitHub',
+            href: 'https://github.com/ChungYingHo',
           },
           {
-            label: 'GitHub',
-            href: 'https://github.com/facebook/docusaurus',
+            label: 'npm',
+            href: 'https://www.npmjs.com/~ag_jeremy',
           },
         ],
       },
     ],
-    copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+    copyright: `Copyright © ${new Date().getFullYear()} Jeremy Ho. Built with Docusaurus.`,
   },
   prism: {
     theme: prismThemes.github,
