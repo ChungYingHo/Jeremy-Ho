@@ -11,7 +11,6 @@ unlisted: true
 
 喔對了，這裡我要很強調地說，請至少開個 Replit 或自己的 IDE 實際就著我的範例跑一次會更容易理解一些。
 
----
 
 ## Call by value
 我們先來講講最沒問題的 Call by value。先看下面這道範例：
@@ -38,7 +37,6 @@ console.log(b) // 2
 
 而在 JavaScript 中，一切基礎型別，諸如 `number`、`string`、`boolean`，都是 call by value。
 
----
 
 ## Call by reference
 我們從上面 call by value 的結論可以知道 JavaScript 的基礎型別都是走 call by value 的路，那誰走 call by reference 就不言而喻了。  
@@ -71,7 +69,6 @@ console.log(obj2) // { name: 'Jeremy', age: 29 }
 打個比方就是你開始和你好友合租一間房子 (大學生 or 研究所幾乎都會這樣幹)，你們共享同一間屋子的裝潢，誰對裝潢有了變動，都會影響到對方。  
 這就是 call by reference 的概念。
 
----
 
 ## 人生總是有各種例外
 講真，如果要面試的話，上面的概念基本已經足夠，我想也不會有面試官繼續往下刁 XD  
@@ -201,7 +198,6 @@ console.log(obj2) // { name: 'Dolores', age: 500 }
 
 瞧，結果又回到了 call by reference 的概念，`obj1` 跟 `obj2` 一起更動了。
 
----
 
 ## Conclusion
 看到這裡的，我希望不要被前一節的內容給搞暈了 XD  

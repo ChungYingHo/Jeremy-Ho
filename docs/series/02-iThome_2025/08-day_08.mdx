@@ -7,7 +7,7 @@ unlisted: true
 之後會再看到閉包這個辭彙，講真，真的是在面試時時被問。  
 
 MDN 其實有一篇專門解釋閉包的[文章](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Guide/Closures)，但是呢，你總不可能把 MDN 整篇文章都背給面試官聽吧？ (是說要是背得出我覺得也是挺厲害的 www)  
-之前我在 Dart 也寫過[閉包的紀錄](https://codefictionist.com/docs/tech_articles/language/Dart/dart_syntax#closure-%E9%96%89%E5%8C%85)：
+之前我在 Dart 也寫過閉包的紀錄：
 
 > 當定義一個函數時，如果在函數內部引用了外部的變量，那麼這個函數就是一個閉包。
 
@@ -17,7 +17,6 @@ MDN 其實有一篇專門解釋閉包的[文章](https://developer.mozilla.org/z
 
 現在看起來還是有點抽象，趁著這次機會，來重新闡述一下 JavaScript 中的閉包。
 
----
 
 ## 閉包，閉起來的一包
 把 Closure 翻譯成閉包也是挺形象的哈 www  
@@ -66,7 +65,6 @@ So，我們看完 `countNumber` method 內在做的事，現在來看如何讓�
 3. `countNumber` 把 `addNumber` 給 return 出來，讓 `addNumberWithTen` 這個變數引用，現在 `addNumberWithTen` 其實調用的就是 `a` = `10` 的 `addNumber` method。
 所以當 `addNumberWithTen(2)` 時，`addNumber` method 會使用 `a` = `10` 與 `b` = `2` 進行運算，得到 `12`。
 
----
 
 ## 閉包的使用情境
 接著我們來談談閉包的使用情境。
