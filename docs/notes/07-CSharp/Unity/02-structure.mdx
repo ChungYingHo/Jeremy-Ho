@@ -1,0 +1,138 @@
+---
+title: "[Unity] 專案結構"
+sidebar_label: "[Unity] 專案結構"
+tags: [csharp, unity, structure]
+keywords: [csharp, unity, structure]
+---
+
+## Unity 專案結構
+Unity 專案結構大致上長這樣：
+
+```
+📁 MyUnityProject/
+├── 📁 Assets/              ← 你做的圖、音、腳本全都在這
+├── 📁 Packages/            ← 套件管理
+├── 📁 ProjectSettings/     ← 專案整體設定（畫質、輸出平台、按鍵設定等）
+├── 📄 .gitignore           ← 告訴 Git 哪些檔案不要上傳
+├── 📄 .vsconfig            ← VS 編輯器的設定
+```
+
+所以基本上無論是美術、UI/UX 設計師、亦或是程式設計師，大家基本都是在 `Assets` 資料夾裡面工作。
+
+## Assets 資料夾
+建完專案後，打開 Assets 資料夾，初始結構會類似這樣：
+
+```
+Assets/
+├── DefaultVolumeProfile.asset               # URP 的後製 Volume 設定檔
+├── DefaultVolumeProfile.asset.meta          # 上述設定的 .meta 檔（包含 GUID 與匯入設定）
+
+├── InputSystem_Actions.inputactions         # Unity 新版 Input System 的輸入綁定資源
+├── InputSystem_Actions.inputactions.meta    # 對應的 .meta 檔案
+
+├── Scenes/                                  # 預設的場景資料夾（空）
+├── Scenes.meta                              # Scenes 資料夾的 meta 檔，不是在 Scenes 裡面喔！
+
+├── Settings/                                # 預設建立的專案設定資料夾
+├── Settings.meta                            # Settings 資料夾的 meta 檔
+
+├── UniversalRenderPipelineGlobalSettings.asset       # URP 的全域渲染管線設定
+├── UniversalRenderPipelineGlobalSettings.asset.meta  # 對應 URP 設定的 meta 檔
+```
+
+可以看到除了 `Scenes` 和 `Settings` 資料夾外，其它檔案基本是跟 URP 以及 Input System 有關的設定檔。  
+基本上可以先放著他們不要理，亂動可能會出事。但還是先稍微了解一下他們在幹嘛：
+1. **URP（Universal Render Pipeline）**
+   - Unity 提供的現代化渲染流程，目的是在各種裝置上（手機、電腦、主機）達到良好效能與畫面品質。
+   - 適合需要中高畫質畫面的遊戲，支援後製特效（如泛光、景深）與 Shader Graph。
+   - 相關檔案如 `UniversalRenderPipelineGlobalSettings.asset`、`DefaultVolumeProfile.asset` 等。
+
+2. **Input System**
+   - Unity 的新版輸入處理系統，支援鍵盤、滑鼠、手把、觸控等多裝置。
+   - 輸入邏輯改為「以動作為主」的設定方式，便於維護與跨平台支援。
+   - 相關檔案為 `InputSystem_Actions.inputactions`。
+
+### 協作時 Assets 建議的架構
+開發一款遊戲時，除了專門寫 code 的工程師外，還會有美術、UI/UX 設計師、劇情編劇等。那大家都要在 `Assets` folder 裡工作的話理所當然要為大家劃分工作區域。一方面是達到分流，一方面也是遊戲最後的整合者 - 工程師，可以方便迅速知道要取哪裡找相關資源。  
+Unity 給予使用者很大的自由去自訂資料夾結構，建議的架構：
+
+```
+Assets/
+├── Art/                      ← 🎨 美術素材（角色、場景、物件圖）
+│   ├── Characters/           ← 角色立繪、行走圖、切片等
+│   ├── Environments/         ← 背景、場景圖
+│   └── Effects/              ← 火焰、水波等特效圖（非動畫）
+
+├── UI/                       ← UI 設計相關資源
+│   ├── Sprites/              ← UI 元素圖（icon、按鈕、底圖等）
+│   ├── Prefabs/              ← 純 UI prefab（無程式控制）
+│   └── Layouts/              ← UI 排版、設計 layout 範本
+
+├── Prefabs/                  ← ✅ 工程 prefab（含腳本、邏輯）
+│   ├── Characters/           ← 組裝好的角色 prefab（動畫 + 控制）
+│   ├── Props/                ← 場景用互動物件（開關、箱子）
+│   └── UI/                   ← 有程式控制的 UI prefab（如選單、對話框）
+
+├── Audio/                    ← 🎵 音效與音樂
+│   ├── BGM/                  ← 背景音樂
+│   └── SFX/                  ← 短音效（攻擊、點擊、UI 聲）
+
+├── Scripts/                  ← 📜 C# 程式碼
+│   ├── Systems/              ← 核心系統邏輯（戰鬥、任務、存檔等）
+│   ├── Components/           ← 掛載用元件（控制器、偵測器）
+│   ├── UI/                   ← 控制 UI 行為的程式
+│   └── Data/                 ← ScriptableObject 與資料模型
+
+├── Scenes/                   ← 場景檔案（.unity）
+│   └── MainMenu.unity
+
+├── Texts/                    ← 📘 文本資料（劇情、對話、翻譯）
+│   ├── Dialogues/            ← 對話資料（json、csv、Ink）
+│   ├── Story/                ← 世界觀與劇情流程
+│   └── Localization/         ← 多語系文案（zh-TW、en-US）
+
+├── Animations/               ← 動畫與控制器
+│   ├── Characters/           ← 角色動畫（.anim, Animator）
+│   └── UI/                   ← UI 動畫（按鈕動畫、進場動畫）
+
+├── Data/                     ← 純資料（非程式邏輯）
+│   ├── ScriptableObjects/    ← 可序列化的資料（如角色屬性、道具）
+│   ├── JSON/                 ← 關卡資訊、事件設定等 JSON
+│   └── CSV/                  ← 翻譯、設定表等資料表格
+
+├── Materials/                ← 材質設定檔（Material）
+
+└── Plugins/                  ← 插件、Asset Store 套件（如 DOTween）
+```
+
+### Assets 資料夾與檔案的命名規則
+
+通則是：
+- ❌ **不要**使用空格或中文命名。
+- ✅ 使用 `PascalCase` 或 `snake_case`。
+- ✅ 資料夾命名使用 `PascalCase` 較清晰。
+- ✅ 檔案名稱應描述用途、角色、功能，避免縮寫過多。
+
+**資料夾的命名**
+| 類型       | 建議命名範例       | 命名方式與說明 |
+|------------|--------------------|----------------|
+| 美術素材   | `Characters/`, `Environments/` | 使用複數名詞，PascalCase（每個字首大寫） |
+| UI 素材    | `UI/`, `Sprites/`, `Layouts/` | 統一大寫開頭，避免使用空格或底線 |
+| 預製件     | `Prefabs/`, `UI/Prefabs/`     | 預製件分類存放，通常由工程師建立 |
+| 腳本       | `Scripts/`, `Components/`     | 命名具語意，表示用途 |
+| 動畫       | `Animations/`, `Characters/`  | 以功能或角色分類 |
+| 文本資源   | `Texts/`, `Dialogues/`, `Story/` | 可依語系進一步分類（如 `Localization/zh-TW/`） |
+| 資料設定   | `Materials/`, `ScriptableObjects/` | 明確指出檔案類型 |
+
+
+**檔案的命名**
+
+| 類型       | 命名範例                       | 說明 |
+|------------|--------------------------------|------|
+| 脚本       | `PlayerController.cs`         | PascalCase，與類別名稱相同 |
+| 預製件     | `MainMenuButton.prefab`       | 使用明確功能或角色名 |
+| 動畫       | `Idle.anim`, `Run.anim`       | 動作命名簡潔，易讀 |
+| 材質       | `PlayerSkin.mat`              | 明確對應物件用途 |
+| 文本/JSON  | `dialogue_lv1_intro.json`     | 可用底線分隔語意層次 |
+| UI 圖片    | `btn_confirm.png`, `icon_user.png` | 使用前綴標註功能（btn、icon 等） |
+
