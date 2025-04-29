@@ -41,20 +41,11 @@ Assets/
 ```
 
 可以看到除了 `Scenes` 和 `Settings` 資料夾外，其它檔案基本是跟 URP 以及 Input System 有關的設定檔。  
-基本上可以先放著他們不要理，亂動可能會出事。但還是先稍微了解一下他們在幹嘛：
-1. **URP（Universal Render Pipeline）**
-   - Unity 提供的現代化渲染流程，目的是在各種裝置上（手機、電腦、主機）達到良好效能與畫面品質。
-   - 適合需要中高畫質畫面的遊戲，支援後製特效（如泛光、景深）與 Shader Graph。
-   - 相關檔案如 `UniversalRenderPipelineGlobalSettings.asset`、`DefaultVolumeProfile.asset` 等。
-
-2. **Input System**
-   - Unity 的新版輸入處理系統，支援鍵盤、滑鼠、手把、觸控等多裝置。
-   - 輸入邏輯改為「以動作為主」的設定方式，便於維護與跨平台支援。
-   - 相關檔案為 `InputSystem_Actions.inputactions`。
+這些是 Universal 2D 模板自動產生的檔案，基本上可以先放著他們不要理。
 
 ### 協作時 Assets 建議的架構
 開發一款遊戲時，除了專門寫 code 的工程師外，還會有美術、UI/UX 設計師、劇情編劇等。那大家都要在 `Assets` folder 裡工作的話理所當然要為大家劃分工作區域。一方面是達到分流，一方面也是遊戲最後的整合者 - 工程師，可以方便迅速知道要取哪裡找相關資源。  
-Unity 給予使用者很大的自由去自訂資料夾結構，建議的架構：
+Unity 給予使用者很大的自由去自訂資料夾結構，其實依團隊並沒有一定的架構，每個團隊都有各自喜歡的結構，以下是我將團隊架構與 ChatGpt 說明後產生的建議結構：
 
 ```
 Assets/
@@ -107,32 +98,11 @@ Assets/
 
 ### Assets 資料夾與檔案的命名規則
 
-通則是：
-- ❌ **不要**使用空格或中文命名。
-- ✅ 使用 `PascalCase` 或 `snake_case`。
-- ✅ 資料夾命名使用 `PascalCase` 較清晰。
-- ✅ 檔案名稱應描述用途、角色、功能，避免縮寫過多。
+在這裡我參考了一些遊戲開發團隊公開 repo 裡的命名規範整理出了一套通用原則，大概依用途以及開發者身份來區分。  
+基本上先說唯一的通則，這是工程師、美術設計師、UI/UX 設計師、編劇都該遵守的：
 
-**資料夾的命名**
-| 類型       | 建議命名範例       | 命名方式與說明 |
-|------------|--------------------|----------------|
-| 美術素材   | `Characters/`, `Environments/` | 使用複數名詞，PascalCase（每個字首大寫） |
-| UI 素材    | `UI/`, `Sprites/`, `Layouts/` | 統一大寫開頭，避免使用空格或底線 |
-| 預製件     | `Prefabs/`, `UI/Prefabs/`     | 預製件分類存放，通常由工程師建立 |
-| 腳本       | `Scripts/`, `Components/`     | 命名具語意，表示用途 |
-| 動畫       | `Animations/`, `Characters/`  | 以功能或角色分類 |
-| 文本資源   | `Texts/`, `Dialogues/`, `Story/` | 可依語系進一步分類（如 `Localization/zh-TW/`） |
-| 資料設定   | `Materials/`, `ScriptableObjects/` | 明確指出檔案類型 |
+> 資料夾的命名一律採用 PascalCase（每個單字的第一個字母大寫），例如 `MyFolder`。
 
-
-**檔案的命名**
-
-| 類型       | 命名範例                       | 說明 |
-|------------|--------------------------------|------|
-| 脚本       | `PlayerController.cs`         | PascalCase，與類別名稱相同 |
-| 預製件     | `MainMenuButton.prefab`       | 使用明確功能或角色名 |
-| 動畫       | `Idle.anim`, `Run.anim`       | 動作命名簡潔，易讀 |
-| 材質       | `PlayerSkin.mat`              | 明確對應物件用途 |
-| 文本/JSON  | `dialogue_lv1_intro.json`     | 可用底線分隔語意層次 |
-| UI 圖片    | `btn_confirm.png`, `icon_user.png` | 使用前綴標註功能（btn、icon 等） |
-
+檔案的命名則依身份有所分別：
+1. 工程師：因為牽涉到 C#，所以以 `PascalCase` 為主。
+2. 美術設計師、UI/UX 設計師、編劇：`PascalCase` 混合 `snake_case` (首字大寫 + _ 分隔片段)，例如：`Bird_01.png`、`Cactus_Large_Doube.png`、`Act1_Scott_Talk_01.yaml`
