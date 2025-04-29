@@ -1,0 +1,307 @@
+---
+title: "[React] Simple guide"
+slidebar_title: "[React] Simple guide"
+tags: [React, JSX, function, props]
+keywords: [React, JSX, function, props]
+---
+
+## Thinking in Function
+我認為在開發 React 之前，在了解什麼是 JSX、什麼是 component 之前，需要很深刻瞭解到一件事：
+
+> Function 是 React 的一等公民
+
+無論是 JSX 還是 component，無非都是 function 的一種表現形式。  
+在這裡其實可以直接定義他們兩者的本質：
+1. JSX：為服務可以在 JS Function 內撰寫 HTML 產生的格式。
+2. component：其實就是一個一個含有 UI 的 function。
+
+說真的 React 的一切核心都是繞著 function 這個概念在運行的。  
+直接用官網的例子來看 JSX 跟 component：
+
+```jsx
+function MyButton() {
+  return (
+    <button>
+      I'm a button
+    </button>
+  );
+}
+
+export default function MyApp() {
+  return (
+    <div>
+      <h1>Welcome to my app</h1>
+      <MyButton />
+    </div>
+  );
+}
+```
+不論是 `MyButton` 還是 `MyApp`，都是一個 function。  
+function 內部再 return 出 UI 結構，所以他們兩個都是 component，然後那種在 JS 內撰寫 UI 格式的語法就是 JSX。
+
+## JSX
+依照前述的邏輯，需要瞭解到 JSX 其實就是 function 裡 return 中撰寫的那個定義 UI 的區塊，雖然邏輯上是會 HTML 那 JSX 基本沒什麼問題，但因為一些編譯上與底層邏輯上的問題，JSX 會有一些規範：
+1. Return a single root element：簡單來說 return 裡的東西通通都要用一個 element 包起來，是 `<div></div>` 還是 `<></>` 都可以。
+2. Close all the tags：反正就是養成良好習慣，每個 element tag 都要 end tag 或 self-close tag。
+3. camelCase most of the things：這其實是在說 `className`。因為在 HTML 上我們可以用 `class` 來定義 CSS，但我們要知道 JSX 是服務 JS function 的，`class` 對 JS 來說是保留字，所以 JSX 上我們要用 `className` 來取代 `class`。
+
+### 在 JSX 中撰寫 JS
+一般我們並不允許在 HTML 中寫 JS，但回歸開篇說的：「JSX 是為服務可以在 JS Function 內撰寫 HTML 產生的格式。」，既然它是活在 JS 理他就允許我們在 JSX 內寫 JS。
+
+```jsx
+export default function Avatar() {
+  const avatar = 'https://i.imgur.com/7vQD0fPs.jpg';
+  const description = 'Gregorio Y. Zara';
+  return (
+    <img
+      className="avatar"
+      src={avatar}
+      alt={description}
+    />
+  );
+}
+```
+
+從官方範例中可以看到在 `Avatar` function，或是我們稱呼它 `Avatar` component，裡面有兩個變數 `avatar` 與 `description`，然後在 JSX 終究可以用 `{}` 把 JS 的變數帶進去，`{}` 其實就是讓 JSX 可以寫 JS 的黑魔法。
+
+### 條件渲染
+JSX 的條件渲染有幾種方式，但基本上都跟 vanilla JS 的邏輯差不多。
+
+1. `if` statement：
+
+```jsx
+function Item({ name, isPacked }) {
+  if (isPacked) {
+    return <li className="item">{name} ✅</li>;
+  }
+  return <li className="item">{name}</li>;
+}
+```
+
+從官方例子可以看到 `Item` component 裡面有一個 `if` statement，然後根據 props `isPacked` 的值來決定要 return 哪一個 element。
+
+:::info
+React 的 props 在下一節講到。
+:::
+
+2. `ternary` operator：
+
+```jsx
+function Item({ name, isPacked }) {
+  return (
+    <li className="item">
+      {isPacked ? (
+        <del>
+          {name + ' ✅'}
+        </del>
+      ) : (
+        name
+      )}
+    </li>
+  );
+}
+```
+
+3. `&&` operator：
+
+```jsx
+function Item({ name, isPacked }) {
+  return (
+    <li className="item">
+      {name} {isPacked && '✅'}
+    </li>
+  );
+}
+```
+
+三者的差異在於：
+1. `if` statement：可以用在多條件
+2. `ternary` operator：可以用在單條件，但會有一個 else 的情況
+3. `&&` operator：可以用在單條件，但沒有 else 的情況
+
+### Rendering Lists
+跟條件渲染一樣，vanilla JS 怎麼來，React 就怎麼來。
+
+```jsx
+const people = [{
+  id: 0, // Used in JSX as a key
+  name: 'Creola Katherine Johnson',
+  profession: 'mathematician',
+  accomplishment: 'spaceflight calculations',
+  imageId: 'MK3eW3A'
+}, {
+  id: 1, // Used in JSX as a key
+  name: 'Mario José Molina-Pasquel Henríquez',
+  profession: 'chemist',
+  accomplishment: 'discovery of Arctic ozone hole',
+  imageId: 'mynHUSa'
+}, {
+  id: 2, // Used in JSX as a key
+  name: 'Mohammad Abdus Salam',
+  profession: 'physicist',
+  accomplishment: 'electromagnetism theory',
+  imageId: 'bE7W1ji'
+}, {
+  id: 3, // Used in JSX as a key
+  name: 'Percy Lavon Julian',
+  profession: 'chemist',
+  accomplishment: 'pioneering cortisone drugs, steroids and birth control pills',
+  imageId: 'IOjWm71'
+}, {
+  id: 4, // Used in JSX as a key
+  name: 'Subrahmanyan Chandrasekhar',
+  profession: 'astrophysicist',
+  accomplishment: 'white dwarf star mass calculations',
+  imageId: 'lrWQx8l'
+}];
+
+function List() {
+  const listItems = people.map(person =>
+    <li key={person.id}>
+      <img
+        src={getImageUrl(person)}
+        alt={person.name}
+      />
+      <p>
+        <b>{person.name}</b>
+          {' ' + person.profession + ' '}
+          known for {person.accomplishment}
+      </p>
+    </li>
+  );
+  return <ul>{listItems}</ul>;
+}
+```
+
+## props
+已知 component 的概念是一段可「複用」的 UI 結構，所謂可複用就表示多數場景下召喚這個 component 時只有少部分的內容會隨召喚場合、時機出現些微差異，但大部分的 UI 主架構是相同的。  
+想像一下構五網站的商品展示頁，一個個商品用 Card 陳列，差別只在於商品名稱、照片與價格，但 Card 整體 UI 架構是不變的。  
+`props` 就是用來允許我們在召喚 component 時，傳入這些會隨著場景、時機而改變的內容。
+
+```jsx
+// 別管這個 getImageUrl 是什麼，他只是一個用來組連結的 function
+import { getImageUrl } from './utils.js';
+
+function Avatar({ person, size }) {
+  return (
+    <img
+      className="avatar"
+      src={getImageUrl(person)}
+      alt={person.name}
+      width={size}
+      height={size}
+    />
+  );
+}
+
+export default function Profile() {
+  return (
+    <div>
+      <Avatar
+        size={100}
+        person={{ 
+          name: 'Katsuko Saruhashi', 
+          imageId: 'YfeOqp2'
+        }}
+      />
+      <Avatar
+        size={80}
+        person={{
+          name: 'Aklilu Lemma', 
+          imageId: 'OKS67lh'
+        }}
+      />
+      <Avatar
+        size={50}
+        person={{ 
+          name: 'Lin Lanying',
+          imageId: '1bX5QH6'
+        }}
+      />
+    </div>
+  );
+}
+```
+
+從官方範例可以看到，component `Avatar` 內部有兩個 props，分別是 `person` 與 `size`，當在 `Profile` component 中使用 `Avatar` 時，我們可以傳入不同的 `person` 與 `size`，這樣就可以讓 `Avatar` component 在不同的場景、時機下顯示不同的內容。
+
+### Specifying a default value for a prop 
+也可以為 `props` 先指定預設值，這樣當 parent component 使用 child component 時，就算沒給該 props 一個值，child component 也可以拿預設值來做事。
+
+```jsx
+function Avatar({ person, size = 100 }) {
+  // ...
+}
+```
+
+### 重複性傳入 props
+有時候 component 的層級可能會多達 3、4 層，這時候如果每一層都要傳入同樣的 props，一直寫一樣的內容其實會很繁瑣，這時就可以用 `...` 來處理。
+
+```jsx
+// 原函式
+function Profile({ person, size, isSepia, thickBorder }) {
+  return (
+    <div className="card">
+      <Avatar
+        person={person}
+        size={size}
+        isSepia={isSepia}
+        thickBorder={thickBorder}
+      />
+    </div>
+  );
+}
+
+// 改寫後
+function Profile(props) {
+  return (
+    <div className="card">
+      <Avatar {...props} />
+    </div>
+  );
+}
+```
+
+### Passing JSX as children
+`children` 是 React `props` 的一個保留字，這個 `props` 會自動接收 component 內部的 JSX。
+
+```jsx
+function Avatar({ person, size }) {
+  return (
+    <img
+      className="avatar"
+      src={getImageUrl(person)}
+      alt={person.name}
+      width={size}
+      height={size}
+    />
+  );
+}
+
+function Card({ children }) {
+  return (
+    <div className="card">
+      {children}
+    </div>
+  );
+}
+
+export default function Profile() {
+  return (
+    <Card>
+      <Avatar
+        size={100}
+        person={{ 
+          name: 'Katsuko Saruhashi',
+          imageId: 'YfeOqp2'
+        }}
+      />
+    </Card>
+  );
+}
+```
+
+透過 `children`，`Card` component 內部就可以接收到 `Profile` component 傳入的 JSX 並做渲染。
+
+## Reference
+1. [React Docs](https://react.dev/learn)

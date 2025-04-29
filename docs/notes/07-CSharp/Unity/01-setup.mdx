@@ -6,20 +6,47 @@ keywords: [csharp, unity]
 ---
 
 ## Unity 安裝
-### Unity 載點
 [Unity 官網](https://unity.com/products) 下載 Unity Personal 版本 (免費版)。
+
+1. 打開 Unity Hub，點選 **Installs** 頁籤，點選 **Install Editor** 按鈕，選擇要下載的 Unity 版本 (我撰寫時是採用 6.0 LTS)。
+    - (optional) Microsoft Visual Studio 2022：如果打算以 Visual Studio 作為 IDE 的話，建議在這邊就一起安裝。
+    - WebGL build support：如果打算開發 WebGL 的話，建議在這邊就一起安裝。
+2. **Install** 按鈕開始安裝。
+
 :::info
-Unity 雖然近幾年有價格議題的炎上，但是說實在的，要開發到給 Unity 從遊戲中抽錢，那遊戲得大賣才行誒。
+WebGL build support 是 Unity 的一個功能，可以讓我們將遊戲編譯成 WebGL 格式，這樣就可以在瀏覽器中運行遊戲了。
 :::
 
-### 安裝 Unity
-1. 打開 Unity Hub，點選 **Installs** 頁籤，點選 **Install Editor** 按鈕，選擇要下載的 Unity 版本。
-    - (optional) 可以勾選 **Documentation**
-    - **Windows Build Support** 也勾起來
-2. **Inastaill** 按鈕開始安裝。
+### 用 Vscode 開發 Unity
+雖然 C# 主流是以 Visual Studio 為主，但其實 VScode 的開發介面我比較習慣，所以改以 VScode 為主。
+
+1. 先在 Unity Hub 建立一個新的 Unity 專案，我們需要先能進去 Unity 編輯器才能做 VScode 相關設定。
+2. `Edit > Preferences > External Tools`，在 External Script Editor 選擇 VScode。
+
+![](./img/01-01_unity_install.png)  
+![](./img/01-02_unity.png)
+
+3. [下載 .Net](https://dotnet.microsoft.com/zh-tw/download)
+4. 安裝 Vscode extension：
+    - [C# Dev Kit](https://marketplace.visualstudio.com/items/?itemName=ms-dotnettools.csdevkit)：VScode 支援 C# 的擴充套件。
+    - [C#](https://marketplace.visualstudio.com/items/?itemName=ms-dotnettools.csharp)：裝了 C# Dev Kit 之後其實就會被自動安裝了。
+    - [Unity Code Snippets](https://marketplace.visualstudio.com/items/?itemName=kleber-swf.unity-code-snippets)：提供各種 Unity 常用語法的快速模板。
+    - [Unity](https://marketplace.visualstudio.com/items/?itemName=VisualStudioToolsForUnity.vstuc)：VScode 支援 Unity 的擴充套件。
+    - [.NET Install Tool](https://marketplace.visualstudio.com/items/?itemName=ms-dotnettools.vscode-dotnet-runtime)：裝了 C# Dev Kit 之後應該默認也會自動安裝。
 
 ## Unity 專案建立與版本控制
-Unity 專案的建立非常簡單，只要進入 Unity Hub 的「專案」標籤，選取「新專案」，即可開啟建立新專案的介面，選擇預計開發的遊戲類型或模板，Unity 即會幫忙產出初始專案。
+### 2D 專案建立
+1. 打開 Unity Hub，點選「專案」內的「新專案」。
+
+![](./img/01-03_unity.png)
+2. 範本選擇 `Universal 2D`，然後輸入專案名字與路徑即可。
+
+:::warning
+2D 範本還有一個 `2D (Build-In Render Pipeline)` 跟 `2D Mobile`，後者看名字基本上就是為了開發移動端遊戲在用的輕量級引擎。  
+有問題的是 `Universal 2D` 跟 `2D (Build-In Render Pipeline)` 到底該選哪個？
+
+按照 Reddit 這兩篇文章的說法 ([link1](https://www.reddit.com/r/Unity2D/comments/1c984zb/whats_the_difference_between_universal_2d_and/?rdt=63925)、[link2](https://www.reddit.com/r/Unity2D/comments/1547o0a/whats_the_difference_between_2d_and_2d_urp/?show=original))，`Universal 2D` 是 Unity 現在主推的版本，效能也較 `2D (Build-In Render Pipeline)` 來得好些。
+:::
 
 ### 版本控制
 每次建立新專案，Unity 都會問說要不要連結 Unity Cloud，那是 Unity 自己的雲端整合系統，有點像是 Unity 版的 github。  
