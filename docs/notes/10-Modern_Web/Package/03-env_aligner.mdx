@@ -1,5 +1,5 @@
 ---
-title: "[Pkg] env-aligner / npm 套件開發"
+title: "[Pkg] Env Aligner / npm 套件開發"
 tags: [npm, package, env-aligner]
 keywords: [npm, package, env-aligner]
 ---
@@ -7,87 +7,71 @@ keywords: [npm, package, env-aligner]
 :::info
 [env-aligner](https://www.npmjs.com/package/env-aligner)
 :::
-先簡介一下這個套件好了，這是一個我自己和一位前端前輩一起開發的環境變數檢查套件，主要是用來檢查 `.env` 跟 `.env.example` 這兩個檔案的環境變數是否有對齊，這樣可以避免在開發或是部署時因為環墋變數對不齊而造成問題。  
+先簡介一下這個套件好了，Env Aligner 主要是用來檢查 `.env` 跟 `.env.example` 這兩個檔案的環境變數是否有對齊，這樣可以避免在開發或是部署時因為環墋變數對不齊而造成問題。  
 
-會做這個套件其實起因是公司需要一個**工具**可以在前端自己開發、build 或是 CI/CD pipeline 時可以檢查環境變數是否有齊全，沒有齊全的話就噴個錯誤並把流程終止，然後希望這個工具可以在不同專案中使用。  
-於是我寫了一個腳本，後來主管問我，那如果把這個腳本塞進套件裡，它裡面抓檔案路徑的函式能不能正常運作，我想了一下，好問題耶！  
-轉個念一想，不如我做個套件試試看好了 (我自己也不敢直接玩公司的套件 :sweat_smile:)，於是就開始人生初次開發 npm 套件的旅程，中間也邀請了我前端啟蒙的前輩進來幫我把關測試。  
+做這個套件的起因，就像某業界前輩說的「軟體的開發都源自生活中的問題」，Env Aligner 的出現其實是來自公司需求一個**工具**在前端自己開發、build 或是 CI/CD pipeline 時可以檢查環境變數是否有齊全，沒有齊全的話就噴個錯誤並把流程終止，來做到環境變數的簡易把控。  
+在我 survey 的過程裡，其實有發現不少套件有類似的功能，但總在一些細枝末節上跟我的需求稍有差異，沒有辦法達到 100% 吻合，這其實也正常，一般開源性套件通常都是開發者為了因應自身某些需求而開發，然後想說做都做了就放到 npm 上讓大家用用看，而我的需求可能跟他的需求不一樣也是合情合理。  
+那為了達到 100% 的需求，我一開始寫了個腳本，確確實實地 work 了，但如果要應用在各專案上，不太可能一直 copy / paste 這個腳本，那是否應該做一個新的套件呢？於是 Env Aligner 因應而出。  
 
-然後小小閒聊一下，其實 npm 已經有類似的套件存在，只是在我測試下實在不符合我要的需求，所以就自己開發了一個。  
-這篇會含括 `env-aligner` 的功能介紹以及如何發布套件。
+這篇會先簡介一下 Env Aligner 的功能，但其實重點是後方章節怎麼簡易地製作套件並發布到 npm 上。
 
 
-## `env-aligner` 功能介紹
-它會檢查三種情境：
-1. `.env` 跟 `.env.example` 比對後如果有缺少的環境變數就會報錯並終止流程
-2. `.env.example` 的變數如果有值，但是 `.env` 沒有設定值，也會報錯並終止流程
-3.. `.env` 如果有變數是 `.env.example` 沒有的，會報錯 (但不會終止流程)
+## Env Aligner 功能介紹
+### Features
+Env Aligner 主要有五個功能：
+1. 參照 `.env.example` 檢查 `.env` 檔案中是否有缺少的變數。
+2. 參照 `.env.example` 檢查 `.env` 檔案中是否有空值的變數。
+3. 參照 `.env.example` 檢查 `.env` 檔案中是否有多餘的變數。(strict 模式限定)
+4. 參照 `.env.example` 自動對齊 `.env` 檔案中的變數。此項會移除使用者在 `.env` 檔案中多出的註解以及變數，但會保留使用者已經填入變數的值。(strict 模式限定)
+5. 參照 `.env.example` 自動產生一份 `.env` 檔案，就不用手動 copy / paste。
 
-因為考量到這是個 public 套件，我們開發時將其設計成可以自訂檔案路徑、env 檔案名稱、env schema 檔案名稱、三項檢查的開關，這樣可以讓使用者在不同專案中獲得最大限度的彈性。(比如有人就用 `.env.local` 之類的)  
-總而言之，要用就要先安裝：
+### Installation
 ```powershell
 npm install env-aligner
 ```
 
-### 程式中引入
-最基本的使用就是不傳任何參數，這樣會使用預設的檔案路徑 (`process.cwd()`)、檔案名稱 (`.env`)、schema 檔案名稱 (`.env.example`)、三項檢查都開啟的設定：
-```js
+### CLI Options
+| Option        | Description                                                                 | Default           |
+|---------------|-----------------------------------------------------------------------------|-------------------|
+| `--dir`       | Root directory to scan.                                                     | `process.cwd()`   |
+| `--schema`    | Schema file name (usually `.env.example`).                                 | `.env.example`    |
+| `--env`       | Env file name to validate or align.                                         | `.env`            |
+| `--strict`    | Enable strict mode: warns about extra keys in `.env` not in the schema.     |     Not enabled (unless flag is present)       |
+| `--align`     | Enable align mode: auto-fix `.env` format based on schema. ⚠️ Only works with `--strict`. |      Not enabled (unless flag is present)     |
+| `--clone`     | Clone schema to env file if env does not exist in the folder.               |    Not enabled (unless flag is present)        |
+
+> Examples:
+```
+npx env-aligner
+npx env-aligner --dir .devcontainer --schema config.example --env config.env
+npx env-aligner --clone
+npx env-aligner --strict --align
+```
+
+### Programmatic Usage (Optional)
+雖然 Env Aligner 本意上是做成主要使用 CLI，但其實還是有支援再 JavaScript 中使用。當然，我預想會這樣用的人不多。
+
+:::warning
+因為 Env Aligner 開發之初希望它能支援大部分專案，不論新舊，所以它是用 CommonJS 開發的，這樣可以確保在大部分 Node.js 環境中都能運作。  
+如果專案上是使用 ESM (現今大部分專案都是)，那建議在使用時是放在 `cjs` 腳本中。  
+但我一概推薦使用 CLI。
+:::
+
+```js title="check-env.cjs"
 const envAligner = require('env-aligner')
 
-envAligner()
-```
-
-其他支援客製化的參數如下：
-1. `rootDir`: 一個字串，代表你要檢查的根目錄路徑。預設是 `process.cwd()`。
-2. `fileNames`: 一個物件，裡面包含了檔案名稱的設定。裡面可以傳兩個參數：
-    - `schemaName`: schema 檔案名稱。預設是 `.env.example`。
-    - `envName`: env 檔案名稱。預設是 `.env`。
-3. `checkOptions`: 一個物件，裡面包含了三項檢查的設定。裡面可以傳三個參數：
-    - `isCheckMissing`: 檢查缺少的變數。預設是 `true`。
-    - `isCheckEmptyValue`: 檢查空值的變數。預設是 `true`。
-    - `isCheckExtra`: 檢查多餘的變數。預設是 `true`。
-
-```javascript
-const customRootDir = '/application/frontend'
-const customFileNames = {
-  schemaName: '.env.sample',
-  envName: '.env.local'
-}
-const customCheckOptions = {
-  isCheckExtra: false
-}
-
-
-envAligner({ rootDir: customRootDir, fileNames: customFileNames, checkOptions: customCheckOptions })
-
-// or you can only pass a parameter by this way
-envAligner({fileNames: fileNames})
-```
-
-### CLI 指令
-我們也提供了 CLI 指令，可以在終端機中直接執行：
-```powershell
-npx env-aligner
-```
-
-跟程式中引入一樣，CLI 指令也支援客製化參數：
-| Option | Description | Default |
-| --- | --- | --- |
-| -s, --schema | schema 檔案名稱 | `.env.example` |
-| -e, --env | env 檔案名稱 | `.env` |
-| -m, --missing | 檢查缺少的變數 | `true` |
-| -n, --empty | 檢查空值的變數 | `true` |
-| -x, --extra | 檢查多餘的變數 | `false` |
-
-```powershell
-# Check the specified .env.sample and .env.local
-npx env-aligner -s .env.sample -e .env.local
-
-# Check the specified .env.example and default .env
-npx env-aligner -s .env.example 
-
-# Do not check missing, empty value, and extra
-npx env-aligner -m false -n false -x false
+envAligner({
+  rootDir: string, // Root directory to scan (default: process.cwd())
+  fileNames: {
+    schemaName: string, // Schema file name (e.g., '.env.example')
+    envName: string     // Env file name to validate (e.g., '.env')
+  },
+  mode: {
+    isStrict: boolean,  // Enable strict mode (extra key detection)
+    isAlign: boolean    // Enable align mode (auto format fix)
+  },
+  isClone: boolean       // Whether to generate the env file if missing
+})
 ```
 
 ## 發布套件
@@ -213,6 +197,11 @@ module.exports = [
 ]
 ```
 
+4. 最後執行打包指令：
+```powershell
+npm run build
+```
+
 :::info
 其實 rollup 對 esm 稍微友善一些，但是對 cjs 也是可以的，只是要注意一些額外設定，如 `exports`。  
 但其實如果真的有錯誤之類的，rollup 還是很貼心地會提示你該怎麼改的。
@@ -233,6 +222,32 @@ npm publish
 假設已經發布了兩個 beta 版，這時會發現怎麼第一個 beta 版標籤變 latest 了？  
 這是因為 npm 規定有複數版本時，至少要有一個 latest 版本。
 :::
+
+### 移除 npm 上已發布的套件版本
+這用在有時為了測試套件穩定性會優先發布 beta 版本，但為了 debug，beta 版可能會源源不絕地增生，這時就需要適時移除 npm 上那些已發布的版本。
+
+```powershell
+npm unpublish env-aligner@1.0.0-beta.1 --force
+```
+
+### 幫自己的 commit 上 tags
+這項不是必做，但如果套件是打算持續更新的，那難免會需要寫 Changelog。  
+一般寫 Changelog 都會放個 github 上兩個版本之間的 diff，那麼就需要在 commit 上加上 tags，這樣才能在 github 上看到兩個版本之間的差異。
+
+```powershell
+git tag -a v1.0.0 <commit-hash> -m "Release v1.0.0"
+git push origin v1.0.0
+```
+
+如果需要 tag 的就是剛剛最新的 commit ，可以直接寫：
+```powershell
+git tag -a v1.0.0 -m "Release v1.0.0"
+```
+
+之後有 v2.0.0 時，同樣上完 tag 就可以依下面方式看版本間的 diff：
+```
+https://github.com/你的帳號/你的專案/compare/v1.0.0...v2.0.0
+```
 
 ## Reference
 1. [[Guide] 發佈 npm 套件 - 從手動到自動（0）：專案與套件建置篇](https://pjchender.dev/devops/devops-publish-npm-0/)
