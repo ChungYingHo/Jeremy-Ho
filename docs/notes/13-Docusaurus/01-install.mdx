@@ -4,31 +4,63 @@ tags: [blog, docusaurus]
 keywords: [docusaurus, react, 部署, GitHub page, Vercel]
 ---
 
-## 建立 dosaurus 環境
+## 建立 docusaurus 環境
 ```powershell
 npx create-docusaurus@latest my-website classic
 ```
 
 ## 設定 docusaurus.config.js
-:::info
-在建了好幾個 docusaurus 後，我發現如果要用 vercel 部署，那這裡其實不仔細填也沒差。
-:::
-```js
-const config = {
-  // 通常會設置為 GitHub page 的網址
-  url: 'https://chungyingho.github.io',
-  // 會設置為 GitHub 的專案名稱
-  baseUrl: '/CodeFictionist/',
-  // 部屬的分支
-  deploymentBranch: 'deployment',
-  // 在 GitHub 上的用戶名
-  organizationName: 'chungyingho',
-  // 通常是 repo 的名稱
-  projectName: 'CodeFictionist', 
-}
+整個 docusaurus 的設定檔大概可以分成幾部分：
+1. 個人資料設定，這是跟網站名稱與網址相關的部分
+
+```
+title: 'Jeremy Ho',
+tagline: '前端工程師 aka 遊戲開發設計師',
+favicon: 'img/favicon.ico',
+url: 'https://jeremyho.tw',
+baseUrl: '/',
 ```
 
+2. Github page 部署相關設定。如果是用 Vercel 部署，這邊填不填都無所謂。
+```
+organizationName: '', // Usually your GitHub org/user name.
+projectName: '', // Usually your repo name.
+onBrokenLinks: 'throw',
+onBrokenMarkdownLinks: 'warn',
+```
+
+3. i18n 語系設定，預設是英文。這裡如果面向是中文讀者，還是建議設成 `zh-Hant`，整體 UI 會換成中文會提高 UX。
+```
+i18n: {
+  defaultLocale: 'zh-Hant',
+  locales: ['zh-Hant'],
+},
+```
+
+4. presets 設定。主要是用來設定 docs、blog、theme 相關。([presets 範例](https://github.com/ChungYingHo/Jeremy-Ho/blob/master/config/presets.ts))
+5. plugins 設定。這裡主要用來設定並引用一些插件。([plugins 範例](https://github.com/ChungYingHo/Jeremy-Ho/blob/master/config/plugins.ts))
+6. themeConfig 設定。這裡主要用來設定網站的主題樣式、導航列、側邊欄等。([themeConfig 範例](https://github.com/ChungYingHo/Jeremy-Ho/blob/master/config/themeConfig.ts))
+
+然後其他一些較特殊的插件會需要額外撰寫在 `docusaurus.config.js` 中做引用，比如說專門畫圖表的 [mermaid](https://mermaid.js.org/intro/)。
+
+## Vercel 部署
+### 建立 Vercel 帳號
+:::warning
+這裡默認已經有 GitHub 帳號並把之前的練習上傳到 GitHub repo 上了。
+:::
+[Vercel](https://vercel.com/signup) 選擇 **hobby** 免費方案，使用 GitHub 登入即可。
+
+### Vercel 部署
+辦完 Vercel 帳號後可以直接連通 GitHub repo，import 專案後可以直接一鍵部署。  
+如果打算使用自定義網名的話，Vercel 也會做對應的引導，並且也會明確指引說在網域提供商 (ex: Gandi) 上需要進行哪些對應設定。
+
 ## GitHub page 佈署
+:::warning
+因為我最早的 docusaurus blog - CodeFictionist 就是用 GitHub page 佈署的，我得說，千萬別用。  
+GitHub page 的佈署方式不只繁瑣，而且部署後進站的速度是很明顯遠低於 Vercel 的。  
+那既然一樣免費，為何不選一個方便又迅速的呢？
+:::
+
 1. 先把程式碼打包成可以佈署的形式
 ```powershell
 npm build
@@ -136,12 +168,3 @@ const config = {
 ```
 5. 打包、佈署。
 
-## Vercel 部署
-### 建立 Vercel 帳號
-:::warning
-這裡默認已經有 GitHub 帳號並把之前的練習上傳到 GitHub repo 上了。
-:::
-[Vercel](https://vercel.com/signup) 選擇 **hobby** 免費方案，使用 GitHub 登入即可。
-
-### Vercel 部署
-辦完 Vercel 帳號後可以直接連通 GitHub repo，import 專案後可以直接一鍵部署。

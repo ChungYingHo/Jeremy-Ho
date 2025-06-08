@@ -1,19 +1,17 @@
 ---
-title: "[Docusaurus] 使用指南"
-tags: [blog, docusaurus, mermaid, markdown]
-keywords: [docusaurus, react, 使用指南, markdown, mermaid]
+title: "[Docusaurus] markdown 教學"
+tags: [docusaurus, markdown]
+keywords: [docusaurus, markdown]
 ---
-## markdown 學習資源
+
+如果是對 markdown 還沒甚麼接觸經驗的建議先去下述網站補一下基礎：
 1. [Markdown文件](https://markdown.tw/)
 2. [Docusaurus 官方教學](https://docusaurus.io/zh-CN/docs/markdown-features)
-3. [markdown 表情符號](https://gist.github.com/rxaviers/7360908)
-4. [markdown 程式碼區塊支援語言表](https://prismjs.com/#supported-languages)
 
-## MDX 支援套件
-:::tip
-[MDX](https://marketplace.visualstudio.com/items?itemName=unifiedjs.vscode-mdx)
-:::
-安裝此插件，可以讓 MDX 的撰寫更方便。
+另外 docusaurus 支援 MDX 格式，MDX 是 Markdown 與 JSX 的結合，意圖是在 Markdown 中使用 React 元件，我個人是滿愛用的，因為比 MD 可以多很多撰寫風格。  
+使用 MDX 時推薦安裝 [MDX VScode 插件](https://marketplace.visualstudio.com/items?itemName=unifiedjs.vscode-mdx)。
+
+想讓文章不死板、添加人情味的話，[markdown 表情符號](https://gist.github.com/rxaviers/7360908)也有列出適用在 MD 中的表情符號編碼。
 
 ## markdown 縮放式區塊
 <details>
@@ -28,25 +26,87 @@ Here is an example
 Here is an example
 </details>
 ```
-:::info
+:::warning
 記得 `<summary></summary>` 下面要空一行。
 :::
 
-## markdown 使用圖表
-:::tip
-[Mermaid 官方文件](https://mermaid.js.org/intro/)  
-[VScode 插件](https://marketplace.visualstudio.com/items?itemName=bierner.markdown-mermaid)
+## 警告 or 標註
+```
+:::note
+這是筆記區，因為很白，所以我不喜歡 :disappointed:
 :::
-1. 先安裝 `@docusaurus/theme-mermaid`
-```powershell
-npm install --save @docusaurus/theme-mermaid
+
+:::tip
+這是提示區，通常用來提示小技巧~
+:::
+
+:::info
+這是資訊區，通常用來提供額外資訊。
+:::
+
+:::warning
+這是警告區，通常用來提醒注意事項。
+:::
+
+:::danger
+這是危險區，通常用來提醒注意危險事項。  
+我會用在警告某某東西可能會產生特定危險上。
+:::
 ```
-2. 設定 `docusaurus.config.js`
-```js
-export default {
-  markdown: {
-    mermaid: true,
-  },
-  themes: ['@docusaurus/theme-mermaid'],
-};
+:::note
+這是筆記區，因為在 light mode 下很白，會閃爆眼睛，所以我不喜歡 :disappointed:
+:::
+
+:::tip
+這是提示區，通常用來提示小技巧~
+:::
+
+:::info
+這是資訊區，通常用來提供額外資訊。
+:::
+
+:::warning
+這是警告區，通常用來提醒注意事項。
+:::
+
+:::danger
+這是危險區，通常用來提醒注意危險事項。  
+我會用在警告某某東西可能會產生特定危險上。
+:::
+
+## Code Block highlight
+這裡的 highlight 指的不是 code block 自動對特定語言進行高亮，而是指撰寫者可以在 code block 中透過「註解」指定特定行數進行高亮顯示。
+
+:::warning
+這不是 markdown 自帶的功能，所以不要傻傻的在 github 或 gitlab 的 readme、MR 或 PR 上使用，是沒用的。
+:::
+
+1. 下一行 highlight 提示：`highlight-next-line`
+```js title="highlight-next-line"
+// highlight-next-line
+console.log('This line will be highlighted')
+console.log('This line will not be highlighted')
 ```
+
+2. 指定段落 highlight：`highlight-start` 與 `highlight-end`
+```js title="highlight-start / highlight-end"
+// highlight-start
+console.log('This line will be highlighted')
+console.log('This line will also be highlighted')
+// highlight-end
+console.log('This line will not be highlighted')
+```
+
+## markdown 表格
+```
+| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Row 1    | Cell 1   | Cell 2   |
+| Row 2    | Cell 3   | Cell 4   |
+| Row 3    | Cell 5   | Cell 6   |
+```
+| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Row 1    | Cell 1   | Cell 2   |
+| Row 2    | Cell 3   | Cell 4   |
+| Row 3    | Cell 5   | Cell 6   |
