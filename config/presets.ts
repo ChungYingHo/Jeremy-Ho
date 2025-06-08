@@ -26,6 +26,10 @@ const presets: PresetConfig[] = [
         theme: {
           customCss: './src/css/custom.scss',
         },
+        gtag: {
+          trackingID: 'G-X57D2M0BZX',
+          anonymizeIP: true,
+        },
       } satisfies Preset.Options,
     ],
   ]
