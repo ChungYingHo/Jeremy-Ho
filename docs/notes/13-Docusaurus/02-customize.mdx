@@ -105,6 +105,21 @@ prism: {
 }
 ```
 
+## Google Analytics
+1. 先安裝 `@docusaurus/plugin-google-gtag`。但如果是使用 classic preset 的話，可以直接跳 2.。
+```powershell
+npm install --save @docusaurus/plugin-google-gtag
+```
+
+2. 去 Google Analytics 申辦一個評估 ID。
+3. 在 presets 設定中新增 gtag 設定：
+```
+gtag: {
+  trackingID: 'G-XXXXXXXXXX', // 這是你的 Google Analytics 評估 ID
+  anonymizeIP: true,
+}
+```
+
 ## giscus 留言板
 :::warning
 我在 2025 更新新版部落格後將留言板移除了，理由如下：
