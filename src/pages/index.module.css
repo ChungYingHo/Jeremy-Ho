@@ -13,7 +13,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: none;
+  cursor: url('/img/cursor-circle.svg') 4 4, auto;
 }
 
 .buttons {
