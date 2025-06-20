@@ -1,0 +1,357 @@
+---
+title: "[React] useState"
+sidebar_title: "[React] useState"
+tags: [React, useState, hook]
+keywords: [React, useState, hook]
+---
+
+## Anatomy of useState
+state (狀態) 是 React 中一個重要的概念，它允許組件在其生命週期內儲存和管理數據。  
+而 `useState` 就是 React 用來做狀態管理的 hook，它的基本語法如下：
+
+```jsx
+const [index, setIndex] = useState(0);
+```
+
+`index` 是狀態的當前值，`setIndex` 是用來更新這個狀態的函式。`useState()` 裡的值表示狀態「初始」的值。  
+看一下官方例子會更能感受 `useState` 的應用情景：
+
+```jsx
+export default function Gallery() {
+  const [index, setIndex] = useState(0);
+  const [showMore, setShowMore] = useState(false);
+
+  function handleNextClick() {
+    setIndex(index + 1);
+  }
+
+  function handleMoreClick() {
+    setShowMore(!showMore);
+  }
+
+  let sculpture = sculptureList[index];
+  return (
+    <>
+      <button onClick={handleNextClick}>
+        Next
+      </button>
+      <h2>
+        <i>{sculpture.name} </i> 
+        by {sculpture.artist}
+      </h2>
+      <h3>  
+        ({index + 1} of {sculptureList.length})
+      </h3>
+      <button onClick={handleMoreClick}>
+        {showMore ? 'Hide' : 'Show'} details
+      </button>
+      {showMore && <p>{sculpture.description}</p>}
+      <img 
+        src={sculpture.url} 
+        alt={sculpture.alt}
+      />
+    </>
+  );
+}
+```
+
+在官方的例子中，他用了兩個 `useState`，分別管理兩個狀態：
+1. `index`：用來追蹤當前顯示的資料在 `sculptureList` 中的位子。
+2. `showMore`：用來控制是否顯示更多細節。  
+所以簡簡單單的一個 `useState` 其實就可以做一個有基本互動性的 component 了。
+
+## Render and Commit
+這裡要提提渲染與提交，會在這裡提的原因是因為 React 會渲染的情形只有兩種：
+1. component 的初次渲染。這沒什麼好說的，沒有初次渲染是要看什麼畫面。
+2. component 的 state 更新會引發 re-render。這就跟 `useState` 有關了，要記得，`useState` 在 React 中最大的作用就是管理組件內部的狀態。
+
+React 遇到這種有狀態更新或是初始渲染時都會 follow 這樣一個 Render 步驟：
+1. 觸發：英文叫 Trigger a render，從英文看比較好理解，就是讓 React 知道你正打算要 render 一個 component。
+2. 渲染：如果是初次渲染，React 會建立整棵 Virtual DOM。但如果是 re-render，React 會先比較新舊 Virtual DOM，只找出改變的部分去計算。
+3. 提交 (commit)：這個步驟會把計算出來的 DOM 節點更新到瀏覽器上，這樣使用者就能看到最新的畫面。
+
+### State as a Snapshot
+React 官方文件把這段做成跟 Render and Commit 一樣層級的一篇文章，但我自己覺得先了解完 Render 和 Commit 更能懂 State as a Snapshot 這句話的含金量。  
+前面提到一次 Render 會有三個步驟，基本上這就是一次狀態更新會引發的流程。注意，所謂「一次狀態更新」，指的是在這次 Render 中，直到進入下一次 Render 之前，組件內部會記住當下的 state，也就是這個 Render 的 state 是固定不變的。簡單來講，一次 Render 就是一張 state 的 snapshot。  
+
+官方舉了一個例子：
+
+```jsx
+export default function Counter() {
+  const [number, setNumber] = useState(0);
+
+  return (
+    <>
+      <h1>{number}</h1>
+      <button onClick={() => {
+        setNumber(number + 1);
+        setNumber(number + 1);
+        setNumber(number + 1);
+      }}>+3</button>
+    </>
+  )
+}
+```
+
+也許會預期點擊按鈕後，數字會加 3，但實際上只會加 1。這是因為在一次 Render 中，`number` 的值是固定的，當你點擊按鈕時，`setNumber(number + 1)` 會被呼叫三次，但每次都使用的是同一個 `number` 值（初始值為 0），所以最終只會更新一次狀態。
+
+同理，這裡官方有一個例子，我覺得容易在對 React 不熟時 debug 產生誤解：
+
+```jsx
+export default function Counter() {
+  const [number, setNumber] = useState(0);
+
+  return (
+    <>
+      <h1>{number}</h1>
+      <button onClick={() => {
+        setNumber(number + 5);
+        alert(number);
+      }}>+5</button>
+    </>
+  )
+}
+```
+這裡有兩個地方會印出 `number` 的值，一個是 `h1`，一個是 `alert`。  
+有趣的是，當點擊按鈕後，`h1` 會顯示 `5`，而 `alert` 會顯示 `0`。  
+這是因為 `h1` 顯示的是「下一個 render 的結果」，因為它會在 React 執行完 render + commit 流程後更新畫面。
+`alert(number)` 拿到的則是「這一輪 render 的快照（snapshot）」，也就是尚未進入下一個 render 前的狀態。  
+
+所以這也說明了今天如果為了 debug 而想要在 event handler 裡加 `console.log` 來觀察 state 的變化，就會遇到上述這樣 state 明明已經被 setState 改變但 console 仍未變的情況，這時可能就會開始懷疑人生，但其實問題只是因為這個 console 跟 setState 是活在同一個 Render cycle 也就是同一個 state snapshot 中。
+
+:::tip
+始終牢記 React 官方說的：
+
+> React waits until all code in the event handlers has run before processing your state updates.
+:::
+
+### Queueing a Series of State Updates
+先來看看官方範例，把剛剛上面的 code 改成下面這樣，主要是把 `setNumber(number + 1)` 改成 `setNumber(n => n + 1)`：
+
+```jsx
+export default function Counter() {
+  const [number, setNumber] = useState(0);
+
+  return (
+    <>
+      <h1>{number}</h1>
+      <button onClick={() => {
+        setNumber(n => n + 1);
+        setNumber(n => n + 1);
+        setNumber(n => n + 1);
+      }}>+3</button>
+    </>
+  )
+}
+```
+
+就會發現點擊按鈕後，數字真的加 3 了。  
+這種寫法，React 官方叫它 updater function。本質上，React 每一次 setState 都是排入一個佇列在本次 Render cycle 中，在這裡透過把 把 `setNumber(number + 1)` 改成 `setNumber(n => n + 1)`，就會讓後面的 setState 實際拿到的都是前一個 setState 更新的值，而不是跟 `setNumber(number + 1)` 一樣拿到同一個快照（snapshot）。
+
+## Updating Objects in State
+基本上就還是透過 `setState` 來更新狀態。
+
+```jsx title="object"
+export default function MovingDot() {
+  const [position, setPosition] = useState({
+    x: 0,
+    y: 0
+  });
+  return (
+    <div
+      onPointerMove={e => {
+        setPosition({
+          x: e.clientX,
+          y: e.clientY
+        });
+      }}
+      style={{
+        position: 'relative',
+        width: '100vw',
+        height: '100vh',
+      }}>
+      <div style={{
+        position: 'absolute',
+        backgroundColor: 'red',
+        borderRadius: '50%',
+        transform: `translate(${position.x}px, ${position.y}px)`,
+        left: -10,
+        top: -10,
+        width: 20,
+        height: 20,
+      }} />
+    </div>
+  );
+}
+```
+
+## Updating Arrays in State
+跟更新物件一樣，還是透過 `setState` 來更新狀態。  
+但 React 特別列了一張表說明在操作 array 結構的 state 時有一些常用的 array method 應盡量避免使用。
+
+| 操作類型   | 避免使用（會改變原始陣列）      | 推薦使用（會回傳一個新陣列）               |
+|------------|-------------------------------|--------------------------------------------|
+| 新增元素   | `push`、`unshift`             | `concat`、`[...arr]` 展開語法     |
+| 刪除元素   | `pop`、`shift`、`splice`      | `filter`、`slice`               |
+| 替換元素   | `splice`、`arr[i] = ...` 賦值 | `map`                          |
+| 排序       | `reverse`、`sort`             | 先將陣列複製一份後再處理         |
+
+
+### Adding to an array 
+```jsx
+setArtists( // Replace the state
+  [ // with a new array
+    ...artists, // that contains all the old items
+    { id: nextId++, name: name } // and one new item at the end
+  ]
+);
+```
+
+### Removing from an array 
+```jsx
+setArtists(
+  artists.filter(a => a.id !== artist.id)
+);
+```
+
+### Replacing items in an array (map 的應用)
+```jsx
+let initialCounters = [
+  0, 0, 0
+];
+
+export default function CounterList() {
+  const [counters, setCounters] = useState(
+    initialCounters
+  );
+
+  function handleIncrementClick(index) {
+    const nextCounters = counters.map((c, i) => {
+      if (i === index) {
+        // Increment the clicked counter
+        return c + 1;
+      } else {
+        // The rest haven't changed
+        return c;
+      }
+    });
+    setCounters(nextCounters);
+  }
+
+  return (
+    <ul>
+      {counters.map((counter, i) => (
+        <li key={i}>
+          {counter}
+          <button onClick={() => {
+            handleIncrementClick(i);
+          }}>+1</button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+}
+```
+
+### Inserting into an array 
+```jsx
+let nextId = 3;
+const initialArtists = [
+  { id: 0, name: 'Marta Colvin Andrade' },
+  { id: 1, name: 'Lamidi Olonade Fakeye'},
+  { id: 2, name: 'Louise Nevelson'},
+];
+
+export default function List() {
+  const [name, setName] = useState('');
+  const [artists, setArtists] = useState(
+    initialArtists
+  );
+
+  function handleClick() {
+    const insertAt = 1; // Could be any index
+    const nextArtists = [
+      // Items before the insertion point:
+      ...artists.slice(0, insertAt),
+      // New item:
+      { id: nextId++, name: name },
+      // Items after the insertion point:
+      ...artists.slice(insertAt)
+    ];
+    setArtists(nextArtists);
+    setName('');
+  }
+
+  return (
+    <>
+      <h1>Inspiring sculptors:</h1>
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
+      />
+      <button onClick={handleClick}>
+        Insert
+      </button>
+      <ul>
+        {artists.map(artist => (
+          <li key={artist.id}>{artist.name}</li>
+        ))}
+      </ul>
+    </>
+  );
+}
+```
+
+:::tip
+反正重點就是「不要動到原 array」，所以儘量使用那些不會改變原始陣列的 array method。  
+那如果像 `sort` or `reverse` 這些會改變原始陣列的 method，React 官方建議先複製一份陣列再進行操作。
+:::
+
+## Sharing State Between Components
+其實簡單講就是把 state 交給共通父層管理。
+
+```jsx
+export default function Accordion() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  return (
+    <>
+      <h2>Almaty, Kazakhstan</h2>
+      <Panel
+        title="About"
+        isActive={activeIndex === 0}
+        onShow={() => setActiveIndex(0)}
+      >
+        With a population of about 2 million, Almaty is Kazakhstan's largest city. From 1929 to 1997, it was its capital city.
+      </Panel>
+      <Panel
+        title="Etymology"
+        isActive={activeIndex === 1}
+        onShow={() => setActiveIndex(1)}
+      >
+        The name comes from <span lang="kk-KZ">алма</span>, the Kazakh word for "apple" and is often translated as "full of apples". In fact, the region surrounding Almaty is thought to be the ancestral home of the apple, and the wild <i lang="la">Malus sieversii</i> is considered a likely candidate for the ancestor of the modern domestic apple.
+      </Panel>
+    </>
+  );
+}
+
+function Panel({
+  title,
+  children,
+  isActive,
+  onShow
+}) {
+  return (
+    <section className="panel">
+      <h3>{title}</h3>
+      {isActive ? (
+        <p>{children}</p>
+      ) : (
+        <button onClick={onShow}>
+          Show
+        </button>
+      )}
+    </section>
+  );
+}
+```

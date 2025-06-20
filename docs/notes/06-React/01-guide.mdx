@@ -1,8 +1,8 @@
 ---
 title: "[React] Simple guide"
-slidebar_title: "[React] Simple guide"
-tags: [React, JSX, function, props]
-keywords: [React, JSX, function, props]
+sidebar_title: "[React] Simple guide"
+tags: [React, JSX, function, props, event]
+keywords: [React, JSX, function, props, event]
 ---
 
 ## Thinking in Function
@@ -302,6 +302,154 @@ export default function Profile() {
 ```
 
 透過 `children`，`Card` component 內部就可以接收到 `Profile` component 傳入的 JSX 並做渲染。
+
+## 事件處理
+直接來看 React 官方的例子：
+```jsx
+export default function Button() {
+  function handleClick() {
+    alert('You clicked me!');
+  }
+
+  return (
+    <button onClick={handleClick}>
+      Click me
+    </button>
+  );
+}
+```
+:::danger
+切記不能寫成 `<button onClick={handleClick()}>`。  
+家了 `()` 會讓 `handleClick` 在剛開始 render 時就觸發，這會違背這裡事件處理的目的 (點擊時才觸發)。  
+同理，如果是採用 arrow function 的寫法，正確的是 `<button onClick={() => alert('...')}>`，寫成 `<button onClick={alert('...')}>` 也會在 render 時就觸發。
+:::
+
+### Passing event handlers as props
+```jsx
+function Button({ onClick, children }) {
+  return (
+    <button onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+
+function PlayButton({ movieName }) {
+  function handlePlayClick() {
+    alert(`Playing ${movieName}!`);
+  }
+
+  return (
+    // pass 了 handlePlayClick 作為 onClick prop
+    <Button onClick={handlePlayClick}>
+      Play "{movieName}"
+    </Button>
+  );
+}
+```
+
+React 官方文件有提到：  
+> Built-in components like `<button>` and `<div>` only support browser event names like onClick. However, when you’re building your own components, you can name their event handler props any way that you like.
+
+```jsx
+export default function App() {
+  return (
+    <Toolbar
+      onPlayMovie={() => alert('Playing!')}
+      onUploadImage={() => alert('Uploading!')}
+    />
+  );
+}
+
+function Toolbar({ onPlayMovie, onUploadImage }) {
+  return (
+    <div>
+      <Button onClick={onPlayMovie}>
+        Play Movie
+      </Button>
+      <Button onClick={onUploadImage}>
+        Upload Image
+      </Button>
+    </div>
+  );
+}
+
+function Button({ onClick, children }) {
+  return (
+    <button onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+```
+
+### Event propagation
+React 預設是不會阻止 event propagation 的。所以下面這段官方範例會在點擊內部的 `<button>` 時，觸發外部的 `<div>` 的 `onClick` 事件。
+
+```jsx
+export default function Toolbar() {
+  return (
+    <div className="Toolbar" onClick={() => {
+      alert('You clicked on the toolbar!');
+    }}>
+      <button onClick={() => alert('Playing!')}>
+        Play Movie
+      </button>
+      <button onClick={() => alert('Uploading!')}>
+        Upload Image
+      </button>
+    </div>
+  );
+}
+```
+
+如果想阻擋事件傳播，可以在事件處理函式中呼叫 `e.stopPropagation()`：
+
+```jsx
+function Button({ onClick, children }) {
+  return (
+    <button onClick={e => {
+      e.stopPropagation();
+      onClick();
+    }}>
+      {children}
+    </button>
+  );
+}
+
+export default function Toolbar() {
+  return (
+    <div className="Toolbar" onClick={() => {
+      alert('You clicked on the toolbar!');
+    }}>
+      <Button onClick={() => alert('Playing!')}>
+        Play Movie
+      </Button>
+      <Button onClick={() => alert('Uploading!')}>
+        Upload Image
+      </Button>
+    </div>
+  );
+}
+```
+
+React 還有一個跟事件處理有關係的 `e.preventDefault()`，這個方法是用來阻止瀏覽器的預設行為。  
+例如官方範例裡解釋的：  
+> For example, a `<form>` submit event, which happens when a button inside of it is clicked, will reload the whole page by default. You can call `e.preventDefault()` on the event object to stop this.
+
+```jsx
+export default function Signup() {
+  return (
+    <form onSubmit={e => {
+      e.preventDefault();
+      alert('Submitting!');
+    }}>
+      <input />
+      <button>Send</button>
+    </form>
+  );
+}
+```
 
 ## Reference
 1. [React Docs](https://react.dev/learn)
