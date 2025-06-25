@@ -117,8 +117,8 @@ export default function Stopwatch() {
 ```
 
 但這樣其實違背 React 想把不影響畫面的狀態交給 `useRef` 的設計初衷，而且可能帶來幾個潛在問題：
-1. **不必要的重新渲染**：使用 `useState` 會導致每次更新 interval ID 時都觸發重新渲染，會造成效能浪費。
-2. **狀態快照問題**：如果點擊 start 後很迅速地點即 stop 又點擊 start，有機會抓錯 interval ID，這是因為每一次 Render，`useState` 都會產生一次快照，而 `useRef` 則不會。但當然，這個例子中幾乎是遇不到拉。
+1. 使用 `useState` 會導致每次更新 interval ID 時都觸發重新渲染，會造成效能浪費。
+2. 如果極快速連續點擊 Start → Stop → Start，使用 `useState` 可能會因為狀態更新的非同步特性，導致拿到的 `intervalId` 是舊的（尚未更新為最新 ID），而清錯計時器。相對地，`useRef.current` 的值是同步更新的變數，可以即時讀取與修改，在這類快速交互的邏輯裡更安全可靠。
 :::
 
 ## Manipulating the DOM with Refs
