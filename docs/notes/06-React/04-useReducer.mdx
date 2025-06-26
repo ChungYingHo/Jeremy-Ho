@@ -1,0 +1,294 @@
+---
+title: "[React] useReducer"
+sidebar_title: "[React] useReducer"
+tags: [React, useReducer, hook]
+keywords: [React, useReducer, hook]
+---
+
+## What is `useReducer`?
+在 React 中，`useState` 通常用來管理簡單的狀態。但當狀態變得複雜，例如需要管理多個 state，或在執行 CRUD 操作時 `setState` 散落各處、導致邏輯變得難以維護時，就可以考慮使用 `useReducer` 來集中管理狀態與更新邏輯，讓程式碼更清晰、易於維護。
+
+直接透過官方文件來看從 `useState` 轉換到 `useReducer` 的範例：
+
+```jsx title="before - useState"
+import { useState } from 'react';
+import AddTask from './AddTask.js';
+import TaskList from './TaskList.js';
+
+export default function TaskApp() {
+  const [tasks, setTasks] = useState(initialTasks);
+
+  function handleAddTask(text) {
+    setTasks([
+      ...tasks,
+      {
+        id: nextId++,
+        text: text,
+        done: false,
+      },
+    ]);
+  }
+
+  function handleChangeTask(task) {
+    setTasks(
+      tasks.map((t) => {
+        if (t.id === task.id) {
+          return task;
+        } else {
+          return t;
+        }
+      })
+    );
+  }
+
+  function handleDeleteTask(taskId) {
+    setTasks(tasks.filter((t) => t.id !== taskId));
+  }
+
+  return (
+    <>
+      <h1>Prague itinerary</h1>
+      <AddTask onAddTask={handleAddTask} />
+      <TaskList
+        tasks={tasks}
+        onChangeTask={handleChangeTask}
+        onDeleteTask={handleDeleteTask}
+      />
+    </>
+  );
+}
+
+let nextId = 3;
+const initialTasks = [
+  {id: 0, text: 'Visit Kafka Museum', done: true},
+  {id: 1, text: 'Watch a puppet show', done: false},
+  {id: 2, text: 'Lennon Wall pic', done: false},
+];
+```
+
+這段 code 最大的問題正如官方文件說的：各處的事件處理 (`handleAddTask`、`handleChangeTask`、`handleDeleteTask`) 都使用了 `setTasks` 來更新 `tasks` 狀態，導致 `setTasks` 的邏輯散落在各處，讓程式碼變得難以維護。  
+接下來透過三個步驟將這段程式碼轉換成使用 `useReducer` 的方式：
+1. 將事件處理改成 `dispatch`
+2. 定義 reducer 函數
+3. 使用 `useReducer` 來管理狀態
+
+### 1. 將事件處理改成 `dispatch`
+`useReducer` 的核心在於使用 `dispatch` 來發送 action，這些 action 會被等等第二步要建立的 reducer 函數處理，並更新狀態。  
+這樣講有點抽象，具體一點來說，action 是用來描述狀態變化的事件，而 `dispatch` 則是用來發送這些事件。可以把 action 想像成一個帶身份識別 (`type`) 與各項內容的信件，`dispatch` 則是郵差，負責將這些信件送到 reducer 函數，reducer 收到信後會根據信件上的身份與內容來決定要怎麼處理這些信件。
+
+- `handleAddTask`
+
+```jsx
+// before - useState
+function handleAddTask(text) {
+  setTasks([
+    ...tasks,
+    {
+      id: nextId++,
+      text: text,
+      done: false,
+    },
+  ]);
+}
+
+// after - useReducer
+function handleAddTask(text) {
+  dispatch(
+  // highlight-start
+  // action object
+    {
+      type: 'added',
+      id: nextId++,
+      text: text,
+    }
+  // highlight-end
+  );
+}
+```
+
+- `handleChangeTask`
+
+```jsx
+// before - useState
+function handleChangeTask(task) {
+  setTasks(
+    tasks.map((t) => {
+      if (t.id === task.id) {
+        return task;
+      } else {
+        return t;
+      }
+    })
+  );
+}
+
+// after - useReducer
+function handleChangeTask(task) {
+  dispatch({
+    type: 'changed',
+    task: task,
+  });
+}
+```
+
+- `handleDeleteTask`
+
+```jsx
+// before - useState
+function handleDeleteTask(taskId) {
+  setTasks(tasks.filter((t) => t.id !== taskId));
+}
+
+// after - useReducer
+function handleDeleteTask(taskId) {
+  dispatch({
+    type: 'deleted',
+    id: taskId,
+  });
+}
+```
+
+### 2. 定義 reducer 函數
+接下來要定義一個 reducer 函數，這個函數會接收當前的 state 與 action，並根據 action 的類型來決定如何更新 state。  
+簡而言之 reducer 就是整個 state 的中控中心，負責處理所有的狀態變化，它負責在收到各種信件 (action) 後來決定要怎麼處理 state。
+
+```jsx
+function tasksReducer(tasks, action) {
+  switch (action.type) {
+    case 'added': {
+      return [
+        ...tasks,
+        {
+          id: action.id,
+          text: action.text,
+          done: false,
+        },
+      ];
+    }
+    case 'changed': {
+      return tasks.map((t) => {
+        if (t.id === action.task.id) {
+          return action.task;
+        } else {
+          return t;
+        }
+      });
+    }
+    case 'deleted': {
+      return tasks.filter((t) => t.id !== action.id);
+    }
+    default: {
+      throw Error('Unknown action: ' + action.type);
+    }
+  }
+}
+```
+
+其實仔細看就會發現 reducer 內部 switch case 裡針對各 action 撰寫的邏輯就是一開始使用 `useState` 時各個事件處理函式的邏輯，現在只是將所有的狀態更新邏輯集中在一個地方，讓程式碼更清晰。
+
+### 3. 使用 `useReducer` 來管理狀態
+最後一步就是引用 `useReducer` 來管理狀態，讓前面的 `dispatch` 跟 reducer 都可以作用起來。  
+`useReducer` 接收兩個參數：reducer 函數與初始狀態，所以就把前一步建的 reducer 給丟進去。
+
+```jsx
+import { useReducer } from 'react';
+const [tasks, dispatch] = useReducer(tasksReducer, initialTasks);
+```
+
+完整的程式碼如下：
+
+```jsx title="after - useReducer"
+import { useReducer } from 'react';
+import AddTask from './AddTask.js';
+import TaskList from './TaskList.js';
+
+export default function TaskApp() {
+  const [tasks, dispatch] = useReducer(tasksReducer, initialTasks);
+
+  function handleAddTask(text) {
+    dispatch({
+      type: 'added',
+      id: nextId++,
+      text: text,
+    });
+  }
+
+  function handleChangeTask(task) {
+    dispatch({
+      type: 'changed',
+      task: task,
+    });
+  }
+
+  function handleDeleteTask(taskId) {
+    dispatch({
+      type: 'deleted',
+      id: taskId,
+    });
+  }
+
+  return (
+    <>
+      <h1>Prague itinerary</h1>
+      <AddTask onAddTask={handleAddTask} />
+      <TaskList
+        tasks={tasks}
+        onChangeTask={handleChangeTask}
+        onDeleteTask={handleDeleteTask}
+      />
+    </>
+  );
+}
+
+function tasksReducer(tasks, action) {
+  switch (action.type) {
+    case 'added': {
+      return [
+        ...tasks,
+        {
+          id: action.id,
+          text: action.text,
+          done: false,
+        },
+      ];
+    }
+    case 'changed': {
+      return tasks.map((t) => {
+        if (t.id === action.task.id) {
+          return action.task;
+        } else {
+          return t;
+        }
+      });
+    }
+    case 'deleted': {
+      return tasks.filter((t) => t.id !== action.id);
+    }
+    default: {
+      throw Error('Unknown action: ' + action.type);
+    }
+  }
+}
+
+let nextId = 3;
+const initialTasks = [
+  {id: 0, text: 'Visit Kafka Museum', done: true},
+  {id: 1, text: 'Watch a puppet show', done: false},
+  {id: 2, text: 'Lennon Wall pic', done: false},
+];
+```
+
+## Comparing useState and useReducer
+| 面向         | useState                                                        | useReducer                                                                                             |
+|--------------|------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| **程式碼長度** | 通常要寫的程式碼較少，設定與更新都較簡單                         | 需要額外寫 reducer 函式與 dispatch action，但若有很多事件邏輯類似，反而能減少重複程式碼               |
+| **可讀性**     | 簡單狀態更新時非常好讀；但狀態變複雜時，更新邏輯可能散落整個 component | 可將「狀態如何改變」的邏輯與「事件發生了什麼」的處理分離，讓程式碼結構更清晰                             |
+| **除錯便利性** | 不容易知道是在哪裡錯誤地設定了 state                             | 可以在 reducer 中加上 console log，追蹤每次 state 更新與觸發的 action，幫助找出錯誤位置                 |
+| **可測試性**   | 多數情況下建議直接測試 component 本身                             | reducer 是純函式（pure function），可以獨立匯出並單元測試：給定初始狀態與 action，預期回傳某狀態         |
+| **個人偏好**   | 有些人覺得直觀好寫，也較符合簡單元件開發                            | 有些人喜歡 reducer 的結構性與一致性，兩者皆可依實際情況混用                                             |
+| **官方建議**   | 適合狀態簡單、不容易出錯的元件                                     | 當元件中經常發生狀態錯誤問題時，可考慮用 reducer 增加狀態管理結構，提升穩定性與可維護性                   |
+
+:::danger
+務必記得：不論是 `useState` 的 state updater function，還是 `useReducer` 的 reducer 函式，都必須是 pure function。  
+也就是說，它們不能包含任何副作用（side effects），例如直接修改原始 state、發送請求、或使用 `setTimeout` 等操作。
+:::
