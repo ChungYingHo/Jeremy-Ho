@@ -1,0 +1,374 @@
+---
+title: "[React] useContext"
+sidebar_title: "[React] useContext"
+tags: [React, useContext, hook]
+keywords: [React, useContext, hook]
+---
+
+## 跨多組件狀態傳遞
+`useContext` 是 React 中用來處理跨組件狀態傳遞的一個 hook。熟悉 Vue 的話，它的目的其實就跟 `provide/inject` 一樣。  
+什麼叫跨多組件？想像一下有個 state，它放在最上層做管理，但會用到它的是他的孫子的孫子組件，中間好幾代都用不到這個狀態，但為了讓孫子的孫子組件可以用到這個狀態，還是得把 state 透過 props 一代一代傳下去...。  
+這造成的結果是程式碼會變得不易讀且較難維護。
+
+### 不使用 useContext 的情況 (React 官方範例)
+<details>
+<summary>App.js</summary>
+
+```jsx
+import Heading from './Heading.js';
+import Section from './Section.js';
+
+export default function Page() {
+  return (
+    <Section>
+      <Heading level={1}>Title</Heading>
+      <Section>
+        <Heading level={2}>Heading</Heading>
+        <Heading level={2}>Heading</Heading>
+        <Heading level={2}>Heading</Heading>
+        <Section>
+          <Heading level={3}>Sub-heading</Heading>
+          <Heading level={3}>Sub-heading</Heading>
+          <Heading level={3}>Sub-heading</Heading>
+          <Section>
+            <Heading level={4}>Sub-sub-heading</Heading>
+            <Heading level={4}>Sub-sub-heading</Heading>
+            <Heading level={4}>Sub-sub-heading</Heading>
+          </Section>
+        </Section>
+      </Section>
+    </Section>
+  );
+}
+```
+</details>
+
+<details>
+<summary>Section.js</summary>
+
+```jsx
+export default function Section({ children }) {
+  return (
+    <section className="section">
+      {children}
+    </section>
+  );
+}
+```
+</details>
+
+<details>
+<summary>Heading.js</summary>
+
+```jsx
+export default function Heading({ level, children }) {
+  switch (level) {
+    case 1:
+      return <h1>{children}</h1>;
+    case 2:
+      return <h2>{children}</h2>;
+    case 3:
+      return <h3>{children}</h3>;
+    case 4:
+      return <h4>{children}</h4>;
+    case 5:
+      return <h5>{children}</h5>;
+    case 6:
+      return <h6>{children}</h6>;
+    default:
+      throw Error('Unknown level: ' + level);
+  }
+}
+```
+</details>
+
+### 使用 useContext 的情況
+使用 `useContext` 會先續要建立一個 Context file：
+
+```jsx title="LevelContext.js"
+import { createContext } from 'react';
+
+export const LevelContext = createContext(0);
+```
+
+接下來是一步一步把前面使用 props 傳遞的方式改成使用 Context。  
+相比原來的 code，現在 App.js 不需要傳遞 `level` prop 給每個 `Heading`。
+```jsx
+import Heading from './Heading.js';
+import Section from './Section.js';
+
+export default function Page() {
+  return (
+    <Section>
+      <Heading>Title</Heading>
+      <Section>
+        <Heading>Heading</Heading>
+        <Heading>Heading</Heading>
+        <Heading>Heading</Heading>
+        <Section>
+          <Heading>Sub-heading</Heading>
+          <Heading>Sub-heading</Heading>
+          <Heading>Sub-heading</Heading>
+          <Section>
+            <Heading>Sub-sub-heading</Heading>
+            <Heading>Sub-sub-heading</Heading>
+            <Heading>Sub-sub-heading</Heading>
+          </Section>
+        </Section>
+      </Section>
+    </Section>
+  );
+}
+```
+
+然後在 Section.js 中引入 `useContext` 和 `LevelContext`。
+```jsx title="Section.js"
+import { useContext } from 'react';
+import { LevelContext } from './LevelContext.js';
+
+export default function Section({ children }) {
+  const level = useContext(LevelContext);
+  return (
+    <section className="section">
+      <LevelContext value={level + 1}>
+        {children}
+      </LevelContext>
+    </section>
+  );
+}
+```
+
+最後在使用 `level` 的 Heading.js 中也引入 `useContext` 和 `LevelContext`。
+```jsx title="Heading.js"
+import { useContext } from 'react';
+import { LevelContext } from './LevelContext.js';
+
+export default function Heading({ children }) {
+  const level = useContext(LevelContext);
+  switch (level) {
+    case 0:
+      throw Error('Heading must be inside a Section!');
+    case 1:
+      return <h1>{children}</h1>;
+    case 2:
+      return <h2>{children}</h2>;
+    case 3:
+      return <h3>{children}</h3>;
+    case 4:
+      return <h4>{children}</h4>;
+    case 5:
+      return <h5>{children}</h5>;
+    case 6:
+      return <h6>{children}</h6>;
+    default:
+      throw Error('Unknown level: ' + level);
+  }
+}
+```
+
+## 使用 useReducer 搭配 useContext
+在 React 中，`useReducer` 可以用來管理複雜的 state，而 `useContext` 則可以用來跨組件傳遞這些 state。  
+所以他們合在一起可以打出非常厲害的組合技。  
+一樣是 React 官方的例子：
+
+### TaskContext.js
+```jsx title="TaskContext.js"
+import { createContext, useContext, useReducer } from 'react';
+
+const TasksContext = createContext(null);
+
+const TasksDispatchContext = createContext(null);
+
+// highlight-start
+// Context Provider 組件
+export function TasksProvider({ children }) {
+  const [tasks, dispatch] = useReducer(
+    tasksReducer,
+    initialTasks
+  );
+
+  return (
+    <TasksContext value={tasks}>
+      <TasksDispatchContext value={dispatch}>
+        {children}
+      </TasksDispatchContext>
+    </TasksContext>
+  );
+}
+// highlight-end
+
+// highlight-start
+// 供其他組件中存取 TasksContext / TasksDispatchContext
+export function useTasks() {
+  return useContext(TasksContext);
+}
+
+export function useTasksDispatch() {
+  return useContext(TasksDispatchContext);
+}
+// highlight-end
+
+// highlight-start
+// 這裡是 useReducer 的 reducer method
+function tasksReducer(tasks, action) {
+  switch (action.type) {
+    case 'added': {
+      return [...tasks, {
+        id: action.id,
+        text: action.text,
+        done: false
+      }];
+    }
+    case 'changed': {
+      return tasks.map(t => {
+        if (t.id === action.task.id) {
+          return action.task;
+        } else {
+          return t;
+        }
+      });
+    }
+    case 'deleted': {
+      return tasks.filter(t => t.id !== action.id);
+    }
+    default: {
+      throw Error('Unknown action: ' + action.type);
+    }
+  }
+}
+// highlight-end
+
+const initialTasks = [
+  { id: 0, text: 'Philosopher’s Path', done: true },
+  { id: 1, text: 'Visit the temple', done: false },
+  { id: 2, text: 'Drink matcha', done: false }
+];
+```
+
+### App.js
+App.js 中引用 `TasksProvider` 來包裹其他 child component，這樣就可以讓 child component 都能存取到 `TasksContext` 和 `TasksDispatchContext`。
+```jsx title="App.js"
+import AddTask from './AddTask.js';
+import TaskList from './TaskList.js';
+import { TasksProvider } from './TasksContext.js';
+
+export default function TaskApp() {
+  return (
+    <TasksProvider>
+      <h1>Day off in Kyoto</h1>
+      <AddTask />
+      <TaskList />
+    </TasksProvider>
+  );
+}
+```
+
+### AddTask.js
+```jsx title="AddTask.js"
+import { useState } from 'react';
+import { useTasksDispatch } from './TasksContext.js';
+
+export default function AddTask() {
+  const [text, setText] = useState('');
+  const dispatch = useTasksDispatch();
+  return (
+    <>
+      <input
+        placeholder="Add task"
+        value={text}
+        onChange={e => setText(e.target.value)}
+      />
+      <button onClick={() => {
+        setText('');
+        dispatch({
+          type: 'added',
+          id: nextId++,
+          text: text,
+        }); 
+      }}>Add</button>
+    </>
+  );
+}
+
+let nextId = 3;
+```
+
+### TaskList.js
+```jsx title="TaskList.js"
+import { useState } from 'react';
+import { useTasks, useTasksDispatch } from './TasksContext.js';
+
+export default function TaskList() {
+  const tasks = useTasks();
+  return (
+    <ul>
+      {tasks.map(task => (
+        <li key={task.id}>
+          <Task task={task} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function Task({ task }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const dispatch = useTasksDispatch();
+  let taskContent;
+  if (isEditing) {
+    taskContent = (
+      <>
+        <input
+          value={task.text}
+          onChange={e => {
+            dispatch({
+              type: 'changed',
+              task: {
+                ...task,
+                text: e.target.value
+              }
+            });
+          }} />
+        <button onClick={() => setIsEditing(false)}>
+          Save
+        </button>
+      </>
+    );
+  } else {
+    taskContent = (
+      <>
+        {task.text}
+        <button onClick={() => setIsEditing(true)}>
+          Edit
+        </button>
+      </>
+    );
+  }
+  return (
+    <label>
+      <input
+        type="checkbox"
+        checked={task.done}
+        onChange={e => {
+          dispatch({
+            type: 'changed',
+            task: {
+              ...task,
+              done: e.target.checked
+            }
+          });
+        }}
+      />
+      {taskContent}
+      <button onClick={() => {
+        dispatch({
+          type: 'deleted',
+          id: task.id
+        });
+      }}>
+        Delete
+      </button>
+    </label>
+  );
+}
+```
