@@ -14,6 +14,7 @@ keywords: [React, useContext, hook]
 <details>
 <summary>App.js</summary>
 
+注意現在這裡 `Heading` 都綁了一個 `level` prop，等等的 `useContext` 就是要把這些在同一層的 `Heading` 的 `level` 統一收集起來傳遞，減少每個 `Heading` 都要寫一次 `level` 難讀、難維護的情況。
 ```jsx
 import Heading from './Heading.js';
 import Section from './Section.js';
@@ -83,7 +84,15 @@ export default function Heading({ level, children }) {
 </details>
 
 ### 使用 useContext 的情況
-使用 `useContext` 會先續要建立一個 Context file：
+使用 `useContext` 會先需要建立一個 Context 檔案。
+這裡容易誤會的是，會把 `useContext` 跟 Vue 的 Pinia store 做聯想。
+如果把兩者聯想在一起，會容易以為 `createContext` 裡的值是一個預設值，而且是可以改變的。這其實是錯的！
+
+`createContext` 內的值，其實比較像是 fallback value。
+當一個 component 外層沒有被對應的 context provider 包住，但卻用了 `useContext` 呼叫某個 context，因為此時沒有 provider 的 value 可以提供，`useContext` 就會回傳 `createContext` 裡定義的那個 fallback 值。
+
+不過有一種情況說它是「預設值」也說得通，那就是最外層的 context component。
+因為它本身沒有被其他 provider 包住，所以 `useContext` 這時會回傳 `createContext` 裡的值，因此這時稱它為預設值也可以接受。
 
 ```jsx title="LevelContext.js"
 import { createContext } from 'react';
@@ -91,7 +100,33 @@ import { createContext } from 'react';
 export const LevelContext = createContext(0);
 ```
 
-接下來是一步一步把前面使用 props 傳遞的方式改成使用 Context。  
+React 官方選擇在 Section.js 使用 context，而不是 Heading.js，是因為一個 Section 裡的多個 Heading 共用同一個 level。
+所以乾脆統一在 Section.js 中處理 context 的遞增邏輯會更乾淨。
+在 Section.js 中我們引入 `useContext` 和 `LevelContext`，並透過 provider value 將每層的 level 傳下去。
+下面的 code 註解對後續理解非常重要，建議仔細看一下。
+
+```jsx title="Section.js"
+import { useContext } from 'react';
+import { LevelContext } from './LevelContext.js';
+
+export default function Section({ children }) {
+  const level = useContext(LevelContext); // 這裡會拿到離自己最近的 LevelContext 的值，如果沒有 provider 包住，就會回到 createContext() 中的 fallback 值 0
+  return (
+    <section className="section">
+      <LevelContext value={level + 1}> {/* 將當前的 level + 1，作為下一層的 provider value 傳遞 */}
+        {children}
+      </LevelContext>
+    </section>
+  );
+}
+```
+
+:::warning
+React 19 之前需要寫成 `<LevelContext.Provider>`，但 React 19 之後可以簡化為 `<LevelContext>`。  
+不過 React 19 還是可以繼續使用 `.Provider` 寫法，這也是為什麼我們稱這個值為 provider value。
+:::
+
+接下來清理一下 App.js 的程式碼。   
 相比原來的 code，現在 App.js 不需要傳遞 `level` prop 給每個 `Heading`。
 ```jsx
 import Heading from './Heading.js';
@@ -99,17 +134,17 @@ import Section from './Section.js';
 
 export default function Page() {
   return (
-    <Section>
+    <Section> {/* 第一層 Section，拿到 fallback 值 0，然後 +1 傳下去 */}
       <Heading>Title</Heading>
-      <Section>
+      <Section> {/* 第二層 Section，level 拿到上一層 +1，也就是 1，再 +1 傳下去 */}
         <Heading>Heading</Heading>
         <Heading>Heading</Heading>
         <Heading>Heading</Heading>
-        <Section>
+        <Section> {/* 第三層 Section，拿到 2，再 +1 傳下去 */}
           <Heading>Sub-heading</Heading>
           <Heading>Sub-heading</Heading>
           <Heading>Sub-heading</Heading>
-          <Section>
+          <Section> {/* 第四層 Section，拿到 3，再 +1 傳下去 */}
             <Heading>Sub-sub-heading</Heading>
             <Heading>Sub-sub-heading</Heading>
             <Heading>Sub-sub-heading</Heading>
@@ -119,23 +154,7 @@ export default function Page() {
     </Section>
   );
 }
-```
 
-然後在 Section.js 中引入 `useContext` 和 `LevelContext`。
-```jsx title="Section.js"
-import { useContext } from 'react';
-import { LevelContext } from './LevelContext.js';
-
-export default function Section({ children }) {
-  const level = useContext(LevelContext);
-  return (
-    <section className="section">
-      <LevelContext value={level + 1}>
-        {children}
-      </LevelContext>
-    </section>
-  );
-}
 ```
 
 最後在使用 `level` 的 Heading.js 中也引入 `useContext` 和 `LevelContext`。
@@ -165,6 +184,13 @@ export default function Heading({ children }) {
   }
 }
 ```
+
+:::info
+再提醒一次：  
+`createContext(initialValue)` 中的 initialValue 並不是所有 component 都會拿到。  
+只有在 component 外層沒有 Provider 包住時，`useContext()` 才會回傳這個 fallback 值。  
+一旦有 Provider，哪怕值是 null，`useContext()` 拿到的就一定是 provider 提供的那個值。
+:::
 
 ## 使用 useReducer 搭配 useContext
 在 React 中，`useReducer` 可以用來管理複雜的 state，而 `useContext` 則可以用來跨組件傳遞這些 state。  
