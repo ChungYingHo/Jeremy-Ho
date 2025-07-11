@@ -14,7 +14,10 @@ keywords: [React, useContext, hook]
 <details>
 <summary>App.js</summary>
 
-注意現在這裡 `Heading` 都綁了一個 `level` prop，等等的 `useContext` 就是要把這些在同一層的 `Heading` 的 `level` 統一收集起來傳遞，減少每個 `Heading` 都要寫一次 `level` 難讀、難維護的情況。
+注意現在這裡的 Heading 元件每一個都綁了一個 `level` prop。  
+這樣的寫法在巢狀結構越深的情況下會變得難以維護，因為每層都得手動指定正確的 `level`，不但冗長，也容易出錯。
+
+使用 `useContext`，由 `Section` 統一管理每層的 `level`，然後透過 context 傳遞給底下所有的 `Heading` 可以讓相同層級的 `Heading` 自動取得對應的 `level`，不必每個都手動指定，大幅簡化程式碼，也提升了可維護性與可讀性。
 ```jsx
 import Heading from './Heading.js';
 import Section from './Section.js';
