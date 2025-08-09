@@ -54,9 +54,9 @@ console.log(count) // 2
 這種改變了外部狀態的行為又叫「副作用 (side effect)」。而有 side effect 的函式就是不純的函式。
 
 這裡要提醒的是，side effect 不只指的是改變外部狀態，凡是與外部世界互動的行為，都屬於 side effect，比如：
-1. 改變外部變數或狀態  
-2. 與外部世界互動（DOM 操作、API request、檔案讀寫、console 輸出）  
-3. 依賴可變的環境狀態（Date.now()、Math.random() 等）
+1. 改變外部變數或狀態
+2. 與外部世界互動 (DOM 操作、API request、檔案讀寫、console 輸出)
+3. 依賴可變的環境狀態 (`Date.now()`、`Math.random()` 等)
 
 ## function 純不純真的很重要嗎？
 所以回歸這篇要說的，實務開發上，function 純不純真的很重要嗎？  
