@@ -1,14 +1,13 @@
 ---
 title: Day04 - 大家都在說的變數作用域和提升到底說了什麼故事？
 sidebar_label: "Day04 - 大家都在說的變數作用域和提升到底說了什麼故事？"
-unlisted: true
 tags: [JavaScript, variable, scope, hoisting]
 keywords: [JavaScript, variable, scope, hoisting]
 ---
 
 關於 Javascript 的變數宣告與變數作用域其實也是個老生常談的問題。基本上面試裡總是喜歡塞個幾題考考變數的概念。  
 卡斯伯這位業界前輩有一本挺有名的著作《帶你無痛提升 JavaScript 面試力》，裡面第一章就花了整個章節在講這件事，可見變數的概念有多重要。  
-(是說，不是業配，我也沒資格業配，但這本書真的寫的不錯)
+(是說，不是業配，但這本書真的寫的不錯)
 
 ## 關於 `var`、`let`、`const` 的愛恨情仇
 這幾年新學 JavaScript 的，應該都會被呼籲使用 `let` 和 `const` 來取代 `var`。  
@@ -107,7 +106,7 @@ a = 3
 console.log(a)
 ```
 這樣的情況下，`a` 會被宣告為全域變數 (嚴格一點說是全域屬性，no mind，這裡不用探討那麼細)。  
-不把步宣告變數這件事拎出來講，是因為實務主流開發時使用的框架或 library，Vue 也好、React 也好，其實基本都是 strict mode，會對這種沒宣告直接引用的情況噴 error。  
+不把不宣告變數這件事拎出來講，是因為實務主流開發時使用的框架或 library，Vue 也好、React 也好，其實基本都是 strict mode，會對這種沒宣告直接引用的情況噴 error。  
 想玩這種情形大概就是 VScode 自己開支 JS 檔案或去 devtool 玩玩。
 :::
 :::tip
