@@ -42,7 +42,7 @@ showName.apply(obj, ['嗨']) // 嗨 Jeremy
 呃... 那你要知道 `this` 本來就是指向當前執行上下文的物件。
 
 所以我們在探討 arrow function 跟 function 宣告的那篇文中有提到它們兩個的 `this` 指向性差異。  
-但不論你用什麼方式去宣告函式，用了 `bind`、`call`、`apply`，都可以改變 `this` 的指向，硬生生地把 `this` 綁定到你想要的物件上。  
+只要是以 `function` 去宣告函式，用了 `bind`、`call`、`apply`，都可以改變 `this` 的指向，硬生生地把 `this` 綁定到你想要的物件上。  
 這也許是為什麼面試官喜歡考這個的原因，因為它可以測試你對於 `this` 的理解。
 
 ## 然後我要繼續 murmur

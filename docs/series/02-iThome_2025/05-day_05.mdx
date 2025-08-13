@@ -58,7 +58,7 @@ const sayHi = () => {
 但我覺得第一個結論不夠嚴謹，因為這樣會誤會用 `function` 宣告的函式都會提升。但我們看看這個例子：
 
 ```javascript
-sayHi() // ReferenceError: sayHi is not defined
+sayHi() // ReferenceError: Cannot access 'sayHi' before initialization
 
 const sayHi = function() {
   console.log("Hello, World!")
@@ -126,7 +126,7 @@ TypeError: sayHi is not a function
 老實講，我知道很多文章是這樣寫，GPT 大概也是這樣回你，但我真心覺得它實務上的重要性順位沒有提升高。  
 實話講就是感受沒那麼大 www。  
 但他不是不重要喔！我只是說實務上感受沒有提升那麼大。  
-畢竟提升式會直接噴 error 的，而 `this` 的指向性問題用錯就是隱藏式 bug。
+畢竟提升是會直接噴 error 的，而 `this` 的指向性問題用錯就是隱藏式 bug。
 
 ```javascript
 const obj = {
@@ -215,8 +215,8 @@ const b = {
   sayHi: a.sayHi
 }
 
-a.sayHi() // Hi from global
-b.sayHi() // Hi from global
+a.sayHi() // 可能預期：Hi from global
+b.sayHi() // 可能預期：Hi from global
 ```
 很遺憾，結果還是 `undefined`。  
 

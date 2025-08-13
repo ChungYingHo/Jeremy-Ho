@@ -9,65 +9,100 @@ keywords: [JavaScript, Closure]
 其實我第一次接觸閉包 (Closure) 這個概念其實並不是在 JavaScript，而是那個時候被當時任職公司要求學 Flutter 時在 Dart 裡碰到的。  
 之後會再看到閉包這個辭彙，講真，真的是在面試時時被問。  
 
-MDN 其實有一篇專門解釋閉包的[文章](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Guide/Closures)，但是呢，你總不可能把 MDN 整篇文章都背給面試官聽吧？ (是說要是背得出我覺得也是挺厲害的 www)  
-之前我在 Dart 也寫過閉包的紀錄：
+幾年前碰 Dart 的時候我再自己的筆記裡是這樣紀錄 closure：
 
-> 當定義一個函數時，如果在函數內部引用了外部的變量，那麼這個函數就是一個閉包。
+> 當定義一個函式時，如果在函式內部引用了外部的變數，那麼這個函式就是一個閉包。
 
-那時為了形象一點解釋這樣一句話，我舉了一個例子：
+那時為了形象一點解釋這樣一句話，我嘗試用了一些譬喻 (想像一個盒子，這個盒子裡面有一些東西...) 來描述它，現在回頭來看反而看不懂當時自己寫的那段東西，現在想來我那時其實根本沒懂 closure 的概念。
 
-> 想像一個盒子（函數），這個盒子裡面有一些東西（變量）。現在，把這個盒子放到了另一個盒子裡（另一個函數的作用域）。當我們把這個盒子拿出來時，裡面的東西仍然存在，並且可以使用。 閉包就像是這個被放在另一個盒子中的盒子。它可以捕獲（記住）其定義範圍之外的變量，並在以後的任何時候使用這些變量。這樣，即使函數已經返回，這些變量的狀態仍然可以被保留下來。
+## So, what is Closure?
+為了了解閉包我曾經看過不少文章，大家對閉包的解釋都各有風格：
+1. 當定義一個函式時，如果在函式內部引用了外部的變數，那麼這個函式就是一個閉包。
+2. 函式裡引用了外層作用域的變數 && 外層作用域已經結束，但變數依然活著，那麼這個函式就是閉包。
+3. 閉包就是內部函式能取用並記住外部的變數。
 
-現在看起來還是有點抽象，趁著這次機會，來重新闡述一下 JavaScript 中的閉包。
+然後 [MDN](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Guide/Closures) 對於 closure 的解釋是：
 
+> 閉包為函式的組合、還有該宣告函式的作用域環境。這個環境包含閉包建立時，所有位於該作用域的區域變數。
 
-## 閉包，閉起來的一包
-把 Closure 翻譯成閉包也是挺形象的哈 www  
-那個「閉」暗示了閉包把變數關在函式作用域中的行為。  
-閉包很有趣的概念有兩點：
-1. 會有一個 b method 存在於 a method 內部並被 return 出來。甚至 b method 內部還可以有 c method...
-2. a method 作用域的變數如果 b method 有引用到，那麼這個變數就會被 b method 給牢牢記住，因為這種行為很像把變數就這樣牢牢鎖住，所以我才說 「閉」這個字用得很形象。
+啊啊啊啊... 所以 closure 到底是什麼？  
+說實在這個概念真的抽象到很難形象，所以各路大神無所不用其極，各自用自己的話來解釋 closure。  
+但其實大概可以抓出幾個重點：
+1. closure 是個函式。
+2. closure 是個跟「外部」有高度關聯的函式。
 
-坦白說我覺得閉包用講的很難理解，得照著實際例子看一次才知道：
-
+先來看 closure 的經典範例：
 ```js
-function countNumber (a) {
-  function addNumber (b) {
-    return a + b
+function outer() {
+  const outerVar = 'I am outside!'
+
+  function inner() {
+    console.log(outerVar)
   }
 
-  return addNumber
+  return inner // 或是直接 inner()
 }
-
-const addNumberWithOne = countNumber(1)
-const addNumberWithTen = countNumber(10)
-
-console.log(addNumberWithOne(2)) // 3
-console.log(addNumberWithTen(2)) // 12
 ```
 
-從上面的例子我們來逐步拆解說明閉包：
-1. 首先我們有一個 `countNumber` method，他是我們最外層的函式，接受一個參數 `a`，這時如果參數 `a` 又有在 `countNumber` 內部被使用，那 `a` 就會作為 `countNumber` 函式作用域中的變數活著 (是說真的有人會傳了參數不用嗎)。  
-2. 接著在 `countNumber` method 內部，我們又宣告了一個 `addNumber` method，這個 method 接收一個參數 `b`，並使用 `countNumber` method 的變數 `a` 與自己的參數 `b` 進行運算。  
-3. 最後 `countNumber` method 把 `addNumber` method 給 return 了出來。
+這個例子常被用作說明 closure 的概念：  
+`inner` 作為一個 closure，它取用了外部作用域 `outer` 的變數 `outerVar`。  
+在 `outer` 執行結束 (`outer` 作用域消失) 後，`inner` 仍然能夠存取 `outerVar`。  
+這個例子不論用上面三個 closure 的解釋來看哪個都對：
+1. 當定義一個函式時，如果在函式內部引用了外部的變數，那麼這個函式就是一個閉包。 → 對，因為 `inner` 引用了 `outerVar`。
+2. 函式裡引用了外層作用域的變數 && 外層作用域已經結束，但變數依然活著，那麼這個函式就是閉包。 → 對，因為 `outer` 執行結束後，`outerVar` 依然可以被 `inner` 存取。
+3. 閉包就是內部函式能取用並記住外部的變數。 → 對，因為 `inner` 記住了 `outerVar` 的值。
 
-閉包的關鍵點在於第二點跟第三點。  
-先看第二點，「`addNumber` method 使用了 `countNumber` method 的變數 `a` 與自己的參數 `b` 進行運算」，這個行為就是 `addNumber` 用了它的函式作用域以外的變數，這時它會牢牢把這個它作用域以外的變數給記住。  
-再來看第三點，「`countNumber` method 把 `addNumber` method 給 return 出來」，這時 `addNumber` 會一直存在記憶體中 (只要還有變數引用它)，並且可以在之後的任何時候被調用。
+但該怎麼用 MDN 的定義來理解這個範例？  
+大致上是這樣：
+1. `inner` 是個 closure，它是函式 (`inner` 本身) 與 `inner` 被宣告時所在的作用域環境（這裡是 `outer`）的組合。
+2. 這個環境包含閉包 (`inner`) 建立時，所有位於該作用域 (`outer`) 的區域變數 (`outerVar`)。
 
-So，我們看完 `countNumber` method 內在做的事，現在來看如何讓這個「閉包」發揮作用。  
-可以看到我宣告了一個變數 `const addNumberWithOne = countNumber(1)`，我們來結合上面的三步驟來說明它發生了什麼：
-1. 已知 `countNumber` method 接受一個參數 `a`，這時我們傳入 `1`，所以 `a` 就是 `1`。
-2. 已知 `countNumber` method 內的 `addNumber` method 會使用到 `a`，此時 `a` = `1`，所以 `addNumber` 現在把 `a` = `1` 給記住了。
-3. 最後 `countNumber` method 把 `addNumber` method 給 return 出來，讓 `addNumberWithOne` 這個變數引用，現在 `addNumberWithOne` 其實調用的就是 `a` = `1` 的 `addNumber` method。  
-因此當 `addNumberWithOne(2)` 時，`addNumber` method 會使用 `a` = `1` 與 `b` = `2` 進行運算，得到 `3`。
+以 MDN 的角度來看，一言以蔽之 closure 的概念是：
 
-同理，我們用 `const addNumberWithTen = countNumber(10)` 再說明一次：
-1. 這次 `countNumber` 的變數 `a` = `10`。
-2. `addNumber` method 會使用到 `a`，此時 `a` = `10`，所以 `addNumber` 現在把 `a` = `10` 給記住了。
-3. `countNumber` 把 `addNumber` 給 return 出來，讓 `addNumberWithTen` 這個變數引用，現在 `addNumberWithTen` 其實調用的就是 `a` = `10` 的 `addNumber` method。
-所以當 `addNumberWithTen(2)` 時，`addNumber` method 會使用 `a` = `10` 與 `b` = `2` 進行運算，得到 `12`。
+> 函式在建立時就記住了外部作用域變數的狀態，那就是 closure
 
+所以理論上來說，只要有使用外部的變數的函式都可以被視為 closure。  
+但為何會有論點特別強調「外層作用域要死掉」呢？  
+我覺得換個思維把「closure 會記住外部作用域變數」 改成 「closure 可以延長外部作用域變數的生命週期」應該能更好解釋這個論點。
+
+回到 `outer` 的例子，`outer` 執行時會啟動屬於它的做用域，當 `outer` 執行完畢後，這個作用域就會被銷毀。  
+但 `outer` 的作用域預備銷毀，理應 `outerVar` 也會被銷毀，但因為 `inner` 這個 closure 的存在，`outerVar` 被帶到了closure `inner` 裡面，其生命週期被延長。  
+普遍上 closure 出現的例子都是這種 function 內 return function 的情境，這種情境下外層作用域幾乎必定是會死去的，也更加凸顯 closure 會把外部作用域變數的生命週期延長的特性。  
+因此某些論點才會特別強調「外層作用域要死掉」。  
+學術一點來看就是函式執行結束後，它的執行環境會從 stack 記憶體移除，但如果有 closure 引用了該作用域裡的變數，那些變數會被額外保留在 Heap 記憶體中，直到沒有任何引用為止。
+
+但嚴格來講，MDN 只說了 closure 會記住外層作用域變數，沒說過外層作用域一定要死掉，所以下面兩種其實都是 closure：
+
+```js
+// 外層作用域死掉的例子
+function outer() {
+  const msg = 'Hello Closure';
+  return function inner() {
+    console.log(msg)
+  }
+}
+
+const fn = outer() // outer 結束了
+fn() // 'Hello Closure' -> msg 還活著
+
+
+// 外層作用域沒死掉的例子
+const msg = 'Hello World' // 全域作用域，永遠不會死
+
+function greeting() {
+  console.log(msg)
+}
+
+greeting() // 這其實也是閉包，因為 greeting 仍引用了外部 msg
+```
+
+挺訝異的吧，`greeting` 竟然也是 closure！  
+所以我們放寬來說，函式只要有用到外部作用域的變數，就可以被視為 closure。  
+當然外層作用域沒死掉的例子基本不會做為 closure 的範例，因為它太難凸顯 closure 延長外部作用域變數生命週期的強大。
+
+為此，我們應該可以根據 MDN 統一出一個簡短的結論：
+
+> 函式只要在建立時就記住了外部作用域變數的狀態，那就是 closure
 
 ## 閉包的使用情境
 接著我們來談談閉包的使用情境。
@@ -100,12 +135,11 @@ value.increment()
 console.log(value.getCount()) // 3
 ```
 
-創建私有變數其實是閉包最直觀的使用情境。記得前面說的「當定義一個函數時，如果在函數內部引用了外部的變量，那麼這個函數就是一個閉包」嗎？  
-此時 `increment` 與 `getCount` method 都使用了他們函式作用域外的變數 `count`，所以他們就是閉包。  
+創建私有變數其實是閉包最直觀的使用情境。  
 同時因為 `count` 是宣告在 `counter` method 內部，所以 `count` 就變成了私有變數，外部是無法直接存取到 `count` 的。
 
 ### 柯里化 (Currying)
-誒，別說，我以前問 senior 什麼是柯里化，他很疑惑地問我哪裡聽的，可見這不是一個常見的概念。  
+誒，別說，我以前問助教什麼是柯里化，他很疑惑地問我哪裡聽的，可見這不是一個常見的概念。  
 但是齁，我還真的被考過過柯里化 www  
 但柯里化說穿了本質上就是閉包的概念衍伸應用。
 
@@ -165,4 +199,3 @@ load() // Already loaded
 
 延遲計算的精髓就是「只有在需要的時候才執行，並且只執行一次」，通常會用在避免重複運算的情境。  
 以上述的範例來看，執行了 `load()` 一次後，`isLoaded` 就變成 `true` 了，所以之後再執行 `load()` 時就會直接印出 `Already loaded`，不會再執行 `sayHi()`。
-
