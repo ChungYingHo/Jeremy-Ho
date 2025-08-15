@@ -1,0 +1,117 @@
+---
+title: "Day14 - JS 的辛亥革命：非同步的崛起"
+sidebar_label: "Day14 - JS 的辛亥革命：非同步的崛起"
+tags: [JavaScript, async, promise, callback]
+keywords: [JavaScript, async, promise, callback]
+---
+
+非同步一直是 JavaScript 相關文章很愛討論、考試也超多衍伸題的一個話題。  
+如果說前端不懂非同步，那是相當致命的，非同步自它誕生以來已經充斥在日常開發之中，不會非同步的前端就彷彿練武的人說他決定不練內功一樣。
+
+非同步在實務開發中最廣的應用就是 api request。  
+一個龐大的專案，甚至一個頁面可以 call 到 N 支 api，如果沒有非同步，就等著看網站卡到死。  
+如果問我說，為什麼有那麼多 api 要 call？  
+說實在的，現在前端很多表單選項都不是前端寫死 enum，而是透過 api 從後端取得的，所以可能兩個 select input 就會各自擁有一隻 api。
+
+最早的 JavaScript 誕生雖然就是為了讓網頁能跟使用者互動，但本質仍是一個同步 (synchronous) 的語言。  
+是 web 界發展與需求日益複雜，才讓非同步 (asynchronous) 的概念逐漸被提出。  
+非同步的出現宛若 JS 的辛亥革命，直接給 JS 帶領起了一個新時代。
+
+為什麼說非同步是 JS 的辛亥革命？  
+前面說到 JS 是一個同步語言，準確來說他是單線程 (single-threaded) 的語言。  
+「單」線程這個單字就有學問了，說明只有一條產線嘛！  
+所以 JS 一次只能處理一項任務，一項任務處理完了才能處理下一項任務。  
+以下述範例來看，也是我們開發很常寫的順序，由上而下書寫我們的 code，那這段 code 的執行順序就會是：
+1. `const name = "Jeremy"
+2. `console.log(name)`
+所以別再覺得程式碼順序不重要，好好地規劃程式碼順序有時是能拯救世界的。
+
+```js
+const name = "Jeremy"
+console.log(name)
+```
+
+因為一次只能做一件任務，所以遇到那種要執行很久的任務，同步的 code 就會卡在那裡很久，在等待那個超長任務執行完才會繼續往下執行。  
+這種因為單一任務執行負載過大而導致程式卡住的現象就是大家耳熟能詳的「阻塞」(blocking)。  
+如果把單線程想像成市區裡的警察北北在做臨檢，通常應該會把車道縮成一條對吧 (如果現實不是的話，抱歉，我沒被臨檢過，但先當作縮成一條)，小車車接受檢查艮啟動速度都很快，突然塞進一台載滿貨的大卡車，齁，那個啟動有夠慢，是不是後面的車都要等到大卡車開走才能繼續前進去檢查？  
+大概就是這麼一個概念。
+
+而非同步的出現就是為了解決阻塞這個問題。  
+具體來說他是把那些負載量大、可能需要長時間執行的任務給丟到一旁去執行，讓主線程可以先繼續往下執行其他任務，等那個長任務執行完後再把它的執行結果塞回主線程。  
+有點像是警察北北決定加開一條專屬大車車的臨檢車道，讓大卡車可以先去檢查，其他小車車就可以繼續往前走去檢查，等到大車車在這個加開的車道檢查完後，警察北北再導引大車車開回原本的主幹道。  
+當然現實 JS 的非同步沒這麼單純，一個非同步流程至少涉及三個區塊： Call stack、Web API、Callback queue。
+
+形象點來講，可以這樣說：
+1. Call stack 就是那條主幹道。同步的 code 也是跑在上面。
+2. Web API 就是那條專屬大車車的臨檢車道，負責處理那些需要長時間執行的任務。
+3. Callback queue 就是大車專屬臨檢車道要進入主幹道的閘道，當大車檢查完後會在閘道等待，等到主幹道沒有車輛時才會被導引進入主幹道。
+
+其實在 Callback queue 這個閘道還會有一位負責導引的警察，叫做 Event Loop。  
+他會不斷地監控主幹道的狀態，當主幹道有空位時，就會把 Callback queue 裡的任務導入主幹道繼續執行。  
+每次講這裡我都推薦去看這部[影片](https://www.youtube.com/watch?v=8aGhZQkoFbQ)，堪稱經典，我願稱之為前端必看。  
+或是我以前也寫過一篇更詳細在講非同步的[文章](https://jeremyho.tw/docs/notes/JavaScript/asynchronous)，那篇有更多關於非同步的詳細解釋。
+
+但我還是放一段 code 來幫助理解一下非同步：
+```js
+async function fetchData() {
+  await new Promise(resolve => setTimeout(() => {
+    console.log("Hello!")
+    resolve()
+  }, 2000))
+}
+
+fetchData()
+console.log("Hello, World!")
+```
+猜猜執行結果是什麼？  
+答案是：
+1. `Hello, World!`
+2. `Hello!`
+原因就是執行到 `fetchData()` 時，這台大車車被導到 Web API 的臨檢車道去檢查，這時主幹道還是可以繼續執行後面的 `console.log("Hello, World!")`。  
+最後過了 2 秒，Web API 的臨檢車道檢查完畢，這台大車車到了 Callback queue 的閘道，Event Loop 監控到主幹道有空位，就把這台大車車導入主幹道，執行 `console.log("Hello!")`。
+
+## async/await
+誒好，前面那些其實只是稍微聊聊非同步為何這麼重要，其實多數文章描繪的概念都差不多。  
+但這裡我要把 async/await 單獨抓出來說，因為他是非同步考題裡的大熱門，所以是熱門中的熱門，爆款啊！  
+
+> 請說明何謂 async/await？
+
+我們在學非同步都是從 callback 一路學起到 Promise 的，一直到 async/await 這個 Promise 的語法糖出現，前端的非同步幾乎可以說是被 async/await 所統治，連 Promise 的 then 寫法都很少見了。  
+所以何謂 async/await？  
+如前面所述，它是 Promise 的語法糖，讓我們可以用比 Promise 語法更簡潔的方式來寫非同步程式碼。
+
+我看過很多考卷都會寫說「async/await 讓非同步寫起來很像同步」。  
+即使這句話是對的，但我就會想問你：為什麼寫起來像同步是 async/await 的優點？  
+不然你光寫這一段話很難讓人信服你是真的懂 async/await 呀！
+
+我們先來看一個比較常見的 async/await function：
+
+```js
+async function fetchData() {
+  try {
+    const response = await fetch('https://api.example.com/data')
+    const data = await response.json()
+    console.log(data)
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
+```
+整個 `fetchData` 是一個非同步函式，那 async/await 使之寫起來像同步的點在哪？  
+關鍵在裡面的 `await`。  
+
+前面在講同步時說過，JS 的執行是一行一行執行下來的。  
+而 `await` 可以讓我們執行 api request 這個非同步時，讓 async function 內後面的程式碼暫停執行，直到 `await` 後面的 Promise 被解決 (resolved) 或拒絕 (rejected)。  
+這個特性因為很像同步的概念，所以才會說 async/await 讓非同步寫起來像同步。
+
+所以 async/await 讓非同步寫起來像同步其實指的是 async function 內部的狀態。  
+對於跟 async function 同作用域的其他 code 來說，這個 async function 實質還是個非同步函式。  
+以下述 code 來說，`console.log("Hello, World!")` 這行還是會在 `fetchData()` 執行完之前就先執行，原因無他，他跟 `fetchData()` 在同一個作用域，「async/await 讓非同步寫起來很像同步」這句話不適用在跟 async function 同作用域的 code 上。
+
+```js
+fetchData()
+console.log("Hello, World!")
+```
+
+所以下次遇到人家考你「何謂 async/await」時，別再只寫說「async/await 讓非同步寫起來像同步」這樣而已。  
+拜託寫多一點，說明一下「寫起來像同步」指的是 async function 內部的狀態，對於跟 async function 同作用域的其他 code 來說，這個 async function 實質還是個非同步函式，還是會去 web API 那裡走上一遭的。
