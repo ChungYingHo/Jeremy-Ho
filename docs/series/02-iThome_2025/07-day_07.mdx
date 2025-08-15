@@ -132,7 +132,7 @@ async function getApiData() {
 雖然我們盡量都往 pure function 的概念靠攏，但請記得 side effect 的定義是相當廣泛的。  
 以下述 errorHandler 為例，用途是在發生錯誤時顯示一個通知 (`<q-notify>` 是 vue 框架 Quarsar 呼叫 notify 元件的一個方式)。  
 對於這個 errorHandler，我們可以說它擁有純函式的概念，只要錯誤訊息相同，顯示的通知內容也會相同。  
-但因為它操縱了 DOM (顯示) `<q-notify>`，所以它並不是一個真正的 pure function。
+但因為它操縱了 DOM (顯示 `<q-notify>`) ，所以它並不是一個真正的 pure function。
 
 ```js
 function showErrorNotify (error) {
