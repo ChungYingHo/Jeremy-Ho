@@ -6,9 +6,9 @@ keywords: [JavaScript, Closure]
 ---
 
 其實我第一次接觸閉包 (Closure) 這個概念其實並不是在 JavaScript，而是那個時候被當時任職公司要求學 Flutter 時在 Dart 裡碰到的。  
-之後會再看到閉包這個辭彙，講真，真的是在面試時時被問。  
+之後會再看到閉包這個辭彙，講真，真的是在面試時被問。  
 
-幾年前碰 Dart 的時候我再自己的筆記裡是這樣紀錄 closure：
+幾年前碰 Dart 的時候我在自己的筆記裡是這樣紀錄 closure：
 
 > 當定義一個函式時，如果在函式內部引用了外部的變數，那麼這個函式就是一個閉包。
 
@@ -65,7 +65,7 @@ function outer() {
 我覺得換個思維把「closure 會記住外部作用域變數」 改成 「closure 可以延長外部作用域變數的生命週期」應該能更好解釋這個論點。
 
 回到 `outer` 的例子，`outer` 執行時會啟動屬於它的做用域，當 `outer` 執行完畢後，這個作用域就會被銷毀。  
-但 `outer` 的作用域預備銷毀，理應 `outerVar` 也會被銷毀，但因為 `inner` 這個 closure 的存在，`outerVar` 被帶到了closure `inner` 裡面，其生命週期被延長。  
+但 `outer` 的作用域被銷毀，理應 `outerVar` 也會被銷毀，但因為 `inner` 這個 closure 的存在，`outerVar` 被帶到了closure `inner` 裡面，其生命週期被延長。  
 普遍上 closure 出現的例子都是這種 function 內 return function 的情境，這種情境下外層作用域幾乎必定是會死去的，也更加凸顯 closure 會把外部作用域變數的生命週期延長的特性。  
 因此某些論點才會特別強調「外層作用域要死掉」。  
 學術一點來看就是函式執行結束後，它的執行環境會從 stack 記憶體移除，但如果有 closure 引用了該作用域裡的變數，那些變數會被額外保留在 Heap 記憶體中，直到沒有任何引用為止。
