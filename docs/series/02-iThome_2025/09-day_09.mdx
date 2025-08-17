@@ -1,7 +1,6 @@
 ---
 title: Day09 - Call by Value or Call by Reference?
 sidebar_label: "Day09 - Call by Value or Call by Reference?"
-unlisted: true
 tags: [JS, call by value, call by reference, call by sharing]
 keywords: [JS, call by value, call by reference, call by sharing]
 ---
@@ -104,7 +103,7 @@ console.log(obj2) // { name: 'Dolores', age: 500 }
 看到這裡是不是有些霧煞煞的 XD  
 這就是 JavaScript 到底有沒有 call by reference 百家爭鳴的地方。  
 
-於是一論說 JavaScript 其實從頭到尾走的都是 call by value，只是物件型別平常的行為表現很像 call by reference。  
+於是有一論說 JavaScript 其實從頭到尾走的都是 call by value，只是物件型別平常的行為表現很像 call by reference。  
 這個論述的根據也是上面 call by reference 提到的，call by reference 是兩變數共享同一個記憶體位置，那當 `obj2 = {...}` 時，這時理應更動的是原記憶體位置的值，導致 `obj1` 也要跟著改變。但實際上是 `obj2` 指向了一個全新的記憶體位置，這明顯不符合 call by reference 的概念。  
 於是有人提出這樣的論述：「JavaScript 從頭到尾走的都是 call by value。`obj1` 跟 `obj2` 是共享同一個記憶體位置的**值**而不是位置。」
 
