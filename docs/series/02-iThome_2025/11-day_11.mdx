@@ -1,19 +1,18 @@
 ---
 title: "Day11 - needTypeCheck ? TypeScript : JavaScript"
 sidebar_label: "Day11 - needTypeCheck ? TypeScript : JavaScript"
-unlisted: true
 tags: [JavaScript, TypeScript]
 keywords: [JavaScript, TypeScript]
 ---
 
 前面那篇一不小心提到了一些關於 TypeScript、關於型別的問題，本來 TypeScript 是想放到後面再來聊聊的，但想想還是先拿出來講好了。  
-眾所周知 Javascript 其實是個有別於其他程式語言的動態型別語言，所謂動態就是寫 code 時不用特別塞給變數一個 type，JS 會自己去推斷，這樣的好處是相當自由，一個變數現在想是 string 就是 string，想是 object 就是 object。  
+眾所周知 Javascript 其實是個有別於其他程式語言的動態型別語言，所謂動態就是寫 code 時不用特別塞給變數一個 type，JS 會自己去推斷，這樣的好處是相當自由，所以同一個變數可能先是 string，後來又變成 object。  
 但也就是這樣的自由讓 JS 開發者在開發時有時會遇到一些 bug，追蹤之後才發現可能是在某個 component、某個 flow 修改到了資料的型別，然後導致整組 code 都壞掉。  
 這種情況對於大型專案尤其常見，主因是大型專案通常都 flow 複雜，工程師們也都各自負責不同的 part，這種情況下過度的自由就會變成一種負擔。  
 於是乎後來有了 TypeScript 的出現就是為了解決 JavaScript 過度自由的問題。
 
 嚴格來說 TypeScript 不算是新的語言，它始終還是會被編譯成 Javascript 去執行。  
-我更喜歡說 TypeScript 是 JavaScript 的強型別寫法。  
+我更喜歡說 TypeScript 是 JavaScript 的靜態型別寫法。  
 這篇也不是在教如何使用 TypeScript，想從 0 開始學的建議翻一下 TS 的官網，或是可以稍微瞄一下我以前寫的[筆記](https://jeremyho.tw/docs/category/typescript)。  
 其實這篇是想 murmur 一下，實務開發真的需要 TypeScript 嗎？他真的有前面所說的優點那麼好嗎？
 
@@ -97,7 +96,7 @@ Well... 這是理想，但現實是設計稿可能都是客戶確認過的、api
 ## needTypeCheck ? TypeScript : JavaScript
 `needTypeCheck ? TypeScript : JavaScript`，這一直都是個選擇題。  
 一段時間以前，我聽過一個言論 (我沒去看是否是真的啦)，說 TS 的創辦人之一發表說應該要回歸 JS 的自由，因為這才是 JS 問世的一大目的。  
-先不論它是否真的有這樣說過，但 web 圈確實 JS 跟 TS 各自都有擁護者。  
+先不論他是否真的有這樣說過，但 web 圈確實 JS 跟 TS 各自都有擁護者。  
 誠然，這兩種寫法都有其優劣，那青菜蘿蔔各有所愛，只能說每個人心中各有一把尺，真的開發上就按照團隊的需求來選擇就好。
 
 微軟在 2025 年用 Go 重寫 TypeScript 的底層邏輯，讓 TS 更加強大、編譯更快，這無疑也是在告訴大家，使用 TS 的開發者其實相當龐大。  
