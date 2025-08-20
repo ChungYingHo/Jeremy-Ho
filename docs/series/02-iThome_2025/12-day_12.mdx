@@ -1,7 +1,6 @@
 ---
 title: "Day12 - 事件捕獲與冒泡其實是一個青春戀愛物語"
 sidebar_label: "Day12 - 事件捕獲與冒泡其實是一個青春戀愛物語"
-unlisted: true
 tags: [JavaScript, bubbling, capturing]
 keywords: [JavaScript, bubbling, capturing]
 ---
@@ -59,7 +58,7 @@ keywords: [JavaScript, bubbling, capturing]
 當然也可以掛兩個事件監聽器 (`addEventListener`)，一個設為捕獲階段，一個設為冒泡階段，這也是沒什麼問題的。  
 這樣在目標階段時，會先觸發捕獲階段的事件處理器，然後再觸發冒泡階段的事件處理器。
 
-不過實務上已經很少看到 `addEventListener` 了。  
+不過實務上已經很少直接使用 `addEventListener` 了。  
 在這個 Vue 跟 React 充斥的前端世界，這些東西都被他們包好好的。  
 所以只要記得：
 
