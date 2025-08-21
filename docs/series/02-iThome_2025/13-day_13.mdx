@@ -1,7 +1,6 @@
 ---
-title: "Day12 - JS 的原型鍊又在說什麼故事？"
-sidebar_label: "Day12 - JS 的原型鍊又在說什麼故事？"
-unlisted: true
+title: "Day13 - JS 的原型鍊又在說什麼故事？"
+sidebar_label: "Day13 - JS 的原型鍊又在說什麼故事？"
 tags: [JavaScript, prototype]
 keywords: [JavaScript, prototype]
 ---
@@ -10,14 +9,14 @@ Javascript 有一個每本書都會提到，但面試時考出來機會偏低的
 實務上雖然因為諸多原因我們會下意識忽略了原型鍊，但我認同它比前幾天提到的 `call`、`bind`、`apply` 比起來更符合 JS 接近底層的概念，所以考出來也不為過。
 
 為何說原型鍊是 JS 接近底層的概念？  
-我們看著下方的 code 來思索一個問題：為什麼 `nameList` 這個 array 可以用 `.length` 來取得內容長度？
+我們看著下方的 code 來思索一個問題：為什麼 `nameList` 這個 array 可以用 `.forEach` 來遍歷整個陣列？
 
 ```js
 const nameList = ['Alice', 'Bob', 'Charlie']
-console.log(nameList.length)  // 3
+nameList.forEach(name => console.log(name))
 ```
 
-啊，因為 `nameList` 就是一個 array 呀，然後 `.length` 就是 array 的一個操縱方法呀~。  
+啊，因為 `nameList` 就是一個 array 呀，然後 `.forEach` 就是 array 的一個操縱方法呀~。  
 說真的，我沒辦法說你錯，因為大概念上來講就是這樣認知。  
 但實際上這句話背後隱藏的是原型鍊的概念。
 
@@ -36,7 +35,7 @@ OOP 的經典就是會有一個 class，然後 class 裡面會有一些屬性 (p
 重點是 Javascript 的原型鍊就是這樣的概念，但我們學 JS 都是直接從 FP 的概念學起。
 
 為何說原型鍊跟 OOP 概念很像？  
-簡單來說其實 JS 底層有一個屬於每個物件的原型 (prototype)，這個原型就像是 OOP 的 class。  
+簡單來說其實 JS 底層有一個屬於每個物件的原型 (prototype)，這個原型就很像是 OOP 的 class。  
 我們把下面這段 code 放到 devtool 去跑，看看會得到什麼：
 
 ```js
@@ -63,7 +62,7 @@ console.log(Object.getPrototypeOf(Object.getPrototypeOf(Object.getPrototypeOf(na
 這樣一個例子套用 OOP 的概念就是 `Object.prototype` 是最早的 class、是最早的母代。  
 它往下是繼承了它屬性的 instance `Array.prototype`，也就是第一代子代。  
 再往下就是繼承 `Array.prototype` 的 `nameList`。  
-所以為何 `nameList` 可以使用 `.length`？追本溯源是因為它的媽媽 `Array.prototype` 提供了這個屬性給它。
+所以為何 `nameList` 可以使用 `.forEach`？追本溯源是因為它的媽媽 `Array.prototype` 提供了這個屬性給它。
 
 為此我們可以給原型鍊一個結論：
 
@@ -71,7 +70,7 @@ console.log(Object.getPrototypeOf(Object.getPrototypeOf(Object.getPrototypeOf(na
 
 ## 被忽視的原型鍊，但其實他無處不在
 日常開發中我們會因為用這些繼承的屬性用得很順手而忽視原型鏈的存在，但其實它總是在各處會出現刷一下存在感。  
-舉個例來說，把這段 code 拿去跑會得到 `undefined`：
+舉個例來說，把這段 code 拿去跑會得到 `Uncaught TypeError: user.forEach is not a function`：
 
 ```js
 const user = {
@@ -79,17 +78,17 @@ const user = {
   age: 25
 }
 
-console.log(user.length) // undefined
+user.forEach(name => console.log(name)) // Uncaught TypeError: user.forEach is not a function
 ```
 
-這是因為 `user` 這個物件，從它開始往上找原型鍊，路過了它的媽媽、阿嬤都沒找到 `length` 這個屬性，那自然而然用不了。  
+這是因為 `user` 這個物件，從它開始往上找原型鍊，路過了它的媽媽、阿嬤都沒找到 `forEach` 這個屬性，那自然而然用不了。  
 熟悉 TS 開發的，如果寫過聯合型別，如以下範例：
 
 ```ts
-const score: string | number = 100
+const test: string[] | Object = ['Alice', 'Bob', 'Charlie'] // 先別管為何型別要塞 array 跟 object，就是示範 ><
 
-score.length
+test.forEach(name => console.log(name))
 ```
-會看到 TS 說 `Property 'length' does not exist on type 'number'.`，這就是原型鏈的體現。  
-因為 `number` 那條原型鍊上沒有 `length` 這個屬性，所以 TS 會報錯。  
+會看到 TS 說 ` Property 'forEach' does not exist on type 'Object'`，這就是原型鏈的體現。  
+因為 `Object` 那條原型鍊上沒有 `forEach` 這個屬性，所以 TS 會報錯。  
 是說這也是我推崇 TS 的其中一個原因。比起 JS 執行時會回傳 undefined， TS 會在編譯時直接阻止你呼叫找不到的屬性。
