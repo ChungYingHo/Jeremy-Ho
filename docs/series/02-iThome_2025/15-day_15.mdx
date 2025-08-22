@@ -2,7 +2,6 @@
 title: Day15 - Waiter! 然後 API 端上了一盤 response
 sidebar_label: "Day15 - Waiter! 然後 API 端上了一盤 response"
 tags: [JavaScript, api]
-unlisted: true
 keywords: [JavaScript, api]
 ---
 
@@ -21,7 +20,7 @@ api 在 web 開發中的角色是重中之重，我們使用網站通常都是�
 
 ## 改變歷史的 AJAX
 AJAX (Asynchronous JavaScript and XML) 其實不算是 api 的規範，而是指一種使用 JavaScript 來非同步地從伺服器獲取資料的技術。  
-在 AJAX 技術出現之前，前端主要還是使用同步的方式來獲取資料，所以當時的網站 UX 相當不佳。  
+在 AJAX 技術出現之前，通常需要整頁重新載入來獲取資料，導致 UX 不佳。  
 在 AJAX 之後，才有了前端能夠非同步地從後端獲取資料的能力，因此才有了我們偉大的非同步命題。  
 這一舉讓前端開發者能夠在不重新載入整個頁面的情況下更新頁面內容，從而大幅提升了使用者體驗，堪稱革命也不為過！
 
@@ -72,7 +71,7 @@ GQL 在國外的應用看起來是滿廣泛的，但以目前台灣的 web 生�
 這沒什麼不好，RESTful 的期望就是 endpoint 各司其職。  
 但這種設計在網頁極度複雜、一次操作都會需要跟多個 endpoint 互動的情況下，就會變得很麻煩。
 
-GQL 的解決的就是上面的痛點。  
+GQL 解決的就是上面的痛點。  
 以上述例子來說，既然已知這次互動是一定需要拿到使用者資料與文章們，那就可以設計一個 GQL endpoint 來一次性地拿到這些資料：
 ```js
 {
