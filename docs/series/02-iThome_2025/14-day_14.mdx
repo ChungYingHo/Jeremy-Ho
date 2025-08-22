@@ -24,6 +24,7 @@ keywords: [JavaScript, async, promise, callback]
 以下述範例來看，也是我們開發很常寫的順序，由上而下書寫我們的 code，那這段 code 的執行順序就會是：
 1. `const name = "Jeremy"`
 2. `console.log(name)`
+
 所以別再覺得程式碼順序不重要，好好地規劃程式碼順序有時是能拯救世界的。
 
 ```js
@@ -67,6 +68,7 @@ console.log("Hello, World!")
 答案是：
 1. `Hello, World!`
 2. `Hello!`
+
 原因就是執行到 `fetchData()` 時，這台大車車被導到 Web API 的臨檢車道去檢查，這時主幹道還是可以繼續執行後面的 `console.log("Hello, World!")`。  
 最後過了 2 秒，Web API 的臨檢車道檢查完畢，這台大車車到了 Callback queue 的閘道，Event Loop 監控到主幹道有空位，就把這台大車車導入主幹道，執行 `console.log("Hello!")`。
 
