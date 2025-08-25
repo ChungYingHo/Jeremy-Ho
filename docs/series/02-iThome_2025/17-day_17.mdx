@@ -2,7 +2,6 @@
 title: Day17 - 前端資料操作的眉眉角角
 sidebar_label: "Day17 - 前端資料操作的眉眉角角"
 tags: [JavaScript, data, shallow copy, deep copy]
-unlisted: true
 keywords: [JavaScript, data, shallow copy, deep copy]
 ---
 
@@ -35,7 +34,8 @@ keywords: [JavaScript, data, shallow copy, deep copy]
 const shallowCopy = { ...originalObject }
 
 // 深拷貝
-const deepCopy = JSON.parse(JSON.stringify(originalObject))
+const deepCopy = JSON.parse(JSON.stringify(originalObject)) // 注意：這種深拷貝有其限制，僅適用於純資料物件
+const deepCopy = structuredClone(originalObject) // 近年新出現的深拷貝方法，支援更多資料類型
 ```
 
 淺拷貝雖然也是前端常用的手法，但它有一個問題，就是物件的傳址特性。  
@@ -58,7 +58,8 @@ const deepCopy = JSON.parse(JSON.stringify(originalObject))
 甚至很多時候 array 都是跟 object 一起出現。
 
 在操縱 array 的諸多 method 裡，我相信大家在學 JavaScript 時一定也有被提醒有些會影響到原陣列，有些不會。  
-可能剛學時沒太多想法，但實務上這個差異是很重要的。
+可能剛學時沒太多想法，但實務上這個差異是很重要的。  
+在多人協作裡，通常會建議使用不改變原陣列的方法，以方便追蹤 state 流向，避免難以預測的 side effect。
 
 比如 `push()`、`pop()`、`shift()`、`unshift()`、`splice()` 等等，這些都是會改變原陣列的。  
 而 `concat()`、`slice()`、`map()`、`filter()`、`reduce()` 等等，這些都是不會改變原陣列的。  
