@@ -117,3 +117,113 @@ console.log("Hello, World!")
 
 所以下次遇到人家考你「何謂 async/await」時，別再只寫說「async/await 讓非同步寫起來像同步」這樣而已。  
 拜託寫多一點，說明一下「寫起來像同步」指的是 async function 內部的狀態，對於跟 async function 同作用域的其他 code 來說，這個 async function 實質還是個非同步函式，還是會去 web API 那裡走上一遭的。
+
+## microtask & macrotask
+這是一個沒更新上鐵人賽的片段，具體來說是受同事提醒可以再根據 microtask & macrotask 稍微說明一下。  
+主要來說，前面文章提到的 callback queue 廣義上來講是在說 macrotask queue。  
+當然對於純講非同步來說，直接說 callback queue 也可以，但精確來說像 async/await 其實是屬於 microtask 的範疇，其實在執行順序上跟 macrotask 是有差異的。
+
+具體來說 microtask & macrotask 可以這樣分：
+1. macrotask：setTimeout、setInterval、setImmediate、I/O、UI rendering
+2. microtask：Promise.then、async/await、process.nextTick、MutationObserver
+
+然後雖然同樣是非同步，但 microtask 的優先權是高於 macrotask 的。  
+以下述為例，猜猜執行順序會是什麼？
+```js
+console.log("Start")
+
+setTimeout(() => {
+  console.log("Timeout")
+}, 0)
+
+Promise.resolve().then(() => {
+  console.log("Promise")
+})
+
+console.log("End")
+```
+
+答案是：
+1. Start
+2. End
+3. Promise
+4. Timeout
+
+同步的 `console` 不用多說是一定會被抓去先執行的。  
+`setTimeout` 與 `Promise` 雖然都是非同步，但 `Promise` 是 microtask，優先權高於 macrotask 的 `setTimeout`，所以會先被執行。  
+這是非同步裡一個比較少被提及的細節，但我同事都說了，我就特別放一下。
+
+然後同場加映一題面試題：
+```js
+let k = 0;
+
+setTimeout(() => {
+  k += 1;
+  console.log(k)
+}, 0);
+
+console.log(k)
+
+addK = async function (tag) {
+  k = await k + 1; 
+  console.log(`Await ${tag}: ${k}`)
+};
+
+addK('A').then(() => {
+  console.log('A: ', k);
+});
+
+(function(){
+  k += 1;
+  console.log(k);
+})();
+
+addK('B').then(() => {
+  console.log('B: ', k);
+});
+```
+
+猜猜執行順序跟各自的 console.log 會印出什麼？  
+答案是：
+1. `console.log(k)` 會印出 0
+2. 立即函式會印出 1
+3. `addK('A')` 會印出 `Await A: 2`
+4. `addK('B')` 會印出 `Await B: 2`
+5. 最後才是 `setTimeout` 會印出 3
+
+這題的癥結點有兩個。  
+一個是 async/await 跟 `setTimeout` 的優先權，但透過前面有說過的， async/await 是 microtask，其優先權會高於 macrotask 的 `setTimeout`，所以還好。  
+最有問題的是 `addK('A')` 跟 `addK('B')` 這兩個像的印出結果為何都是 2。難道 `addK('A')` 不會把 `k` 加 1，然後影響 `addK('B')` 嗎？  
+這就是 await 妙的地方。  
+
+對 await 來說，`await k` 等同 `await Promise.resolve(k)`，它會抓當下的 `k` 值，然後把 `+ 1` 丟到 microtask queue，等到下一輪事件循環再執行。  
+所以 `addK('A')` 跟 `addK('B')` 的執行邏輯其實是：
+1. 同步部分跑完 (把兩個 `addK` 都呼叫一遍，兩個人都已經存了「快照 0」，續行排進 microtask queue)。
+2. event loop 開始跑 microtask queue：
+    - 先跑 A 的續行 → 用快照 0 → 算出 1 → 寫回 k=1。
+    - 再跑 B 的續行 → 它也用自己存的快照 0 → 算出 1 → 再寫回 k=1。
+
+放個圖解：
+```mermaid
+sequenceDiagram
+    participant Main as Main Thread
+    participant A as addK('A')
+    participant B as addK('B')
+    participant MQ as Microtask Queue
+
+    Main->>A: 呼叫 addK('A')
+    A->>A: snapshotA = k (=1)
+    A->>MQ: 推入續行 (使用 snapshotA)
+
+    Main->>B: 呼叫 addK('B')
+    B->>B: snapshotB = k (=1)
+    B->>MQ: 推入續行 (使用 snapshotB)
+
+    Note over Main: 同步程式碼結束
+
+    MQ->>A: 執行續行 (k = snapshotA + 1 = 2)
+    A->>Main: 更新 k = 2
+
+    MQ->>B: 執行續行 (k = snapshotB + 1 = 2)
+    B->>Main: 再次更新 k = 2
+```
