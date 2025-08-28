@@ -187,43 +187,74 @@ addK('B').then(() => {
 答案是：
 1. `console.log(k)` 會印出 0
 2. 立即函式會印出 1
-3. `addK('A')` 會印出 `Await A: 2`
+3. `addK('A')` 會印出 `Await A: 1`
 4. `addK('B')` 會印出 `Await B: 2`
-5. 最後才是 `setTimeout` 會印出 3
+5. `addK('A')` 的 then 會印出 2
+6. `addK('B')` 的 then 會印出 2
+7. 最後才是 `setTimeout` 會印出 3
 
 這題的癥結點有兩個。  
 一個是 async/await 跟 `setTimeout` 的優先權，但透過前面有說過的， async/await 是 microtask，其優先權會高於 macrotask 的 `setTimeout`，所以還好。  
-最有問題的是 `addK('A')` 跟 `addK('B')` 這兩個像的印出結果為何都是 2。難道 `addK('A')` 不會把 `k` 加 1，然後影響 `addK('B')` 嗎？  
-這就是 await 妙的地方。  
+最有問題的是 `addK('A')` 跟 `addK('B')` 這兩個的印出結果為何 Await A 跟 Await B 不一樣，但 then 之後的結果卻一樣？
 
-對 await 來說，`await k` 等同 `await Promise.resolve(k)`，它會抓當下的 `k` 值，然後把 `+ 1` 丟到 microtask queue，等到下一輪事件循環再執行。  
-所以 `addK('A')` 跟 `addK('B')` 的執行邏輯其實是：
-1. 同步部分跑完 (把兩個 `addK` 都呼叫一遍，兩個人都已經存了「快照 0」，續行排進 microtask queue)。
-2. event loop 開始跑 microtask queue：
-    - 先跑 A 的續行 → 用快照 0 → 算出 1 → 寫回 k=1。
-    - 再跑 B 的續行 → 它也用自己存的快照 0 → 算出 1 → 再寫回 k=1。
+解析一下 code 的執行順序：
+- 同步階段
+1. 初始 k = 0
+2. 呼叫 `addK('A')`：遇到 `k = await k + 1` → `await k` 等同 `Promise.resolve(k)`，它會先拍 snapshotA = 0，接著把續行 (`+ 1`) 丟進 microtask
+3. IIFE 立刻把 k 加到 1 並印出 1
+4. 呼叫 `addK('B')`：此時 k = 1 → 拍 snapshotB = 1，續行也丟進 microtask
+5. 進入 microtask（FIFO）
+6. 先跑 A 的續行：`k = snapshotA + 1 = 0 + 1 = 1` → 印 Await A: 1
+7. 再跑 B 的續行：`k = snapshotB + 1 = 1 + 1 = 2` → 印 Await B: 2
 
-放個圖解：
+重點：await k 等價於先取「當下的 k」→ Promise.resolve(k)，所以 A 用 0，B 用 1。
+
+為什麼 then 都是 2？  
+A 的 Promise 在 A 的續行完成時 resolve，這時才把 A.then(...) 推進 microtask。  
+但在 A 續行之後、A.then 之前，隊列裡已經排著 B 的續行（先前就排進去了）。  
+所以順序是：A 續行 → B 續行 → A.then → B.then。  
+當跑到 A.then 時，B 已把 k 更新成 2 了；B.then 當然也看到 k = 2。
+
+放個時間序圖解：
 ```mermaid
 sequenceDiagram
+    autonumber
     participant Main as Main Thread
     participant A as addK('A')
+    participant IIFE as (IIFE)
     participant B as addK('B')
     participant MQ as Microtask Queue
+    participant TQ as Macrotask Queue (setTimeout)
+
+    Note over Main: 初始 k = 0
+
+    Main->>TQ: 排入 setTimeout(…, 0)
+    Main->>Main: console.log(k) → 0
 
     Main->>A: 呼叫 addK('A')
-    A->>A: snapshotA = k (=1)
-    A->>MQ: 推入續行 (使用 snapshotA)
+    A->>A: snapshotA = k (=0)   <!-- await 之前先讀值 -->
+    A->>MQ: 推入續行(用 snapshotA)
+
+    Main->>IIFE: 立即函式執行
+    IIFE->>Main: k = 1 並 console.log(1)
 
     Main->>B: 呼叫 addK('B')
-    B->>B: snapshotB = k (=1)
-    B->>MQ: 推入續行 (使用 snapshotB)
+    B->>B: snapshotB = k (=1)   <!-- 這時同步已把 k 改為 1 -->
+    B->>MQ: 推入續行(用 snapshotB)
 
-    Note over Main: 同步程式碼結束
+    Note over Main: 同步程式碼結束 → 進入 Microtasks
 
-    MQ->>A: 執行續行 (k = snapshotA + 1 = 2)
-    A->>Main: 更新 k = 2
+    MQ->>A: 續行：k = snapshotA + 1 = 0 + 1 = 1
+    A->>Main: console.log("Await A: 1")
 
-    MQ->>B: 執行續行 (k = snapshotB + 1 = 2)
-    B->>Main: 再次更新 k = 2
+    MQ->>B: 續行：k = snapshotB + 1 = 1 + 1 = 2
+    B->>Main: console.log("Await B: 2")
+
+    MQ->>A: 執行 A.then → console.log("A:", k=2)
+    MQ->>B: 執行 B.then → console.log("B:", k=2)
+
+    Note over Main: 清空 microtasks 後，輪到 macrotask
+
+    TQ->>Main: 執行 setTimeout：k = 2 + 1 = 3
+    Main->>Main: console.log(3)
 ```
