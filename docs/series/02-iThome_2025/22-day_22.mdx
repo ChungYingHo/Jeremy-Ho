@@ -1,7 +1,6 @@
 ---
 title: Day22 - 網頁卡卡的怎麼辦？
 sidebar_label: "Day22 - 網頁卡卡的怎麼辦？"
-unlisted: true
 tags: [layout, paint, composite]
 keywords: [layout, paint, composite]
 ---
@@ -94,3 +93,11 @@ Composite 階段則是將各個圖層合成到一起，形成最終的畫面。
 其實這部分的優化手段相對較少，因為 composite 階段本身的計算量就比較小。  
 不過還是有一些可以注意的地方，比如使用 CSS 繪製動畫時，多嘗試使用 `transform` 和 `opacity` 屬性，這兩個屬性不會觸發 layout 和 paint 階段，只會影響 composite 階段，這樣可以減少整體的渲染負擔。  
 但這些屬性一旦套用在大面積元素上，效能消耗還是會特別明顯。
+
+## Summary
+從上述可以知道，前端能做的效能優化基本集中在 Render tree 跟 Rendering Pipeline 這兩個部分。  
+Render tree 有關的優化手段是減少 browser 端的解析工作量，像是 SSR、減少 code 體積、改善傳輸檔案類型等等。  
+而 Rendering Pipeline 的優化手段擇要針對不同階段對症下藥，但一般因為 layout 階段的計算量最大，所以優化的重點往往會放在這個階段。  
+值得一提的是，實務上有時會用 JS 來操作 DOM 或 CSS，本質上也是在改變 render tree，所以這些操作也會影響到 layout 階段的效能。  
+所以有一說是，如果真的要動態改變樣式，先看看純 CSS 能不能滿足需求。  
+因為 JS 操作 DOM 或 CSS，實際上就是在動 render tree，往往會拖慢 layout，而單純的 CSS 多半只影響 paint，負擔小很多。
