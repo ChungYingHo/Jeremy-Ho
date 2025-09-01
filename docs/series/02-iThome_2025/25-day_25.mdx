@@ -1,7 +1,6 @@
 ---
 title: Day25 -  面試問我開發環境以及流程耶~ 我該怎麼回答？
 sidebar_label: "Day25 -  面試問我開發環境以及流程耶~ 我該怎麼回答？"
-unlisted: true
 tags: [git, vscode, docker]
 keywords: [git, vscode, docker]
 ---
@@ -37,7 +36,7 @@ git flow 是 git 指令的綜合實踐，也是團隊的開發策略。
 但脫離不了的是大概都會有這幾支 branch：
 1. master/main branch：code 最主要的 branch。通常會被保護起來，不允許直接 commit。
 2. develop branch：給工程師開發用的 branch。
-3. test branch：上線前的測試 branch。
+3. test branch：有些團隊在正式上線前還會有一個上線前的測試 branch。
 4. release branch：正式上線的 branch。
 
 所以面試官考你 git 的時候，除了是想知道你對 git 的熟悉程度之外，藉由你對 git flow 的回答也能對你之前團隊的開發方式略知一二。  
@@ -75,8 +74,7 @@ vscode 差不多就是前端的生命了。
 docker 本質上是一個「容器化」工具，讓我們能在一個封閉的容器裡面跑整個開發環境。  
 這個容器裡可以定義作業系統、套件版本、環境變數，甚至還能把資料庫、快取、message queue 一起跑起來。  
 只要大家使用同一份 dockerfile 或 docker-compose，跑出來的環境就會完全一致。  
-那在多人協作下，也不會再有「我本機可以跑，為什麼你那邊不行？」的問題。  
-甚至如果是在同一台開發機的 docker 中分配各自的 port 各自開發，每個人都在自己的 container 裡作業，這樣就更能確保環境一致性了。  
+那在多人協作下，也不會再有「A 本機可以跑，但 B 本機那邊不行」的問題。  
 更進一步，這些 container 不只在本機可以跑，把它搬到 CI/CD pipeline 或雲端伺服器上也能直接用，減少那種本機測試沒問題，上線卻出錯的情況。
 
 一般來說考 docker 不會考太深啦，因為那基本是 devOps 的範疇了。  
