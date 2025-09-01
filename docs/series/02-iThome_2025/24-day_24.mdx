@@ -1,7 +1,6 @@
 ---
 title: Day24 - 網路身分證：JWT 與 session
 sidebar_label: "Day24 - 網路身分證：JWT 與 session"
-unlisted: true
 tags: [JWT, session]
 keywords: [JWT, session]
 ---
@@ -76,7 +75,8 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtc2ciOiJIZWxsbyB3b3JsZCEifQ.KMUFsIDTnFmy
 }
 ```
 
-眼尖你的一定會發現，signature 是無法 decode 的，它只會有 valid 跟 invalid 兩種結果。  
+可以看到 Header 跟 Payload 都是可以被解碼的，所以 Payload 是千萬不能放敏感資訊，比如密碼、信用卡號之類的東西。  
+然後眼尖你的一定會發現，signature 是無法 decode 的，它只會有 valid 跟 invalid 兩種結果。  
 這是因為 signature 是用來驗證 token 的完整性，確保 token 在傳輸過程中沒有被竄改。  
 當 server 收到一個 JWT 時，它會使用 Header 帶的演算法、Payload 裡的內容，以及只有 server 知道的 secret 密鑰來計算出一個新的 signature，然後跟 token 裡的 signature 進行比對。  
 如果兩者相同，則表示 token 是有效的；如果不同，則表示 token 已經被竄改。
