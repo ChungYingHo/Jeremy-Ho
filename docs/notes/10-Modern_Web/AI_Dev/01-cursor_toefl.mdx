@@ -1,0 +1,222 @@
+---
+title: "[Cursor] 托福單字書練習庫"
+tags: [cursor, toefl]
+keywords: [cursor, toefl]
+---
+
+## 功能 (提示詞)
+
+### 系統架構
+1. 這是一個空白的 Quasar 專案，請依此專案及以下架構建立網站。
+2. 不用連接資料庫，這是個全靜態檔案。
+3. 請務必使用 Typescript。
+4. 請安裝 eslint，並且 save 時要自動 format。
+5. eslint 規則至少要有：
+   - 使用單引號
+   - 使用 2 個空白縮排
+   - 不允許使用未宣告的變數
+   - 不允許有未使用的變數或函式
+   - 不允許有 console.log
+   - 結尾不允許有分號
+   - 空白行不允許超過 1 行
+6. 不安裝 prettier。
+7. 需建立共通樣式 `theme.scss`。常用的樣式，以及網站主色調設定那些都應該放在這裡。
+8. 網站必須是 dark mode。
+9. 請使用 Quasar 的元件庫來建立網站。
+10. 需要做 RWD，手機、平板、桌機都要適用。
+
+### 托福單字來源
+1. 請開一個 folder 叫 `toefl`，裡面將會放製托福單字的 `.md` 檔案。
+2. 每個 `.md` 檔案都是開發者之後手動加進來的，格式會是 `01-day_01.md`、`02-day_02.md`、`03-day_03.md`，依此類推。
+3. 每個 `.md` 檔案的內容格式如下：
+
+```
+| 單字        | 詞性  | 中文解釋               | 英文例句                                               |
+| ----------- | ----- | ---------------------- | ------------------------------------------------------ |
+| abandon     | v.    | 放棄                   | The ship was abandoned by its crew.                    |
+| abase       | v.    | 降低 地位、職位、威望等 | He abased himself by admitting his error.              |
+| abbreviate  | v.    | 縮寫                   | The word "information" is often abbreviated as "info." |
+| abhor       | v.    | 厭惡                   | She abhors cruelty to animals.                         |
+| abide       | v.    | 遵守                   | All players must abide by the rules of the game.       |
+| abolish     | v.    | 廢除                   | The government decided to abolish the outdated law.    |
+| abound      | v.    | 大量存在               | Wildlife abounds in the national park.                 |
+| abrupt      | adj.  | 突然的                 | His departure was so abrupt that no one noticed at first. |
+| absorb      | v.    | 吸收                   | The sponge absorbed all the water.                     |
+| abstract    | adj.  | 抽象的                 | The professor gave an abstract explanation of the theory. |
+| abundant    | adj.  | 豐富的                 | The region is abundant in natural resources.           |
+| accelerate  | v.    | 加速                   | The car accelerated quickly on the highway.            |
+| accessible  | adj.  | 可接近的               | The museum is accessible by public transport.          |
+| acclaim     | v.    | 稱讚                   | The actor was acclaimed for his outstanding performance. |
+| accommodate | v.    | 容納                   | The hotel can accommodate up to 500 guests.            |
+| accompany   | v.    | 陪伴                   | She accompanied her friend to the concert.             |
+| accomplish  | v.    | 完成                   | He accomplished his goals through hard work.           |
+| accumulate  | v.    | 累積                   | Dust accumulated on the old bookshelf.                 |
+| accurate    | adj.  | 精確的                 | The scientist provided an accurate measurement.        |
+| accuse      | v.    | 指控                   | He was accused of stealing the money.                  |
+```
+4. 每個檔案的內容會是一個 markdown table，裡面會有多個單字，每個單字會有 `id`、`word`、`partOfSpeech`、`definition`、`example` 五個欄位。
+
+### 一般單字來源
+1. 請開一個 folder 叫 `daily`，裡面將會放一般單字的 `.md` 檔案。
+2. 每個 `.md` 檔案都是開發者之後手動加進來的，格式會是 `01-day_01.md`、`02-day_02.md`、`03-day_03.md`，依此類推。
+3. 每個 `.md` 檔案的內容格式如下：
+
+```
+| 單字        | 詞性  | 中文解釋             | 英文例句                                                   |
+| ----------- | ----- | -------------------- | ---------------------------------------------------------- |
+| balance     | n.    | 平衡                 | He lost his balance and fell down the stairs.              |
+| ban         | v.    | 禁止                 | The government banned smoking in public places.            |
+| banal       | adj.  | 平庸的、陳腐的       | His speech was filled with banal clichés.                  |
+| barrier     | n.    | 障礙                 | Language can be a barrier to communication.                |
+| barren      | adj.  | 貧瘠的、不孕的       | The land was barren and unsuitable for farming.            |
+| barter      | v.    | 以物易物             | They bartered goods instead of using money.                |
+| behalf      | n.    | 代表                 | She accepted the award on behalf of her team.              |
+| behave      | v.    | 表現、舉止           | The teacher asked the students to behave themselves.        |
+| behold      | v.    | 看見、注視           | They beheld a beautiful sunset over the ocean.             |
+| belittle    | v.    | 輕視                 | He belittled her efforts in front of everyone.             |
+| beneficial  | adj.  | 有益的               | Regular exercise is beneficial to your health.             |
+| benevolent  | adj.  | 仁慈的、慈善的       | The benevolent donor gave millions to charity.             |
+| betray      | v.    | 背叛                 | He betrayed his friend’s trust by lying.                   |
+| bewilder    | v.    | 使困惑               | The complicated instructions bewildered the students.      |
+| bias        | n.    | 偏見、偏心           | The article showed a clear bias against the candidate.     |
+| bid         | v.    | 出價、投標           | He bid $500 for the painting at the auction.               |
+| bizarre     | adj.  | 古怪的               | The movie had a bizarre and confusing storyline.           |
+| blunder     | n.    | 大錯、失誤           | Forgetting his passport was a serious blunder.             |
+| boast       | v.    | 自誇、誇耀           | She always boasts about her cooking skills.                |
+| bolster     | v.    | 支持、增強           | The new evidence bolstered his argument in court.          |
+```
+4. 每個檔案的內容會是一個 markdown table，裡面會有多個單字，每個單字會有 `id`、`word`、`partOfSpeech`、`definition`、`example` 五個欄位。但 `example` 可能會是空的。
+
+### 讀取單字腳本
+1. 請建立一個腳本 `scripts/loadVocabulary.ts`，這個腳本會解析 `toefl` 與 `daily` 資料夾內的所有 `.md` 檔案，並且將它們解析成兩個 JSON 檔案。
+2. 解析後的 JSON 檔案會放在 `public` 資料夾內，檔名為 `toefl.json` 與 `daily.json`。
+3. day 欄位會從檔名取得 (ex. `01-day_01.md` 的 day 為 01，`10-day_10.md` 的 day 為 10)。
+4. 解析後的 JSON 格式如下：
+
+```json
+[
+  {
+    "day": 1,
+    "words": [
+      {
+        "id": 1,
+        "word": "abandon",
+        "partOfSpeech": "v.",
+        "definition": "放棄",
+        "example": "The ship was abandoned by its crew."
+      },
+      {
+        "id": 2,
+        "word": "abase",
+        "partOfSpeech": "v.",
+        "definition": "降低 (地位、職位、威望等)",
+        "example": "He abased himself by admitting his error."
+      }
+    ]
+  }
+]
+```
+6. 此腳本必須在 build 前自動執行，確保 `public/toefl.json` 與 `public/daily.json` 永遠是最新的。
+7. 所以就算 folder 有多個 `.md` 檔案，也會被合併成一個 JSON 陣列，每個陣列元素 (object) 對應一個 `.md` 檔案。
+
+### 網站功能
+1. 首頁有幾個區塊：
+    - header
+        - 顯示網站名稱 (英文單字書練習庫)
+        - 顯示網站 logo (先隨便塞張圖)
+        - 顯示網站導覽選單 (Home, Vocabulary, Quiz)
+        - Vocabulary, Quiz 必須是下拉選單，裡面有各自的子選單
+            - Vocabulary 子選單：托福單字、一般單字
+            - Quiz 子選單：托福單字、一般單字
+        - 右上角有一個小圖片，要開分頁到 `https://jeremyho.tw/` (先隨便塞張圖)
+    - 顯示隨機 5 個單字 (從所有類別、所有天數中隨機選出)。
+        - 以輪播圖 (carousel) 方式顯示，每次顯示 1 個單字，並且每 3 秒自動切換。
+        - 每個單字卡片上會顯示：單字、詞性、中文解釋、英文例句。
+        - 預設從托福單字中選出，但有 tab 可以切換到一般單字。
+    - 顯示可以互動的功能卡片對應下述路由
+        - card1: 全部托福單字：`toefl`
+        - card2： 按照天數瀏覽托福單字：`toefl/by-day`
+        - card3： 全部一般單字：`daily`
+        - card4： 按照天數瀏覽一般單字：`daily/by-day`
+        - card5： 托福單字測驗：`quiz-toefl`
+        - card6： 一般單字測驗：`quiz-daily`
+
+2. `/toefl` 路由
+    - 顯示所有托福單字 (從 `public/toefl.json` 讀取)
+    - 每個單字卡片上會顯示：單字、詞性、中文解釋、英文例句。
+    - 最好可以串個免費 api，讓單字卡片上也可以顯示發音 (可以點擊播放發音)。
+    - 有分頁功能，預設每頁顯示 20 個單字。可以切換每頁顯示 10、20、50、100 個單字。
+
+3. `/toefl/by-day` 路由
+    - 依照天數瀏覽托福單字 (從 `public/toefl.json` 讀取)
+    - 每一張卡片都是一天，上面顯示單字數量、day 編號。
+    - 點擊卡片會導頁到 `/toefl/day/:day`，顯示該天的所有單字。
+
+4. `/toefl/day/:day` 路由
+    - 顯示該天的所有托福單字 (從 `public/toefl.json` 讀取)
+    - 每個單字卡片上會顯示：單字、詞性、中文解釋、英文例句。
+    - 最好可以串個免費 api，讓單字卡片上也可以顯示發音 (可以點擊播放發音)。
+    - 有分頁功能，預設每頁顯示 20 個單字。可以切換每頁顯示 10、20、50、100 個單字。
+
+5. `/daily` 路由
+    - 顯示所有一般單字 (從 `public/daily.json` 讀取)
+    - 其它功能同 `/toefl`。
+
+6. `/daily/by-day` 路由
+    - 依照天數瀏覽一般單字 (從 `public/daily.json` 讀取)
+    - 其它功能同 `/toefl/by-day`。
+
+7. `/daily/day/:day` 路由
+    - 顯示該天的所有一般單字 (從 `public/daily.json` 讀取)
+    - 其它功能同 `/toefl/day/:day`。
+
+8. `/quiz-toefl` 路由
+    - 托福單字測驗 (從 `public/toefl.json` 讀取)
+    - 剛進入頁面時彈出設定 dialog，讓使用者設定測驗參數：
+        - 測驗題數 (10、20、30、50、100)。若單字數量不夠，則以單字數量往下數靠近的數字為準，ex. 單字數量 45 題，則題數只能選 10、20、30。
+        - 測驗範圍：
+            - 全部托福單字
+            - 按照天數選擇
+
+9. `/quiz-daily` 路由
+    - 一般單字測驗 (從 `public/daily.json` 讀取)
+    - 其它功能同 `/quiz-toefl`。
+
+10. 題型
+    - 皆為選擇題，正確答案只有一個。其餘兩個選項會從其他單字中隨機選出。
+    - 題型一：顯示單字，選出正確的中文解釋。正確答案是該單字的中文翻譯。其餘兩個選項會從其他單字中隨機選出中文解釋。
+    - 題型二：顯示中文解釋，選出正確的單字。正確答案是該中文解釋對應的單字。其餘兩個選項會從其他單字中隨機選出單字。
+    - 題目會有個提示按鈕，點擊後會顯示該單字的詞性與英文例句 (如果有的話)。
+
+11. 測驗頁
+    - 使用者選擇的選項要高亮顯示。或是其它明顯的方式讓使用者知道自己選了哪個選項。
+    - 螢幕右側會有計時器，顯示作答時間。
+    - 提交作答後立刻對答案，正確答案要高亮顯示。
+    - 原作答時間的地方要顯示「答對數/總題數」、花費時間以及重新測驗的按鈕。
+    - 使用者回答正確的題目要在題號邊顯示綠色勾勾，答錯的題目要顯示紅色叉叉。
+    - 使用者選錯的選項要用紅色透明底高亮顯示。
+    - 提交後的題目不能再更改答案。
+    - 重新測驗一樣會彈出設定 dialog，屆時也是按照設定從範圍中隨機選題。
+
+### 其它
+1. 如果有串 api，那就要做好錯誤處理，api 失敗或是沒有資料都要有對應的顯示。比如聲音檔案無法取得，點擊時取得 error，要有 dialog 顯示錯誤訊息。
+2. UI 設計要具備現代感。雖然是 dark mode，但要柔和，讓人感受溫暖，畢竟背單字已經很累了。
+3. UX 設計要有扇，要適當調整字體、字體大小、字體顏色、行距、卡片間距等，讓使用者看起來舒服。
+4. RWD 一定要有做好，手機、平板、桌機都要適用。
+
+### 備註
+- `id` 在解析 `.md` 表格時依照行數自動編號，從 1 開始遞增，不需要在 `.md` 檔案裡手動填寫。
+- 測驗若題庫不足 3 題，顯示「題庫不足，無法出題」的提示，避免程式錯誤。
+- 單字發音優先使用瀏覽器內建的 `SpeechSynthesis` API；若裝置不支援，則隱藏發音按鈕，不要報錯。
+- RWD 要求：  
+    - 手機：一列顯示 1 張卡片  
+    - 平板：一列顯示 2 張卡片  
+    - 桌機：一列顯示 3～4 張卡片
+- **Build 流程規範**：  
+    - `scripts/loadVocabulary.ts` 必須在 **每次 build 前自動執行**。  
+    - 在 `package.json` 設定 `"prebuild": "tsx scripts/loadVocabulary.ts"` 與 `"build": "quasar build"`。  
+    - Vercel 上的 **Build Command** 要設為 `npm run build`（或 `pnpm build`）。  
+    - 這樣在部署時，Vercel build 會自動：  
+        1. 執行 `prebuild` → 解析 `toefl/*.md` 與 `daily/*.md` → 產生最新的 `public/toefl.json` 與 `public/daily.json`。  
+        2. 執行 `quasar build` → 打包並帶入剛產生的 JSON。  
+    - **這些 JSON 不需要 commit 到 GitHub**，建議放進 `.gitignore`，讓它們只在 build 階段生成。
