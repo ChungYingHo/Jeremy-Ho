@@ -30,6 +30,13 @@ const themeConfig = {
       },
       { to: '/blog', label: 'Blog', position: 'left' },
       {
+        href: "https://www.linkedin.com/in/chung-ying-ho",
+        title: "LinkedIn",
+        position: "right",
+        className: "header-linkedin-link",
+        "aria-label": "LinkedIn profile",
+      },
+      {
         href: "https://github.com/ChungYingHo",
         title: "GitHub",
         className: "header-github-link",
