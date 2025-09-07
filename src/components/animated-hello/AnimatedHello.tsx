@@ -1,11 +1,18 @@
-import React, { useEffect } from 'react';
-import { animate } from 'animejs';
-import styles from './index.module.css';
-import { useHistory } from '@docusaurus/router';
+import React, { useEffect } from 'react'
+import { animate } from 'animejs'
+import styles from './index.module.css'
+import { useHistory } from '@docusaurus/router'
+
+function getGeekGreeting() {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'A Fresh Morning'
+  if (hour < 18) return 'A Gentle Afternoon'
+  return 'A Quiet Evening'
+}
 
 export default function AnimatedHello() {
-  const text = 'HELLO WORLD!';
-  const history = useHistory();
+  const text = getGeekGreeting()
+  const history = useHistory()
 
   useEffect(() => {
     animate(`.${styles.char}`, {
@@ -20,9 +27,9 @@ export default function AnimatedHello() {
       delay: (_, i) => i * 50,
       easing: 'inOutCirc',
       loopDelay: 1000,
-      loop: true,
-    });
-  }, []);
+      loop: true
+    })
+  }, [])
 
   return (
     <div className={styles.wrapper}>
@@ -46,5 +53,5 @@ export default function AnimatedHello() {
         <button onClick={() => history.push('/blog')}>Blog</button>
       </div>
     </div>
-  );
+  )
 }
