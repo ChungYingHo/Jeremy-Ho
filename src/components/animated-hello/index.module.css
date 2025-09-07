@@ -22,7 +22,7 @@
 .letter {
   position: relative;
   display: inline-block;
-  width: 1ch; /* 讓字稍微拉開 */
+  width: 1.15ch; /* 讓字稍微拉開 */
   height: 2.5rem;
 }
 

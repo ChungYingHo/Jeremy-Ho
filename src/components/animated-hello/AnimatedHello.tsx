@@ -3,16 +3,9 @@ import { animate } from 'animejs'
 import styles from './index.module.css'
 import { useHistory } from '@docusaurus/router'
 
-function getGeekGreeting() {
-  const hour = new Date().getHours()
-  if (hour < 12) return 'A Fresh Morning'
-  if (hour < 18) return 'A Gentle Afternoon'
-  return 'A Quiet Evening'
-}
-
 export default function AnimatedHello() {
-  const text = getGeekGreeting()
   const history = useHistory()
+  const text = 'Hello, World!'
 
   useEffect(() => {
     animate(`.${styles.char}`, {
@@ -20,10 +13,7 @@ export default function AnimatedHello() {
         { to: '-2.75rem', ease: 'outExpo', duration: 600 },
         { to: 0, ease: 'outBounce', duration: 800, delay: 100 }
       ],
-      rotate: {
-        from: '-1turn',
-        delay: 0
-      },
+      rotate: { from: '-1turn', delay: 0 },
       delay: (_, i) => i * 50,
       easing: 'inOutCirc',
       loopDelay: 1000,
