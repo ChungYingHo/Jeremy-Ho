@@ -44,7 +44,7 @@ const themeConfig = {
         position: "right",
       },
       {
-        href:"https://cursor-ai-toefl-words.vercel.app/#/",
+        href:"https://cursor-ai-toefl-words.vercel.app/",
         title: "TOEFL",
         position: "right",
         className: "header-toefl-link",
