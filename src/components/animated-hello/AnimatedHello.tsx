@@ -40,7 +40,7 @@ export default function AnimatedHello() {
       <div className={styles.buttons}>
         <button onClick={() => history.push('/docs/notes')}>筆記</button>
         <button onClick={() => history.push('/docs/series')}>系列</button>
-        <button onClick={() => history.push('/blog')}>Blog</button>
+        <button onClick={() => history.push('/docs/languages')}>語言</button>
       </div>
     </div>
   )

@@ -26,7 +26,7 @@ const themeConfig = {
         type: 'docSidebar',
         sidebarId: 'languages',
         position: 'left',
-        label: '程式語言',
+        label: '語言',
       },
       {
         type: 'docSidebar',
