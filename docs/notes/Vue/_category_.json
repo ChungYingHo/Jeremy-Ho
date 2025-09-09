@@ -1,8 +1,8 @@
 {
-  "label": "TypeScript",
+  "label": "Vue3",
   "position": 4,
   "link": {
     "type": "generated-index",
-    "description": "TypeScript 筆記"
+    "description": "Vue3 與相關 Framework"
   }
 }

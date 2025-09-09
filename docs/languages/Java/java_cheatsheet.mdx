@@ -1,0 +1,130 @@
+---
+title: "[Java] 語言快速導覽 - by GPT"
+sidebar_label: "[Java] 語言快速導覽 - by GPT"
+tags: [java]
+keywords: [java]
+---
+
+# Java 最小必需語法包 (給資料結構 & OOP 課前速查)
+
+## 基本型別
+
+| 型別 | 說明 | 範例 |
+| ---- | ---- | ---- |
+| int | 整數 | `int n = 10;` |
+| double | 浮點數 | `double pi = 3.14;` |
+| boolean | 布林 | `boolean flag = true;` |
+| char | 字元 | `char c = 'A';` |
+| String | 字串 (物件) | `String s = "Hello";` |
+
+---
+
+## 變數與常數
+
+```java
+int age = 20;        // 變數
+final double PI = 3.14; // 常數
+```
+
+---
+
+## 判斷式
+
+```java
+if (age > 18) {
+    System.out.println("Adult");
+} else if (age > 12) {
+    System.out.println("Teenager");
+} else {
+    System.out.println("Child");
+}
+```
+
+---
+
+## 迴圈
+
+```java
+// for loop
+for (int i = 0; i < 5; i++) {
+    System.out.println(i);
+}
+
+// while loop
+int j = 0;
+while (j < 5) {
+    System.out.println(j);
+    j++;
+}
+
+// do-while loop
+int k = 0;
+do {
+    System.out.println(k);
+    k++;
+} while (k < 5);
+```
+
+---
+
+## 方法 (Functions)
+
+```java
+public static int add(int a, int b) {
+    return a + b;
+}
+```
+
+---
+
+## 類別與物件 (OOP)
+
+```java
+public class Person {
+    String name;
+    int age;
+
+    // 建構子
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    // 方法
+    public void sayHi() {
+        System.out.println("Hi, I'm " + name);
+    }
+}
+
+// 使用
+Person p = new Person("昭離", 20);
+p.sayHi();
+```
+
+---
+
+## 繼承 (Inheritance)
+
+```java
+public class Student extends Person {
+    int grade;
+
+    public Student(String name, int age, int grade) {
+        super(name, age);
+        this.grade = grade;
+    }
+
+    @Override
+    public void sayHi() {
+        System.out.println("Hi, I'm " + name + ", grade " + grade);
+    }
+}
+```
+
+---
+
+## 常用輸出
+
+```java
+System.out.println("Hello World");
+```

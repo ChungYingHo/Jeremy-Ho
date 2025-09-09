@@ -24,6 +24,12 @@ const themeConfig = {
       },
       {
         type: 'docSidebar',
+        sidebarId: 'languages',
+        position: 'left',
+        label: '程式語言',
+      },
+      {
+        type: 'docSidebar',
         sidebarId: 'series',
         position: 'left',
         label: '系列',
