@@ -50,7 +50,7 @@ console.log(name)
 其實在 Callback queue 這個閘道還會有一位負責導引的警察，叫做 Event Loop。  
 他會不斷地監控主幹道的狀態，當主幹道有空位時，就會把 Callback queue 裡的任務導入主幹道繼續執行。  
 每次講這裡我都推薦去看這部[影片](https://www.youtube.com/watch?v=8aGhZQkoFbQ)，堪稱經典，我願稱之為前端必看。  
-或是我以前也寫過一篇更詳細在講非同步的[文章](https://jeremyho.tw/docs/notes/JavaScript/asynchronous)，那篇有更多關於非同步的詳細解釋。
+或是我以前也寫過一篇更詳細在講非同步的[文章](https://jeremyho.tw/docs/languages/JavaScript/asynchronous)，那篇有更多關於非同步的詳細解釋。
 
 但我還是放一段 code 來幫助理解一下非同步：
 ```js
