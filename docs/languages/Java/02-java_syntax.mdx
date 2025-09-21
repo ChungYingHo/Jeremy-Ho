@@ -1,0 +1,184 @@
+---
+title: "[Java] 型別與語法"
+sidebar_label: "[Java] 型別與語法"
+tags: [java, type, syntax]
+keywords: [java, type, syntax]
+---
+
+## Java 的型別與對應變數宣告方式
+
+| Type 類型   | 說明                         | 變數宣告範例                                     | 常用/差異說明 |
+|------------|----------------------------|------------------------------------------------|----------------|
+| byte       | 8-bit 整數                  | `byte b = 100;`                                | 偏少用，通常用於大量資料節省記憶體 |
+| short      | 16-bit 整數                 | `short s = 1000;`                              | 偏少用，通常用於節省記憶體 |
+| int        | 32-bit 整數                 | `int i = 100000;`                              | 最常用整數型別，適合大部分情況 |
+| long       | 64-bit 整數                 | `long l = 100000000L;`                         | 用於大整數或時間戳、金額等需大數範圍 |
+| float      | 32-bit 浮點數               | `float f = 3.14f;`                             | 偏少用，一般用 double 更精準 |
+| double     | 64-bit 浮點數               | `double d = 3.14159265;`                       | 最常用浮點型別，適合大部分計算 |
+| char       | 單一字元                    | `char c = 'A';`                                | 用於單字元或字元操作 |
+| boolean    | true / false                | `boolean flag = true;`                         | 最常用布林型別 |
+| String     | 字串（參考型別）             | `String name = "Jeremy";`                      | 最常用文字型別，操作方便 |
+| Array      | 陣列（參考型別）             | `int[] arr1 = {1,2,3};`<br/>`int[] arr2 = new int[5];` | 儲存同型別多個元素，`arr1` 直接初始化，`arr2` 指定大小再賦值 |
+| Object     | 物件（參考型別，父類別）      | `Object obj = new Object();`                   | 所有類別父類別，可存任何物件，但需強制轉型 |
+
+### Object 
+`Object` 這個詞其實在 Java 理有兩種意思。上述表格的 `Object` 是一種型別的概念，代表 Java 中所有類別的父類別 (superclass)。  
+但在日常使用中，`object` 這個詞也常被用來泛指「物件」，意思是某個類別 (class) 的實例 (instance)。  
+所以要看上下文來判斷 `object` 是指哪一種意思：
+
+1. 廣義的 `object`：指的是任何類別 (class) 的實例 (instance)，也就是說，當你使用 `new` 關鍵字創建一個類別的物件時，這個物件就是一個 `object`。  
+例如：
+```java
+Person person1 = new Person("Alice", 25);
+String s = "Hello";
+int[] arr = new int[5];
+```
+上述的 `person1`、`s` 和 `arr` 都是 `object`，因為它們分別是 `Person`、`String` 和 `int[]` 類別的實例。
+
+2. 狹義的 `Object` 類別：指的是 Java 提供的 `Object` 類別，這是所有類別的父類別。
+
+```java
+Object obj = new Person("Alice", 25);
+```
+雖然一樣是 `Person` 類別的實例，但因為宣告成 `Object` 型別，所以只能使用 `Object` 類別的方法，無法直接使用 `Person` 類別特有的方法，除非進行強制轉型 (casting)。  
+以口語一點來解釋就是：
+1. 廣義上的 `object`：桌上的咖啡杯，你很明確知道桌上的是咖啡杯這個物件。
+2. 狹義上的 `Object`：桌上的杯子，但你不知道它是咖啡杯還是茶杯，只知道它是個杯子這個類別。
+
+:::tip
+平常討論 Java 或 OOP 時，大家說的 object 通常都是廣義的意思，也就是「某個類別的實例」。  
+型別的 `Object` 通常都是在特定情況下才會討論。
+:::
+
+
+## 迴圈
+### for 迴圈
+```java
+for (int i = 0; i < 5; i++) {
+  System.out.println("i = " + i);
+}
+```
+
+### while 迴圈
+```java
+int j = 0;
+while (j < 5) {
+  System.out.println("j = " + j);
+  j++;
+}
+```
+
+## 條件判斷
+### if-else 條件判斷
+
+```java
+int score = 85;
+
+// if-else
+if (score >= 90) {
+  System.out.println("Excellent!");
+} else if (score >= 60) {
+  System.out.println("Pass");
+} else {
+  System.out.println("Fail");
+}
+```
+
+### switch 條件判斷
+
+```java
+int day = 3;
+String dayName;
+switch (day) {
+  case 1:
+    dayName = "Monday";
+    break;
+  case 2:
+    dayName = "Tuesday";
+    break;
+  case 3:
+    dayName = "Wednesday";
+    break;
+  case 4:
+    dayName = "Thursday";
+    break;
+  case 5:
+    dayName = "Friday";
+    break;
+  case 6:
+    dayName = "Saturday";
+    break;
+  case 7:
+    dayName = "Sunday";
+    break;
+  default:
+    dayName = "Invalid day";
+}
+System.out.println("Day " + day + " is " + dayName);
+```
+
+:::tip
+`break` 是用來跳出 `for`、`switch` 或迴圈的語句`;`continue` 是用來跳過本次迴圈，直接進入下一次迴圈的語句。
+
+```java
+for (int i = 0; i < 10; i++) {
+  if (i % 2 == 0) {
+    continue; // 偶數跳過，直接進入下一次迴圈
+  }
+  System.out.println(i); // 只會印出奇數
+}
+```
+:::
+
+## method
+
+### 無回傳值的 method 會以 `void` 宣告
+
+```java
+void printMessage(String message) {
+  System.out.println(message);
+}
+```
+
+### 有回傳值的 method 會以回傳型別宣告
+
+```java
+int add(int a, int b) {
+  return a + b;
+}
+```
+
+### overloading (多載)
+最早學 overloading 是在 TypeScript 裡面，但其實用 TS 學 overloading 會有點抽象，但從 Java 等 OOP 語言來看就會比較直觀。  
+那 overloading 其實具有幾個特性：
+1. method 名稱相同
+2. 參數數量或型別不同
+3. 回傳型別的不同不能單獨作為判斷依據，必須配合參數差異 → 簡單說就是，兩個 method 不能只有回傳型別不同，其他都一樣，這樣會造成呼叫時無法判斷要用哪一個 method
+
+
+```java
+public class Calculator {
+
+    // 加法：兩個 int
+    int add(int a, int b) {
+        return a + b;
+    }
+
+    // 加法：三個 int
+    int add(int a, int b, int c) {
+        return a + b + c;
+    }
+
+    // 加法：兩個 double
+    double add(double a, double b) {
+        return a + b;
+    }
+
+    public static void main(String[] args) {
+        Calculator calc = new Calculator();
+        System.out.println(calc.add(2, 3));       // 使用 int, int
+        System.out.println(calc.add(2, 3, 4));    // 使用 int, int, int
+        System.out.println(calc.add(2.5, 3.5));   // 使用 double, double
+    }
+}
+```
