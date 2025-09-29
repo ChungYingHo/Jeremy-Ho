@@ -15,7 +15,7 @@ const config: Config = {
   organizationName: '', // Usually your GitHub org/user name.
   projectName: '', // Usually your repo name.
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  
 
   // i18n config
   i18n: {
@@ -31,6 +31,9 @@ const config: Config = {
   // setup mermaid and search plugin
   markdown: {
     mermaid: true,
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    }
   },
   themes: [
     "@docusaurus/theme-mermaid",

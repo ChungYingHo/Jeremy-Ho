@@ -54,17 +54,99 @@ Object obj = new Person("Alice", 25);
 ## 迴圈
 ### for 迴圈
 ```java
-for (int i = 0; i < 5; i++) {
-    System.out.println("i = " + i);
+public class ShoppingCart {
+    public static void main(String[] args) {
+        double[] prices = {12.5, 9.9, 5.0, 20.0};
+        double total = 0;
+
+        // 計算購物車總價
+        for (int i = 0; i < prices.length; i++) {
+            total += prices[i];
+        }
+
+        System.out.println("購物車總價: $" + total);
+    }
 }
 ```
 
 ### while 迴圈
 ```java
-int j = 0;
-while (j < 5) {
-    System.out.println("j = " + j);
-    j++;
+public class AccumulateExample {
+    public static void main(String[] args) {
+        int[] dailySteps = {1000, 2500, 3000, 2000, 1500};
+        int totalSteps = 0;
+        int day = 0;
+
+        // 累加每天步數，直到總步數超過 5000 步
+        while (totalSteps <= 5000) {
+            totalSteps += dailySteps[day];
+            System.out.println("第 " + (day + 1) + " 天步數: " + dailySteps[day] + ", 累計步數: " + totalSteps);
+            day++;
+        }
+
+        System.out.println("累計步數超過 5000，總共用了 " + day + " 天");
+    }
+}
+```
+
+### do-while 迴圈
+```java
+import java.util.Scanner;
+
+public class PasswordCheck {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        String password;
+
+        // 使用者至少輸入一次
+        do {
+            System.out.print("請輸入密碼: ");
+            password = scanner.nextLine();
+        } while (!password.equals("1234"));
+
+        System.out.println("密碼正確，登入成功！");
+        scanner.close();
+    }
+}
+```
+
+### 巢狀迴圈
+```java title="for 巢狀迴圈印出九九乘法表"
+public class MultiplicationTable {
+    public static void main(String[] args) {
+        for (int i = 1; i <= 9; i++) {
+            for (int j = 1; j <= i; j++) {
+                System.out.print(j + "x" + i + "=" + (i*j) + "\t");
+            }
+            System.out.println();
+        }
+    }
+}
+```
+
+```java title="while 巢狀迴圈印出各班級學生分數"
+public class ClassScores {
+    public static void main(String[] args) {
+        int[][] scores = {
+            {85, 90, 78}, // 班級 1
+            {92, 88, 79}, // 班級 2
+            {75, 80, 85}  // 班級 3
+        };
+
+        int classIndex = 0;
+        while (classIndex < scores.length) {
+            System.out.println("班級 " + (classIndex + 1) + " 成績:");
+            
+            int studentIndex = 0;
+            while (studentIndex < scores[classIndex].length) {
+                System.out.println("  學生 " + (studentIndex + 1) + ": " + scores[classIndex][studentIndex]);
+                studentIndex++;
+            }
+
+            classIndex++;
+            System.out.println();
+        }
+    }
 }
 ```
 
@@ -87,34 +169,28 @@ if (score >= 90) {
 ### switch 條件判斷
 
 ```java
-int day = 3;
-String dayName;
-switch (day) {
-    case 1:
-        dayName = "Monday";
-        break;
-    case 2:
-        dayName = "Tuesday";
-        break;
-    case 3:
-        dayName = "Wednesday";
-        break;
-    case 4:
-        dayName = "Thursday";
-        break;
-    case 5:
-        dayName = "Friday";
-        break;
-    case 6:
-        dayName = "Saturday";
-        break;
-    case 7:
-        dayName = "Sunday";
-        break;
-    default:
-        dayName = "Invalid day";
+public class UserRoleExample {
+    public static void main(String[] args) {
+        String role = "admin"; // 可能值: "admin", "editor", "viewer"
+        String permission;
+
+        switch (role) {
+            case "admin":
+                permission = "可以新增、編輯、刪除資料";
+                break;
+            case "editor":
+                permission = "可以編輯資料";
+                break;
+            case "viewer":
+                permission = "只能查看資料";
+                break;
+            default:
+                permission = "無權限";
+        }
+
+        System.out.println("身份: " + role + " → " + permission);
+    }
 }
-System.out.println("Day " + day + " is " + dayName);
 ```
 
 :::tip
@@ -234,6 +310,32 @@ class ApiCaller {
             System.out.println("API call failed.");
             return false;
         }
+    }
+}
+```
+
+### 將使用者輸入的字串中的數字加總
+題目需求為，當使用者輸入如：「abc 12 de 5」時，程式能夠計算出 12 和 5 的總和 17。
+
+```java
+import java.util.Scanner;
+
+public class SumNumbersInString {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("請輸入一串字串（可包含數字）：");
+
+        int sum = 0;
+        while (scanner.hasNext()) {
+            if (scanner.hasNextInt()) {
+                sum += scanner.nextInt(); // 讀到數字就加總
+            } else {
+                scanner.next(); // 不是數字就跳過
+            }
+        }
+
+        System.out.println("字串中的數字總和為: " + sum);
+        scanner.close();
     }
 }
 ```
