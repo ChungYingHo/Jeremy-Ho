@@ -228,11 +228,11 @@ int add(int a, int b) {
 最早學 overloading 是在 TypeScript 裡面，但其實用 TS 學 overloading 會有點抽象，但從 Java 等 OOP 語言來看就會比較直觀。  
 那 overloading 其實具有幾個特性：
 1. method 名稱相同
-2. 參數數量或型別不同
+2. 參數數量、型別或順序不同
 3. 回傳型別的不同不能單獨作為判斷依據，必須配合參數差異 → 簡單說就是，兩個 method 不能只有回傳型別不同，其他都一樣，這樣會造成呼叫時無法判斷要用哪一個 method
 
 
-```java
+```java title="範例 01"
 public class Calculator {
 
     // 加法：兩個 int
@@ -255,6 +255,55 @@ public class Calculator {
         System.out.println(calc.add(2, 3));       // 使用 int, int
         System.out.println(calc.add(2, 3, 4));    // 使用 int, int, int
         System.out.println(calc.add(2.5, 3.5));   // 使用 double, double
+    }
+}
+```
+
+```java title="範例 02"
+public class overloadIssue {
+    public static void main(String[] args) {
+        int[][] intMatrix = {
+            {1, 2, 3, 4, 5},
+            {9, 8, 7, 6, 5}
+        };
+        double[][] doubleMatrix = {
+            {1.26, 2.25, 3.74, 4.26, 9.02},
+            {9.53, 9.99, 7.36, 6.2, 5.5}
+        };
+
+        int intResult = maxEle(intMatrix);
+        double doubleResult = maxEle(doubleMatrix);
+
+        System.out.println("int result of maxEle is: " + intResult);
+        System.out.println("double result of maxEle is: " + doubleResult);
+    }
+
+    static int maxEle (int x[][]) {
+        int max = x[0][0];
+
+        for (int i = 0; i < x.length; i++) {
+            for (int j = 0; j < x[i].length; j++) {
+                if (x[i][j] > max) {
+                    max = x[i][j];
+                }
+            }
+        }
+
+        return max;
+    }
+
+    static double maxEle (double x[][]) {
+        double max = x[0][0];
+
+        for (int i = 0; i < x.length; i++) {
+            for (int j = 0; j < x[i].length; j++) {
+                if (x[i][j] > max) {
+                    max = x[i][j];
+                }
+            }
+        }
+
+        return max;
     }
 }
 ```
