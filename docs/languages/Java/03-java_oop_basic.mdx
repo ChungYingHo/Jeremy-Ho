@@ -1,0 +1,93 @@
+---
+title: "[Java] OOP 概論"
+sidebar_label: "[Java] OOP 概論"
+tags: [java, oop, object-oriented]
+keywords: [java, oop, object-oriented]
+---
+
+:::note
+1. 內聚性 (Cohesion)：模組本身的功能強度，意即模組的完整性。
+2. 耦合性 (Coupling)：模組與模組之間的依賴關係，意即模組之間的關聯性。
+
+以 OOP、甚至應該說多數程式設計的角度來看，**高內聚性**與**低耦合性**是我程式設計時所追求的目標。  
+但這之間必須要拿捏有度，不可過分偏激。  
+舉例來說，如果極高度內聚性，但耦合性趨近於無，那這跟在同一支 file 上寫完所有 code 無異，這樣就失去模組化的意義了。  
+所以高內聚、低耦合是相對且主觀的概念，必須視情況而定。
+:::
+
+## OOP (Object-Oriented)
+
+OOP 的核心組成基本是以**類別 (class)** 為基礎。  
+以 class 做為藍圖 (Blueprint)，來建立具有特徵與行為的**物件 (Object)**。
+
+```java
+public class practice {
+    public static void main(String[] args) {
+        Student obj1 = new Student("Jeremy", "ag001", "AG", 100, 100, 90);
+        Student obj2 = new Student("Joanna", "ds008", "DS", 88, 79.2, 100);
+        Student obj3 = new Student("Scott", "ch237", "CH", 100, 10, 37);
+
+        obj1.printStudentInfo();
+        obj1.printStudentScores();
+        System.out.println();
+
+        obj2.printStudentInfo();
+        obj2.printStudentScores();
+
+        System.out.println();
+
+        obj3.printStudentInfo();
+        obj3.printStudentScores();
+    }
+}
+
+class Student {
+    public String name;
+    public String StudentId;
+    public String department;
+
+    public double chScore;
+    public double enScore;
+    public double mathScore;
+
+    public Student(String name, String StudentId, String department, double chScore, double enScore, double mathScore) {
+        this.name = name;
+        this.StudentId = StudentId;
+        this.department = department;
+        this.chScore = chScore;
+        this.enScore = enScore;
+        this.mathScore = mathScore;
+    }
+
+    public void printStudentInfo () {
+        System.err.println("Student name: " + this.name);
+        System.err.println("Student ID: " + this.StudentId);
+        System.err.println("Student department: " + this.department);
+    }
+
+    public void printStudentScores () {
+        System.err.println("Chinese score: " + this.chScore);
+        System.err.println("English score: " + this.enScore);
+        System.err.println("Math score: " + this.mathScore);
+
+        isGraduate();
+    }
+
+    private  void isGraduate () {
+        double total = chScore + enScore + mathScore;
+
+        double avg = total / 3;
+
+        if (avg > 60) {
+            System.out.println("Pass! Your semester scores is: " + avg);
+        } else {
+            System.out.println("Not pass! Your semester scores is: " + avg);
+        }
+    }
+}
+```
+
+### OOP 三大特性
+1. 封裝 (Encapsulation)：將物件區分為可被外界使用的特性以及受保護的內部特性。因此封裝有助於維護物件的完整性與安全性 (ex: 資訊的隱藏)。
+2. 多型 (Polymorphism)：允許物件以不同的形式出現，意即允許物件有同一行為，但有不同的結果。主要透過方法覆寫 (Method Overriding) 與方法重載 (Method Overloading) 來實現多型。 → 簡單來說就是可以利用 parent class 的 method，但 child class 執行出來卻是另一結果。
+3. 繼承 (Inheritance)：一種可以避免重複定義相同屬性與方法的概念。 → 但 child class 依舊可以擁有自己特有的屬性與方法。

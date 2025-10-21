@@ -321,104 +321,178 @@ public class ExchangeRate {
 
 ## 鏈結串列 (Linked List)
 
-```mermaid
-graph LR
-    A[Node A]:::original --> B[Node B]:::original --> C[Node C]:::original --> D[Node D]:::original --> null
+是一種線性資料結構，每一個元素都是一個**節點物件 (Node)**。  
+各節點透過**引用 (next)** 相連結，形成一個鏈狀結構，故稱為鏈結串列。  
+引用會紀錄下一個節點的記憶體位置 (address)，最後一個節點的引用則指向 `null`，表示串列結束。  
+所以透過引用，可以從當前節點訪問到下一個節點，依此類推直到串列尾端。  
+Linked List 的設計使各 node 可以分散在記憶體中的任意位置，無需連續空間。
 
-    A --> A_value[Value: 10]:::value
-    B --> B_value[Value: 20]:::value
-    C --> C_value[Value: 30]:::value
-    D --> D_value[Value: 40]:::value
+Linked List 的第一個 node 稱為**頭節點 (Head Node)**，最後一個 node 則稱為**尾節點 (Tail Node)**。  
+每個 node 都由**值 (Value)** 與**引用 (Next)** 組成，因此在相同資料量下，Linked List 會比 Array 佔用更多的記憶體空間 (大致就是多了 1 倍啦)。
 
-    classDef original fill:#f2f2f2,color:#000,stroke:#000,stroke-width:1.5px;
-    classDef value fill:#fff,color:#000,stroke:#555,stroke-width:1px;
+### Create a Linked List
 
-```
+建立 Linked List 大致有兩個步驟：
+1. 先初始化各 node 物件
+2. 建立 node 之間的引用關係
 
 ```java
-import java.util.LinkedList;
-
-public class TaskQueueExample {
+public class listBasic {
     public static void main(String[] args) {
-        // 1. 建立 LinkedList 當作任務佇列
-        LinkedList<String> tasks = new LinkedList<>();
+        Node n0 = new Node(1);
+        Node n1 = new Node(3);
+        Node n2 = new Node(2);
+        Node n3 = new Node(5);
+        Node n4 = new Node(4);
 
-        // 2. 加入任務
-        tasks.add("備份資料庫");
-        tasks.add("寄送通知信");
-        tasks.add("產生報表");
-        System.out.println("初始任務清單: " + tasks);
+        n0.next = n1;
+        n1.next = n2;
+        n2.next = n3;
+        n3.next = n4;
+    }
+}
 
-        // 3. 插入高優先權任務 (插到最前面)
-        tasks.addFirst("緊急修復 Bug");
-        System.out.println("加入高優先任務後: " + tasks);
+class Node {
+    int value;
+    Node next;
 
-        // 4. 插入低優先權任務 (插到最後)
-        tasks.addLast("清理暫存檔");
-        System.out.println("加入低優先任務後: " + tasks);
-
-        // 5. 存取 / 檢查任務
-        System.out.println("下一個要處理的任務: " + tasks.getFirst());
-        System.out.println("最後一個任務: " + tasks.getLast());
-
-        // 6. 更新某個任務內容
-        tasks.set(2, "寄送 VIP 客戶通知信");
-        System.out.println("更新任務後: " + tasks);
-
-        // 7. 移除已完成任務
-        tasks.removeFirst(); // 完成第一個任務
-        tasks.remove("產生報表"); // 完成指定任務
-        System.out.println("部分任務完成後: " + tasks);
-
-        // 8. 遍歷剩餘任務
-        System.out.println("剩餘任務清單:");
-        for (String task : tasks) {
-            System.out.println("- " + task);
-        }
+    Node(int val) {
+        this.value = val;
     }
 }
 ```
 
-### Insertion (插入)
-Linked list 插入新資料的方式非常快速且簡單，只要將要插入的位置前一個節點的 next 指向新節點，然後將新節點的 next 指向原本的下一個節點即可。  
-以下圖為例，假設我們要在節點 B 和 C 之間插入一個新節點 X，該 X 節點的值為 25，那麼只需要將 B 節點的 next 指向 X 節點，然後將 X 節點的 next 指向 C 節點即可。
-```mermaid
-graph LR
-    A[Node A]:::original --> B[Node B]:::original --> C[Node C]:::original --> D[Node D]:::original --> null
-    X[Node X]:::new
+### Insert a Node
 
-    A --> A_value[Value: 10]
-    B --> B_value[Value: 20]
-    C --> C_value[Value: 30]
-    D --> D_value[Value: 40]
-    X --> X_value[Value: 25]
+在 Linked List 裡要插入新的 node 是相當容易的事情，例如要在 `n0` 與 `n1` 之間加入新節點 `p`，只需要調整兩個節點間的引用。  
+因此 insert 的時間複雜度為 `O(1)`，相較於 Array 的 `O(n)`，效率提升非常多。
 
-    B -.-> X
-    X -.-> C
+```java
+public class listInsert {
+    public static void main(String[] args) {
+       Node n0 = new Node(1);
+       Node n1 = new Node(3);
+       Node n2 = new Node(2);
+       Node n3 = new Node(5);
+       Node n4 = new Node(4);
 
-    classDef original fill:#f2f2f2,color:#000,stroke:#333,stroke-width:1.5px;
-    classDef new fill:#a7f3a7,color:#000,stroke:#333,stroke-width:1.5px;
+       n0.next = n1;
+       n1.next = n2;
+       n2.next = n3;
+       n3.next = n4;
 
+       Node p = new Node(0);
+       insertNode(n0, p);
+       printList(n0);
+    }
+
+    static void insertNode (Node head, Node newNode) {
+        newNode.next = head.next;
+        head.next = newNode;
+    }
+
+    static void printList(Node head) {
+        Node curr = head;
+        System.out.print("Linked List: ");
+
+        while (curr != null) {
+            if (curr.next != null) {
+                System.out.print(curr.value + ", ");
+            } else {
+                System.out.print(curr.value);
+            }
+            
+            curr = curr.next;
+        }
+        System.err.println();
+    }
+
+
+}
+
+class Node {
+    int value;
+    Node next;
+
+    Node (int val) {
+        this.value = val;
+    }
+}
 ```
 
-### Deletion (刪除)
-Linked list 刪除節點的方式同樣快速，只要將 **要刪除節點的前一個節點** 的 next 改成指向 **要刪除節點的下一個節點**，就能把該節點從鏈結串列中移除。  
-以下圖為例，假設我們要刪除節點 C，只需要將 B 節點的 next 改為指向 D 節點，這樣節點 C 就會被跳過，不再存在於鏈結串列中。  
+### Delete a Node
 
-```mermaid
-graph LR
-    A[Node A]:::original --> B[Node B]:::original --> C[Node C]:::delete --> D[Node D]:::original --> null
+刪除 node 在 Linked List 也是相當簡單的事情，只需要改變一個 node 的引用即可。  
+以前面 insert 的例子來說，要在原 Linked List 裡刪除 `p` 節點，只需要將 `n0` 的引用指向 `n1` 即可。  
 
-    A --> A_value[Value: 10]
-    B --> B_value[Value: 20]
-    C --> C_value[Value: 30]
-    D --> D_value[Value: 40]
+刪除完成後，雖然 node `p` 仍然存在，其引用仍指向 `n1`，但在走訪由 `n0` 開始的 Linked List 時，已經無法再透過 `n0` 訪問到 `p` 了。  
+某種意義上來說，也是又建立了一條由 `p` 開始的 Linked List。
 
-    %% 刪除提示：B 應該直接指向 D
-    B -.-> D
+```java
+public class listDelete {
+    public static void main(String[] args) {
+       Node n0 = new Node(1);
+       Node p = new Node(0);
+       Node n1 = new Node(3);
+       Node n2 = new Node(2);
+       Node n3 = new Node(5);
+       Node n4 = new Node(4);
 
-    classDef original fill:#f2f2f2,color:#000,stroke:#333,stroke-width:1.5px;
-    classDef delete fill:#f8d7da,color:#000,stroke:#333,stroke-width:1.5px;
+       n0.next = p;
+       p.next = n1;
+       n1.next = n2;
+       n2.next = n3;
+       n3.next = n4;
+
+       removeNode(n0, p);
+       printList(n0);
+
+       removeNextNode(n0);
+       printList(n0);
+    }
+
+    static void removeNode (Node head, Node targetNode) {
+        if (head == null || targetNode == null){
+            return;
+        }
+        if (head.next == targetNode) {
+            head.next = targetNode.next;
+        }
+    }
+
+    static void removeNextNode (Node head) {
+        if (head.next == null) {
+            return;
+        }
+        head.next = head.next.next;
+    }
+
+    static void printList(Node head) {
+        Node curr = head;
+        System.out.print("Linked List: ");
+
+        while (curr != null) {
+            if (curr.next != null) {
+                System.out.print(curr.value + ", ");
+            } else {
+                System.out.print(curr.value);
+            }
+            
+            curr = curr.next;
+        }
+        System.err.println();
+    }
+
+}
+
+class Node {
+    int value;
+    Node next;
+
+    Node (int val) {
+        this.value = val;
+    }
+}
 ```
 
 ## Array vs Linked List — CRUD 時間複雜度比較
