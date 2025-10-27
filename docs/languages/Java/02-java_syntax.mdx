@@ -53,7 +53,7 @@ Object obj = new Person("Alice", 25);
 
 ## 迴圈
 ### for 迴圈
-```java
+```java title="範例 01"
 public class ShoppingCart {
     public static void main(String[] args) {
         double[] prices = {12.5, 9.9, 5.0, 20.0};
@@ -65,6 +65,30 @@ public class ShoppingCart {
         }
 
         System.out.println("購物車總價: $" + total);
+    }
+}
+```
+
+```java title="範例 02"
+public class practiceSum {
+    public static void main(String[] args) {
+        NonStaticCaculate obj = new NonStaticCaculate();
+
+        obj.sum(1, 10, 1);
+        obj.sum(1, 99, 2);
+        obj.sum(4, 97, 3);
+    }
+}
+
+class NonStaticCaculate {
+    public void sum (int head, int tail, int diff) {
+        int total = 0;
+        
+        for (int i = head; i <= tail; i += diff) {
+            total += i;
+        }
+        
+        System.out.println("The sum of is: " + total);
     }
 }
 ```

@@ -1,0 +1,36 @@
+---
+title: "[Data Structure] 堆疊 & 佇列"
+tags: [data structure, stack, queue]
+keywords: [data structure, stack, queue]
+---
+
+## 堆疊 (Stack)
+
+### Java 中的堆疊 class
+
+```java
+import java.util.Stack;
+
+public class stackInJava {
+    public static void main(String[] args) {
+        Stack<Integer> stack = new Stack<>();
+
+        stack.push(1);
+        stack.push(3);
+        stack.push(2);
+        stack.push(5);
+
+        int top = stack.peek();
+        System.out.println("The top is: " + top);
+
+        int removeVal = stack.pop();
+        System.out.println("Remove val is: " + removeVal);
+        top = stack.peek();
+        System.out.println("The top is: " + top);
+
+        System.out.println("The stack size is: " + stack.size());
+        System.out.println("Is the stack empty? Ans: " + stack.isEmpty());
+        System.out.println("Is the stack empty? Ans: " + stack.empty());
+    }
+}
+```

@@ -20,12 +20,11 @@ keywords: [java, oop, object-oriented]
 OOP 的核心組成基本是以**類別 (class)** 為基礎。  
 以 class 做為藍圖 (Blueprint)，來建立具有特徵與行為的**物件 (Object)**。
 
-```java
+```java title="範例 01"
 public class practice {
     public static void main(String[] args) {
-        Student obj1 = new Student("Jeremy", "ag001", "AG", 100, 100, 90);
-        Student obj2 = new Student("Joanna", "ds008", "DS", 88, 79.2, 100);
-        Student obj3 = new Student("Scott", "ch237", "CH", 100, 10, 37);
+        Student obj1 = new Student("王大明", "S123", "DigitalMedia", "S123", 90, 80, 60);
+        Student obj2 = new Student("李大一", "D456", "ComputerScience", "D456", 20, 40, 70);
 
         obj1.printStudentInfo();
         obj1.printStudentScores();
@@ -33,11 +32,6 @@ public class practice {
 
         obj2.printStudentInfo();
         obj2.printStudentScores();
-
-        System.out.println();
-
-        obj3.printStudentInfo();
-        obj3.printStudentScores();
     }
 }
 
@@ -45,44 +39,135 @@ class Student {
     public String name;
     public String StudentId;
     public String department;
+    public String id;
 
-    public double chScore;
-    public double enScore;
-    public double mathScore;
+    public float chScore;
+    public float enScore;
+    public float mathScore;
 
-    public Student(String name, String StudentId, String department, double chScore, double enScore, double mathScore) {
+    public Student(String name, String StudentId, String department, String id, float chScore, float enScore, float mathScore) {
         this.name = name;
         this.StudentId = StudentId;
         this.department = department;
+        this.id = id;
         this.chScore = chScore;
         this.enScore = enScore;
         this.mathScore = mathScore;
     }
 
     public void printStudentInfo () {
-        System.err.println("Student name: " + this.name);
-        System.err.println("Student ID: " + this.StudentId);
-        System.err.println("Student department: " + this.department);
+        System.out.println("Student name: " + this.name);
+        System.out.println("Student ID: " + this.StudentId);
+        System.out.println("Student department: " + this.department);
+        System.out.println("Personal  ID: " + this.id);
     }
 
     public void printStudentScores () {
-        System.err.println("Chinese score: " + this.chScore);
-        System.err.println("English score: " + this.enScore);
-        System.err.println("Math score: " + this.mathScore);
+        System.out.println("Chinese score: " + this.chScore);
+        System.out.println("English score: " + this.enScore);
+        System.out.println("Math score: " + this.mathScore);
 
         isGraduate();
     }
 
     private  void isGraduate () {
-        double total = chScore + enScore + mathScore;
+        float total = chScore + enScore + mathScore;
 
-        double avg = total / 3;
+        float avg = total / 3;
 
         if (avg > 60) {
             System.out.println("Pass! Your semester scores is: " + avg);
         } else {
             System.out.println("Not pass! Your semester scores is: " + avg);
         }
+    }
+}
+```
+
+```java title="範例 02"
+public class homework_01 {
+    public static void main(String[] args) {
+        // 初始化個人 PNR 資訊
+        PersonalPNR obj = new PersonalPNR("Jeremy", "abc@test.com", 'A', "TPE", "NRT", 5000, 305);
+        obj.printPnrInfo();
+        System.out.println();
+
+        // 改變艙等，手續費會增加，所以要付的錢會增加
+        obj.upgradeSeatLevel('S');
+        obj.printPnrInfo();
+        System.out.println();
+
+        // 改變里程，需要付款的金額會有折扣
+        obj.addMileage(5000);
+        obj.printPnrInfo();
+    }
+}
+
+
+class PersonalPNR {
+    public String name; // 旅客姓名
+    public String email; // 旅客 email
+    public char seatLevel; // 旅客艙等
+    public String origin; // 旅行出發機場
+    public String destination; // 抵達機場
+    private double mileage; // 旅客擁有里程
+    public int price; // 此航程基本價格
+    private int changeSeatLevelPrice = 50; // 改變艙等固定手續費
+
+    public PersonalPNR(String name, String email, char seatLevel, String origin, String destination, double mileage, int price) {
+        this.name = name;
+        this.email = email;
+        this.seatLevel = seatLevel;
+        this.origin = origin;
+        this.destination = destination;
+        this.mileage = mileage;
+        this.price = price;
+    }
+
+    // 印出 PNR 資訊，每次都會再依目前里程等資訊計算價格
+    public void printPnrInfo () {
+        int totalPrice = calcTotalPrice();
+
+        System.out.println("Passenger name: " + name);
+        System.out.println("Passenger email: " + email);
+        System.out.println("Passenger seat level: " + seatLevel);
+        System.out.println("Flight origin: " + origin);
+        System.out.println("Flight destination: " + destination);
+        System.out.println("Price: " + totalPrice);
+    }
+
+        // 依里程計算折扣
+    private int calcDiscount () {
+        int totalDiscount = 0;
+        totalDiscount += (mileage / 1000);
+        return totalDiscount;
+    }
+
+    // 計算實際需要支付的金額
+    private int calcTotalPrice () {
+        int total = 0;
+        int discount = calcDiscount();
+
+        if (discount > 0) {
+            total = price - discount;
+        }
+
+        return total;
+    }
+
+    // 改變艙等，會影響價格
+    public void upgradeSeatLevel (char level) {
+        seatLevel = level;
+        price += changeSeatLevelPrice;
+
+        System.out.println("Change seat level success!");
+    }
+
+    // 改變里程，也會因為折扣而影響價格
+    public void addMileage(double additionalMileage) {
+        mileage += additionalMileage;
+        System.out.println("Added " + additionalMileage + " miles. Total mileage is now: " + mileage);
+        
     }
 }
 ```

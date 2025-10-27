@@ -495,6 +495,56 @@ class Node {
 }
 ```
 
+### Search a Node
+
+```java
+public class listSearch {
+    public static void main(String[] args) {
+        Node n0 = new Node(1);
+        Node n1 = new Node(3);
+        Node n2 = new Node(2);
+        Node n3 = new Node(5);
+        Node n4 = new Node(4);
+
+        n0.next = n1;
+        n1.next = n2;
+        n2.next = n3;
+        n3.next = n4;
+
+        searchList(n0, 9); // value 9 不存在 -> Cannot find the value of 9 in the linked list.
+        searchList(n0, 5); // value 5 存在 -> Success! Find the value 5 in the linked list.
+    }
+
+    static void searchList (Node head, int val) {
+        Node current = head;
+        boolean isFindVal = false;
+
+        while (current != null) {
+            if (current.value == val) {
+                isFindVal = true;
+                break;
+            }
+            current = current.next;
+        }
+
+        if (isFindVal) {
+            System.out.println("Success! Find the value " + val + " in the linked list.");
+        } else {
+            System.out.println("Failed! Cannot find the value of " + val + " in the linked list.");
+        }
+    }
+}
+
+class Node {
+    int value;
+    Node next;
+
+    Node(int val) {
+        this.value = val;
+    }
+}
+```
+
 ## Array vs Linked List — CRUD 時間複雜度比較
 
 ### 理論版 (純 Big-O 定義)
