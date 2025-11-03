@@ -34,3 +34,117 @@ public class stackInJava {
     }
 }
 ```
+
+### 用 Array 實做 Stack
+```java
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("=== Array-based Stack ===");
+        StackArray stackA = new StackArray(5);
+        stackA.push(10);
+        stackA.push(20);
+        stackA.push(30);
+        System.out.println("Top element: " + stackA.peek());
+        System.out.println("Pop: " + stackA.pop());
+        System.out.println("Pop: " + stackA.pop());
+        System.out.println("Is empty? " + stackA.isEmpty());
+    }
+}
+
+class StackArray {
+    private int[] arr;
+    private int top; // 目前 stack 最上層的 index
+    private int capacity; // array 的容量
+
+    public StackArray(int size) {
+        arr = new int[size];
+        capacity = size;
+        top = -1; // 初始時 stack 為空，故 top 設為 -1
+    }
+
+    public void push(int x) {
+        if (top == capacity - 1) {
+            System.out.println("Stack overflow!");
+            return;
+        }
+        arr[++top] = x; // 先將 top 加 1，再將 x 放入該位置
+    }
+
+    public int pop() {
+        if (isEmpty()) {
+            System.out.println("Stack underflow!");
+            return -1;
+        }
+        return arr[top--]; // 先回傳 top 位置的值，再將 top 減 1
+    }
+
+    public int peek() {
+        if (isEmpty()) {
+            System.out.println("Stack is empty!");
+            return -1;
+        }
+        return arr[top];
+    }
+
+    public boolean isEmpty() {
+        return top == -1;
+    }
+}
+```
+
+### 用 Linked List 實做 Stack
+```java
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("\n=== LinkedList-based Stack ===");
+        ListStack stackB = new ListStack();
+        stackB.push("apple");
+        stackB.push("banana");
+        stackB.push("cherry");
+        System.out.println("Top element: " + stackB.peek());
+        System.out.println("Pop: " + stackB.pop());
+        System.out.println("Pop: " + stackB.pop());
+        System.out.println("Is empty? " + stackB.isEmpty());
+    }
+}
+
+class ListStack {
+    private Node top;
+
+    private static class Node {
+        String value;
+        Node next;
+        Node(String value) {
+            this.value = value;
+        }
+    }
+
+    public void push(String value) {
+        Node newNode = new Node(value);
+        newNode.next = top; // 新節點指向目前的 top
+        top = newNode; // 更新 top 為新節點
+    }
+
+    public String pop() {
+        if (isEmpty()) {
+            System.out.println("Stack underflow!");
+            return null;
+        }
+        String value = top.value;
+        top = top.next;
+        return value;
+    }
+
+    public String peek() {
+        if (isEmpty()) {
+            System.out.println("Stack is empty!");
+            return null;
+        }
+        return top.value;
+    }
+
+    public boolean isEmpty() {
+        return top == null;
+    }
+}
+```
