@@ -148,3 +148,166 @@ class ListStack {
     }
 }
 ```
+
+## 佇列 (Queue)
+### Java 中的佇列 class
+
+```java
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class queueInJava {
+    public static void main(String[] args) {
+        Queue<Integer> queue = new LinkedList<>();
+
+        queue.add(1);
+        queue.add(3);
+        queue.add(2);
+        queue.add(5);
+
+        int front = queue.peek();
+        System.out.println("The front is: " + front);
+
+        int removeVal = queue.remove();
+        System.out.println("Removed value: " + removeVal);
+
+        front = queue.peek();
+        System.out.println("The front is: " + front);
+
+        System.out.println("The queue size is: " + queue.size());
+        System.out.println("Is the queue empty? Ans: " + queue.isEmpty());
+    }
+}
+```
+
+### 用 Array 實做 Queue
+```java
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("=== Array-based Queue ===");
+        ArrayQueue queueA = new ArrayQueue(5);
+        queueA.enqueue(10);
+        queueA.enqueue(20);
+        queueA.enqueue(30);
+        System.out.println("Front element: " + queueA.peek());
+        System.out.println("Dequeue: " + queueA.dequeue());
+        System.out.println("Dequeue: " + queueA.dequeue());
+        System.out.println("Is empty? " + queueA.isEmpty());
+    }
+}
+
+class ArrayQueue {
+    private int[] arr;
+    private int front, rear, size, capacity;
+
+    public ArrayQueue(int capacity) {
+        this.capacity = capacity;
+        arr = new int[capacity];
+        front = 0;
+        rear = -1;
+        size = 0;
+    }
+
+    public void enqueue(int x) {
+        if (isFull()) {
+            System.out.println("Queue overflow!");
+            return;
+        }
+        rear = (rear + 1) % capacity; // 環狀佇列
+        arr[rear] = x;
+        size++;
+    }
+
+    public int dequeue() {
+        if (isEmpty()) {
+            System.out.println("Queue underflow!");
+            return -1;
+        }
+        int value = arr[front];
+        front = (front + 1) % capacity;
+        size--;
+        return value;
+    }
+
+    public int peek() {
+        if (isEmpty()) {
+            System.out.println("Queue is empty!");
+            return -1;
+        }
+        return arr[front];
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public boolean isFull() {
+        return size == capacity;
+    }
+}
+```
+
+### 用 Linked List 實做 Queue
+```java
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("\n=== LinkedList-based Queue ===");
+        ListQueue queueB = new ListQueue();
+        queueB.enqueue("apple");
+        queueB.enqueue("banana");
+        queueB.enqueue("cherry");
+        System.out.println("Front element: " + queueB.peek());
+        System.out.println("Dequeue: " + queueB.dequeue());
+        System.out.println("Dequeue: " + queueB.dequeue());
+        System.out.println("Is empty? " + queueB.isEmpty());
+    }
+}
+
+class ListQueue {
+    private Node front, rear;
+
+    private static class Node {
+        String value;
+        Node next;
+        Node(String value) {
+            this.value = value;
+        }
+    }
+
+    public void enqueue(String value) {
+        Node newNode = new Node(value);
+        if (rear == null) { // queue 為空
+            front = rear = newNode;
+            return;
+        }
+        rear.next = newNode;
+        rear = newNode;
+    }
+
+    public String dequeue() {
+        if (isEmpty()) {
+            System.out.println("Queue underflow!");
+            return null;
+        }
+        String value = front.value;
+        front = front.next;
+
+        if (front == null) { // 若取完變空
+            rear = null;
+        }
+        return value;
+    }
+
+    public String peek() {
+        if (isEmpty()) {
+            System.out.println("Queue is empty!");
+            return null;
+        }
+        return front.value;
+    }
+
+    public boolean isEmpty() {
+        return front == null;
+    }
+}
+```
