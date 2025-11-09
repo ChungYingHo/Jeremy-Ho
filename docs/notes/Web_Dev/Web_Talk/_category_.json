@@ -1,6 +1,6 @@
 {
-  "label": "Modern Web",
-  "position": 6,
+  "label": "Web Talk",
+  "position": 1,
   "link": {
     "type": "generated-index",
     "description": "紀錄前端開發一些瑣碎的知識"
