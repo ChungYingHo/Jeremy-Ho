@@ -167,13 +167,107 @@ class PersonalPNR {
 
 ### 繼承 (Inheritance)
 既然叫做繼承，那就一定有個親緣關係存在。  
-OOP 的世界裡，其實不需要每個 class 都要開發者詳細定義內部的屬性與方法，只要是有相似性的 class，就可以把它們相似的部分抽出來定義在一個**父類別 (Parent Class)** 裡，然後其他**子類別 (Child Class)** 就可以透過**繼承**這個父類別的屬性與方法，來避免重複定義相同的屬性與方法。
+OOP 的世界裡，其實不需要每個 class 都要開發者詳細定義內部的屬性與方法，只要是有相似性的 class，就可以把它們相似的部分抽出來定義在一個**父類別 (Parent Class，或稱基礎類別)** 裡，然後其他**子類別 (Child Class，或稱衍生類別)** 就可以透過**繼承**這個父類別的屬性與方法，來避免重複定義相同的屬性與方法。
 
 口語一點來說，舉個生物的例子。  
 Parent class 是哺乳類 (Mammal)，而 Child class 則是狗 (Dog)、貓 (Cat)、人類 (Human) 等等。  
 哺乳類這個 parent class 裡面會定義一些所有哺乳類都會有的屬性與方法 (ex: 有毛髮、胎生、會哺乳)，而狗、貓、人類這些 child class 就可以繼承這些屬性與方法，然後再各自定義自己特有的屬性與方法 (ex: 狗會吠叫、貓會抓老鼠、人類會寫 code www)。
 
-拿剛剛 PNR 的例子來看，假設今天虎航跟星宇航空也都需要這樣一個個人機票定位資訊的系統，我們大可以把剛剛的 PersonalPNR class 當作是 parent class，然後再建立兩個 child class，分別是 TigerAirPNR 與 StarluxPNR，然後讓這兩個 child class 繼承 PersonalPNR 這個 parent class。
+:::note
+一個沒那麼重要的分類：
+1. 單一繼承 (Single Inheritance)：一個子類別只能繼承一個父類別。但一個父類別可以有多個子類別繼承它。
+2. 多層繼承 (Multilevel Inheritance)：子類別可以繼承另一個子類別，形成多層繼承結構。例如，A 繼承 B，B 繼承 C。
+:::
+
+但繼承也不是什麼東西都可以繼承的。  
+前面**封裝**有寫到如 `private` 這類只能給予 class 內部存取的變數與方法，就是無法被 child class 繼承到的。  
+這種時候如果子類別需要使用父類別的這些 private 變數與方法，就必須要透過父類別提供的 public 或 protected 方法來間接存取。  
+父類別的建構子也是無法被子類別直接繼承使用的，但子類別可以透過在自己的建構子裡呼叫 `super()` 來間接使用父類別的建構子。
+
+<details>
+<summary>一個簡單的繼承範例</summary>
+
+```java
+import java.util.Scanner;
+
+public class Inherit_01 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("請輸入飛機物件 airplane 之相關資訊: ");
+        String line = scanner.nextLine(); // 洛克希德馬丁 F-16 Chinese-1 A0001 1 3986 像鯊魚
+
+        String[] parts = line.split(" ");
+
+        String inputManufacturer = parts[0];
+        String inputFlightVehileType = parts[1];
+        String inputFlightVehileId = parts[2];
+        String inputEngineId = parts[3];
+        int inputPilotAmount = Integer.parseInt(parts[4]);
+        int inputFuelContent = Integer.parseInt(parts[5]);
+        String inputFlightVehileDesc = parts[6];
+
+        scanner.close();
+
+        Airplane airplane = new Airplane(inputFlightVehileDesc, inputManufacturer, inputFlightVehileType, inputFlightVehileId, inputPilotAmount, inputEngineId, inputFuelContent);
+        airplane.printAirplane();
+
+    }
+}
+
+class FlightVehile {
+
+    public FlightVehile() {
+    }
+
+    public FlightVehile(String flightVehileDesc) {
+        this.flightVehileDesc = flightVehileDesc;
+    }
+
+    protected String flightVehileDesc;
+}
+
+class Airplane extends FlightVehile {
+
+    public Airplane(String flightVehileDesc, String manufacturer, String flightVehileType, String flightVehileId, int pilotAmount, String engineId, double fuelContent) {
+        super(flightVehileDesc);
+
+        this.manufacturer = manufacturer;
+        this.flightVehileType = flightVehileType;
+        this.flightVehileId = flightVehileId;
+        this.pilotAmount = pilotAmount;
+        this.engineId = engineId;
+        this.fuelContent = fuelContent;
+    }
+
+    public String manufacturer;
+    public String flightVehileType;
+    public String flightVehileId;
+    public int pilotAmount;
+    protected double fuelContent;
+
+    private String engineId;
+
+    public void printAirplane () {
+        System.out.println("製造商： " + manufacturer);
+        System.out.println("飛機型號： " + flightVehileType);
+        System.out.println("飛機編號： " + flightVehileId);
+        System.out.println("引擎號碼： " + engineId);
+        System.out.println("飛行員人數： " + pilotAmount);
+        System.out.println("油箱容量 (L)： " + fuelContent);
+        System.out.println("飛機外觀： " + flightVehileDesc);
+    }
+}
+```
+</details>
+
+:::warning
+這裡要注意，如果類別內沒手動定義「無參數」的建構子，只定義了「含參數」的建構子，這寫法在這個 class 沒任何子輩關係時是沒問題的。  
+但若是要做為父類別，因為子類別實體化時會預設呼叫父類別的無參數建構子，這時就會因為找不到無參數建構子而報錯。  
+所以撰寫 Java 的良好習慣是，不管有沒有子類別，都建議手動定義一個無參數建構子，以避免這種問題發生。
+:::
+
+再拿剛剛 PNR 的例子來看，假設今天虎航跟星宇航空也都需要這樣一個個人機票定位資訊的系統，我們大可以把剛剛的 PersonalPNR class 當作是 parent class，然後再建立兩個 child class，分別是 TigerAirPNR 與 StarluxPNR，然後讓這兩個 child class 繼承 PersonalPNR 這個 parent class。
 
 ```java
 class TigerAirPNR extends PersonalPNR {
