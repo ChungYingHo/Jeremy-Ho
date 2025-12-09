@@ -1,0 +1,376 @@
+---
+title: "[Java] OOP 概論"
+sidebar_label: "[Java] OOP 概論"
+tags: [java, oop, object-oriented]
+keywords: [java, oop, object-oriented]
+---
+
+:::note
+1. 內聚性 (Cohesion)：模組本身的功能強度，意即模組的完整性。
+2. 耦合性 (Coupling)：模組與模組之間的依賴關係，意即模組之間的關聯性。
+
+以 OOP、甚至應該說多數程式設計的角度來看，**高內聚性**與**低耦合性**是我程式設計時所追求的目標。  
+但這之間必須要拿捏有度，不可過分偏激。  
+舉例來說，如果極高度內聚性，但耦合性趨近於無，那這跟在同一支 file 上寫完所有 code 無異，這樣就失去模組化的意義了。  
+所以高內聚、低耦合是相對且主觀的概念，必須視情況而定。
+:::
+
+## OOP (Object-Oriented)
+
+OOP 的核心組成基本是以**類別 (class)** 為基礎。  
+以 class 做為藍圖 (Blueprint)，來建立具有特徵與行為的**物件 (Object)**。
+
+```java title="一個簡單的 class & object"
+public class practice {
+    public static void main(String[] args) {
+        Student obj1 = new Student("王大明", "S123", "DigitalMedia", "S123", 90, 80, 60);
+        Student obj2 = new Student("李大一", "D456", "ComputerScience", "D456", 20, 40, 70);
+
+        obj1.printStudentInfo();
+        obj1.printStudentScores();
+        System.out.println();
+
+        obj2.printStudentInfo();
+        obj2.printStudentScores();
+    }
+}
+
+class Student {
+    public String name;
+    public String StudentId;
+    public String department;
+    public String id;
+
+    public float chScore;
+    public float enScore;
+    public float mathScore;
+
+    public Student(String name, String StudentId, String department, String id, float chScore, float enScore, float mathScore) {
+        this.name = name;
+        this.StudentId = StudentId;
+        this.department = department;
+        this.id = id;
+        this.chScore = chScore;
+        this.enScore = enScore;
+        this.mathScore = mathScore;
+    }
+
+    public void printStudentInfo () {
+        System.out.println("Student name: " + this.name);
+        System.out.println("Student ID: " + this.StudentId);
+        System.out.println("Student department: " + this.department);
+        System.out.println("Personal  ID: " + this.id);
+    }
+
+    public void printStudentScores () {
+        System.out.println("Chinese score: " + this.chScore);
+        System.out.println("English score: " + this.enScore);
+        System.out.println("Math score: " + this.mathScore);
+
+        isGraduate();
+    }
+
+    private  void isGraduate () {
+        float total = chScore + enScore + mathScore;
+
+        float avg = total / 3;
+
+        if (avg > 60) {
+            System.out.println("Pass! Your semester scores is: " + avg);
+        } else {
+            System.out.println("Not pass! Your semester scores is: " + avg);
+        }
+    }
+}
+```
+
+## OOP 三大特性
+1. 封裝 (Encapsulation)：將物件區分為可被外界使用的特性以及受保護的內部特性。因此封裝有助於維護物件的完整性與安全性 (ex: 資訊的隱藏)。
+2. 繼承 (Inheritance)：一種可以避免重複定義相同屬性與方法的概念。 → 但 child class 依舊可以擁有自己特有的屬性與方法。
+3. 多型 (Polymorphism)：允許物件以不同的形式出現，意即允許物件有同一行為，但有不同的結果。主要透過方法覆寫 (Method Overriding) 與方法重載 (Method Overloading) 來實現多型。 → 簡單來說就是可以利用 parent class 的 method，但 child class 執行出來卻是另一結果。
+
+### 封裝 (Encapsulation)
+如前面所述，OOP 的封裝是一種將變數 & 方法等做內外部區分的概念，口語化一點來說有點像是隱私權的概念在程式裡的實踐。  
+那在 Java 中，封裝主要是透過**存取修飾詞 (Access Modifiers)** 來達成的。  
+所謂的存取修飾詞，簡單來說就是用來定義變數或方法的**可見範圍**，一共有四種修飾詞：
+1. public：公開的，表示該變數或方法可以被任何其他類別存取。
+2. protected：受保護的，表示該變數或方法只能被同一個 package 中的類別或其子類別存取。
+3. default (無修飾詞)：預設的，表示該變數或方法只能被同一個 package 中的類別存取。
+4. private：私有的，表示該變數或方法只能在該類別內部存取。
+
+:::info
+沒有很懂 Java 的 package 範疇的話，可以先直白一點記每個寫在同一 folder 下的 class 都是同一 package 就好。  
+所以最容易搞混的是 default 與 protected，但他們差異是在於 protected 允許子類別存取，而子類別是可以不跟父類別寫在同一 package 下的。
+:::
+
+下方舉個例子來說明封裝的概念：
+
+```java
+class PersonalPNR {
+    private String name;
+    private String email;
+    private char seatLevel;
+    private String origin;
+    private String destination;
+    private double mileage;
+    private int price;
+
+    private int changeSeatLevelPrice = 50;
+
+    public PersonalPNR(String name, String email, char seatLevel, String origin, String destination, double mileage, int price) {
+        this.name = name;
+        this.email = email;
+        this.seatLevel = seatLevel;
+        this.origin = origin;
+        this.destination = destination;
+        this.mileage = mileage;
+        this.price = price;
+    }
+
+    public void printPnrInfo() {
+        System.out.println("Passenger name: " + name);
+        System.out.println("Passenger email: " + email);
+        System.out.println("Passenger seat level: " + seatLevel);
+        System.out.println("Flight origin: " + origin);
+        System.out.println("Flight destination: " + destination);
+        System.out.println("Price: " + calcTotalPrice());
+    }
+
+    protected int calcDiscount() {
+        return (int)(mileage / 1000);
+    }
+
+    private int calcTotalPrice() {
+        return price - calcDiscount();
+    }
+
+    public void upgradeSeatLevel(char level) {
+        seatLevel = level;
+        price += changeSeatLevelPrice;
+    }
+
+    public void addMileage(double additionalMileage) {
+        mileage += additionalMileage;
+    }
+}
+```
+
+以上述例子來看，這是一個簡易的個人機票訂位資訊 (PNR) 類別。  
+這個 class 包的既然是個人 PNR 資訊，那一般就不會希望裡面含個人資訊 (name、email) 可以被外部直接存取到，這樣就違反了封裝的概念，所以選擇使用 private 修飾詞來保護這些變數。  
+而像是 `printPnrInfo`、`upgradeSeatLevel`、`addMileage` 這些方法則是希望可以被外部存取到，所以使用 public 修飾詞來開放這些方法。  
+至於 `calcDiscount` 則是希望可以被子類別存取到 (ex: 繼承 PersonalPNR 的子類別)，但不希望被其他非子類別的外部類別存取到，所以使用 protected 修飾詞。
+
+所以嚴格來說，封裝達到了起碼三件事情：
+1. 安全性：透過限制變數與方法的可見範圍，防止外部直接存取或修改物件的內部狀態，確保資料的完整性與安全性。
+2. 複用性：透過封裝，可以將物件的內部實現細節隱藏起來，使用者只要會調用公開的方法即可，這樣可以提高重複邏輯的複用性。
+3. 易維護性：封裝使得物件的內部實現細節與外部使用者隔離，所以在調整或修改物件的內部實現時，只要能確保公開的方法或變數不變，外部使用者就不需要做任何修改，這樣可以提高程式碼的易維護性。
+
+### 繼承 (Inheritance)
+既然叫做繼承，那就一定有個親緣關係存在。  
+OOP 的世界裡，其實不需要每個 class 都要開發者詳細定義內部的屬性與方法，只要是有相似性的 class，就可以把它們相似的部分抽出來定義在一個**父類別 (Parent Class，或稱基礎類別)** 裡，然後其他**子類別 (Child Class，或稱衍生類別)** 就可以透過**繼承**這個父類別的屬性與方法，來避免重複定義相同的屬性與方法。
+
+口語一點來說，舉個生物的例子。  
+Parent class 是哺乳類 (Mammal)，而 Child class 則是狗 (Dog)、貓 (Cat)、人類 (Human) 等等。  
+哺乳類這個 parent class 裡面會定義一些所有哺乳類都會有的屬性與方法 (ex: 有毛髮、胎生、會哺乳)，而狗、貓、人類這些 child class 就可以繼承這些屬性與方法，然後再各自定義自己特有的屬性與方法 (ex: 狗會吠叫、貓會抓老鼠、人類會寫 code www)。
+
+:::note
+一個沒那麼重要的分類：
+1. 單一繼承 (Single Inheritance)：一個子類別只能繼承一個父類別。但一個父類別可以有多個子類別繼承它。
+2. 多層繼承 (Multilevel Inheritance)：子類別可以繼承另一個子類別，形成多層繼承結構。例如，A 繼承 B，B 繼承 C。
+:::
+
+但繼承也不是什麼東西都可以繼承的。  
+前面**封裝**有寫到如 `private` 這類只能給予 class 內部存取的變數與方法，就是無法被 child class 繼承到的。  
+這種時候如果子類別需要使用父類別的這些 private 變數與方法，就必須要透過父類別提供的 public 或 protected 方法來間接存取。  
+父類別的建構子也是無法被子類別直接繼承使用的，但子類別可以透過在自己的建構子裡呼叫 `super()` 來間接使用父類別的建構子。
+
+<details>
+<summary>一個簡單的繼承範例</summary>
+
+```java
+import java.util.Scanner;
+
+public class Inherit_01 {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("請輸入飛機物件 airplane 之相關資訊: ");
+        String line = scanner.nextLine(); // 洛克希德馬丁 F-16 Chinese-1 A0001 1 3986 像鯊魚
+
+        String[] parts = line.split(" ");
+
+        String inputManufacturer = parts[0];
+        String inputFlightVehileType = parts[1];
+        String inputFlightVehileId = parts[2];
+        String inputEngineId = parts[3];
+        int inputPilotAmount = Integer.parseInt(parts[4]);
+        int inputFuelContent = Integer.parseInt(parts[5]);
+        String inputFlightVehileDesc = parts[6];
+
+        scanner.close();
+
+        Airplane airplane = new Airplane(inputFlightVehileDesc, inputManufacturer, inputFlightVehileType, inputFlightVehileId, inputPilotAmount, inputEngineId, inputFuelContent);
+        airplane.printAirplane();
+
+    }
+}
+
+class FlightVehile {
+
+    public FlightVehile() {
+    }
+
+    public FlightVehile(String flightVehileDesc) {
+        this.flightVehileDesc = flightVehileDesc;
+    }
+
+    protected String flightVehileDesc;
+}
+
+class Airplane extends FlightVehile {
+
+    public Airplane(String flightVehileDesc, String manufacturer, String flightVehileType, String flightVehileId, int pilotAmount, String engineId, double fuelContent) {
+        super(flightVehileDesc);
+
+        this.manufacturer = manufacturer;
+        this.flightVehileType = flightVehileType;
+        this.flightVehileId = flightVehileId;
+        this.pilotAmount = pilotAmount;
+        this.engineId = engineId;
+        this.fuelContent = fuelContent;
+    }
+
+    public String manufacturer;
+    public String flightVehileType;
+    public String flightVehileId;
+    public int pilotAmount;
+    protected double fuelContent;
+
+    private String engineId;
+
+    public void printAirplane () {
+        System.out.println("製造商： " + manufacturer);
+        System.out.println("飛機型號： " + flightVehileType);
+        System.out.println("飛機編號： " + flightVehileId);
+        System.out.println("引擎號碼： " + engineId);
+        System.out.println("飛行員人數： " + pilotAmount);
+        System.out.println("油箱容量 (L)： " + fuelContent);
+        System.out.println("飛機外觀： " + flightVehileDesc);
+    }
+}
+```
+</details>
+
+:::warning
+這裡要注意，如果類別內沒手動定義「無參數」的建構子，只定義了「含參數」的建構子，這寫法在這個 class 沒任何子輩關係時是沒問題的。  
+但若是要做為父類別，因為子類別實體化時會預設呼叫父類別的無參數建構子，這時就會因為找不到無參數建構子而報錯。  
+所以撰寫 Java 的良好習慣是，不管有沒有子類別，都建議手動定義一個無參數建構子，以避免這種問題發生。
+:::
+
+再拿剛剛 PNR 的例子來看，假設今天虎航跟星宇航空也都需要這樣一個個人機票定位資訊的系統，我們大可以把剛剛的 PersonalPNR class 當作是 parent class，然後再建立兩個 child class，分別是 TigerAirPNR 與 StarluxPNR，然後讓這兩個 child class 繼承 PersonalPNR 這個 parent class。
+
+```java
+class TigerAirPNR extends PersonalPNR {
+    public TigerAirPNR(String name, String email, char seatLevel, String origin, String destination, double mileage, int price) {
+        super(name, email, seatLevel, origin, destination, mileage, price);
+    }
+
+    // Tiger Air 特有的服務
+    public void tigerAirSpecialService() {
+        System.out.println("This is a special service for Tiger Air passengers.");
+    }
+}
+
+class StarluxPNR extends PersonalPNR {
+    public StarluxPNR(String name, String email, char seatLevel, String origin, String destination, double mileage, int price) {
+        super(name, email, seatLevel, origin, destination, mileage, price);
+    }
+
+    // Starlux 特有的服務
+    public void starluxSpecialService() {
+        System.out.println("This is a special service for Starlux passengers.");
+    }
+}
+```
+
+那一樣可以透過建立 TigerAirPNR 與 StarluxPNR 物件來使用這兩個 child class，然後間接使用 PersonalPNR 這個 parent class 裡的屬性與方法。
+
+```java
+public class PnrSystem {
+    public static void main(String[] args) {
+        TigerAirPNR tigerPnr = new TigerAirPNR("Maria", "maria@example.com", 'B', "Taipei", "Tokyo", 1500, 300);
+        StarluxPNR starluxPnr = new StarluxPNR("John", "john@example.com", 'A', "Taipei", "Seoul", 2000, 400);
+        tigerPnr.printPnrInfo(); // 使用繼承自 PersonalPNR 的方法
+        tigerPnr.tigerAirSpecialService(); // 使用 TigerAirPNR 特有的方法
+        System.out.println();
+        starluxPnr.printPnrInfo(); // 使用繼承自 PersonalPNR 的方法
+        starluxPnr.starluxSpecialService(); // 使用 StarluxPNR 特有的方法
+    }
+}
+```
+
+### 多型 (Polymorphism)
+前面講了，多型的概念是允許物件以不同的形式出現，意即允許物件有同一行為，但有不同的結果。  
+這講起來很抽象，但舉個例子應該就理解了：  
+1. 今天虎航跟星宇的手續費不一樣了，已經不是每次改票都 50 元，而是虎航改票手續費是 50 元，星宇則是 100 元。
+2. 哩程累積的計算方式也不一樣了，虎航是每 1000 公里折抵 1 元，星宇則是每 800 公里折抵 1 元。
+
+這種少數行為的差異，我們就可以透過**方法覆寫 (Method Overriding)** 來實現多型。
+
+```java
+class TigerAirPNR extends PersonalPNR {
+    public TigerAirPNR(String name, String email, char seatLevel, String origin, String destination, double mileage, int price) {
+        super(name, email, seatLevel, origin, destination, mileage, price);
+    }
+
+    @Override
+    protected int calcDiscount() {
+        return (int)(mileage / 1000); // 虎航每 1000 公里折抵 1 元
+    }
+
+    @Override
+    public void upgradeSeatLevel(char level) {
+        seatLevel = level;
+        price += 50; // 虎航改票手續費 50 元
+    }
+}
+
+class StarluxPNR extends PersonalPNR {
+    public StarluxPNR(String name, String email, char seatLevel, String origin, String destination, double mileage, int price) {
+        super(name, email, seatLevel, origin, destination, mileage, price);
+    }
+
+    @Override
+    protected int calcDiscount() {
+        return (int)(mileage / 800); // 星宇每 800 公里折抵 1 元
+    }
+
+    @Override
+    public void upgradeSeatLevel(char level) {
+        seatLevel = level;
+        price += 100; // 星宇改票手續費 100 元
+    }
+}
+```
+
+那當然，眼尖的話會發現：誒？那這樣 changeSeatLevelPrice 這個變數不就沒用了嗎？  
+對，這裡其實揭露兩個問題：
+1. 程式設計之初，parent class 的設計其實就該考慮清楚哪些屬性與方法是有可能會被 child class 覆寫的，然後就不該把這些屬性或方法寫死在 parent class 裡。
+2. 多型是沒辦法做變數的覆寫 (Variable Overriding) 的。所謂多型，作用的一直是方法 (Method)，所以我們才不能在 child class 裡覆寫 changeSeatLevelPrice 這個寫死的變數。  
+對於變數可能在各個 child class 有不同值的情況，最佳做法試把它納到 constructor 裡，然後在建立 child class 物件時傳入不同的值。
+
+多型除了方法覆寫 (Method Overriding) 之外，還有一種是**方法重載 (Method Overloading)**，這是大家比較耳熟能詳的東西，這裡不贅述其意義。  
+簡單示範一下以上方的 TigerAirPNR 做多載的例子：
+
+```java
+class TigerAirPNR extends PersonalPNR {
+    public TigerAirPNR(String name, String email, char seatLevel, String origin, String destination, double mileage, int price) {
+        super(name, email, seatLevel, origin, destination, mileage, price);
+    }
+
+    // 方法重載 (Method Overloading)
+    public void addMileage(double additionalMileage, double bonusMileage) {
+        mileage += (additionalMileage + bonusMileage);
+    }
+}
+```

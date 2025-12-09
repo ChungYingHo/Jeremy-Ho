@@ -91,20 +91,24 @@ class StackArray {
         arr.add(val);
     }
 
-    int pop () {
+    Integer pop() {
         if (isEmpty()) {
-            throw new NoSuchElementException("Stack is empty!");
+            System.out.println("Stack is empty, cannot pop.");
+            return null;
+        } else {
+            int popVal = arr.get(size() - 1);
+            arr.remove(size() - 1);
+            return popVal;
         }
-        int popVal = arr.get(size() - 1);
-        arr.remove(size() - 1);
-        return popVal;
     }
 
-    int peek() {
+    Integer peek() {
         if (isEmpty()) {
-            throw new NoSuchElementException("Stack is empty!");
+            System.out.println("Stack is empty, no top element.");
+            return null;
+        } else {
+            return arr.get(size() - 1);
         }
-        return arr.get(size() - 1);
     }
 
 

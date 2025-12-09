@@ -1,0 +1,377 @@
+---
+title: 遞迴
+tags: [recursion]
+keywords: [recursion]
+---
+
+Recursion 這玩意兒說穿了真的挺麻煩的，一樣是做迭代計算，它的運行思維硬生生就跟迴圈那種與人類順向思考相符的方式不太一樣，遞迴是反著來的。  
+但偏偏遞迴在某些情況下確又是一些問題的最佳解，這邊排除易讀性啊，畢竟遞迴本身因為是逆向思考，讀起來本身就不太直觀，但單就程式碼數量來看，在部分問題，比如河內塔，遞迴往往是最佳解。
+
+遞迴我會說是逆向思考是相對於迴圈而言。  
+對於迴圈，以印出數字 1 到 10 為例，迴圈的思維是從 1 開始，「逐步」往上印到 10，這是非常符合人類直觀思考的方式。  
+但遞迴的本質不一樣，遞迴相關的文章都會說遞迴本身是把「大問題拆解成小問題，然後小問題又可以同樣方式拆解成更小的問題，直至最小的問題。然後由小問題的結果來解決大問題。」，這是一種「反推」的思維過程，相較於迴圈那種「逐步前進」的思維，遞迴就是一種逆向且抽象的思維。
+
+## 迴圈 vs 遞迴
+以一個簡單的例子，累加 1 到 10 的數字總和來說明迴圈與遞迴的差異。  
+用迴圈的順向思維來思考，就是很順很順地從 1 開始，一直加到 10，程式碼大概長這樣：
+
+```java
+void SumWithLoop() {
+    int sum = 0;
+    for (int i = 1; i <= 10; i++) {
+        sum += i;
+    }
+    System.out.println("Sum is: " + sum);
+}
+```
+
+但如果改成用遞迴呢？  
+秉持著遞迴是「把大問題拆解成小問題來解決的思維」，累加數字 1-10 這件事變成要反著思考。  
+已知 `1+....+10` 是大問題，以遞迴來說，第一次就是先把 10 拆掉，變成 `1+....+9 + 10`，這時候 `1+....+9` 就變成一個小問題。  
+接下來一樣，`1+....+9` 這個小問題再拆掉 9，變成 `1+....+8 + 9`，`1+....+8` 又變成一個更小的問題。  
+這樣一直拆下去，直到拆到最小的問題 `1` 為止，這時再根據最小問題的結果往回推，將所有拆掉的數字加回來，這樣就能得到最終結果。
+
+```java
+int SumWithRecursion(int n) {
+    // 基本情況：當 n 為 1 時，直接回傳 1
+    if (n == 1) {
+        return 1;
+    } else {
+        // 遞迴情況：將 n 加上 SumWithRecursion(n-1) 的結果
+        return n + SumWithRecursion(n - 1);
+    }
+}
+
+System.out.println("Sum is: " + SumWithRecursion(10));
+```
+
+可以看到遞迴的思維是相當迂迴的，基本就是反著來思考問題，然後繞上那麼一圈來取得答案。  
+以這種累加數字 1 到 10 的問題來看，遞迴只是在提高理解困難以及增加空間複雜度而已。  
+
+:::info
+以這題而言，迴圈與遞迴的時間複雜度都是 O(n)，但遞迴的空間複雜度是 O(n)，而迴圈的空間複雜度是 O(1)。
+:::
+
+## 什麼時候需要用遞迴？
+再提一次，遞迴的核心是「把大問題拆解成小問題，由小問題的解回推大問題的解」。  
+再換句話說，就是當一件事可以用「自己重複自己」的方式描述時，就可以考慮用遞迴。  
+這裡說的是「考慮」，因為多數情況下用迴圈會更直覺、更容易排錯。  
+但是否有那種問題真的得靠遞迴來解決？或是換句話說，用遞迴解決可以解決不用遞迴時要寫很多 code、甚至邏輯更複雜的痛點？  
+答案還真的有，但一般都牽涉到比較複雜的資料結構或演算法，像是樹狀結構的遍歷、圖形的深度優先搜尋 (DFS)、河內塔問題、費氏數列等。
+
+### 河內塔 (Tower of Hanoi)
+以河內塔而言，這是資料結構在學堆疊時常拿出來提的經典問題。  
+河內塔的規則有三個：
+1. 一次只能移動一個圓盤。
+2. 任何時候都不能把大圓盤放在小圓盤上面。
+3. 只能使用三根柱子來移動圓盤。
+
+先假設盤子只有三個，我們用 1、2、3 來代表，數字越大代表圓盤越大。然後有 towerA、towerB、towerC 三根柱子，初始狀態是 towerA 有三個圓盤，towerB、towerC 是空的，我們的目標是把 towerA 的圓盤全部移到 towerC 上。  
+先簡單用程式表示只有三個盤子要移時的情形：
+
+```java
+import java.util.Stack;
+
+public class TowerOfHanoi {
+    public static void main(String[] args) {
+        // 初始化柱子 A、B、C
+        Stack<Integer> towerA = new Stack<Integer>();
+        Stack<Integer> towerB = new Stack<Integer>();
+        Stack<Integer> towerC = new Stack<Integer>();
+
+        // 初始化盤子，數字越大盤子越大
+        towerA.push(3);
+        towerA.push(2);
+        towerA.push(1);
+
+        // 搬移過程，目標把盤子搬到 C 上
+        towerC.push(towerA.pop()); // 把 1 從 A 搬到 C
+        towerB.push(towerA.pop()); // 把 2 從 A 搬到 B
+        towerB.push(towerC.pop()); // 把 1 從 C 搬到 B
+        towerC.push(towerA.pop()); // 把 3 從 A 搬到 C
+        towerA.push(towerB.pop()); // 把 1 從 B 搬到 A
+        towerC.push(towerB.pop()); // 把 2 從 B 搬到 C
+        towerC.push(towerA.pop()); // 把 1 從 A 搬到 C
+
+        System.out.println("Top is:" + towerC.peek());
+    }
+}
+```
+
+這是用堆疊做逐步搬移的過程，可以看到程式碼量不少，而且如果盤子數量增加，程式碼會變得更長更複雜。  
+所幸偉大的數學家們已經找出河內塔的規律，即當有 n 個盤子時，最小移動次數是 `2^n - 1` 次。然後移動步驟可以拆解成三個部分：
+1. 先把上面的小盤子（共 n−1 個）暫時搬到中間的柱子 B，用 C 幫忙周轉。
+2. 接著把最大那個盤子從 A 搬到目標柱子 C。
+3. 最後把剛剛暫存在 B 的小盤子搬到 C，用 A 當輔助。
+
+把剛剛的程式邏輯對應上這三個步驟：
+```java
+// Step 1：先把上面的小盤子（n−1 個）暫時搬到中間的柱子 B，用 C 幫忙周轉
+towerC.push(towerA.pop()); // 把 1 從 A 搬到 C（暫存）
+towerB.push(towerA.pop()); // 把 2 從 A 搬到 B
+towerB.push(towerC.pop()); // 把 1 從 C 搬到 B，疊在 2 上
+
+// Step 2：接著把最大那個盤子從 A 搬到目標柱子 C
+towerC.push(towerA.pop()); // 把 3 從 A 搬到 C（最大的盤子）
+
+// Step 3：最後把剛剛暫存在 B 的小盤子搬到 C，用 A 當輔助
+towerA.push(towerB.pop()); // 把 1 從 B 搬到 A
+towerC.push(towerB.pop()); // 把 2 從 B 搬到 C
+towerC.push(towerA.pop()); // 把 1 從 A 搬到 C，完成
+```
+
+依這三個步驟來看，如果用遞迴來思考，就是把「將 n 個盤子從 A 移到 C」這個大問題，拆解成「將 n-1 個盤子從 A 移到 B」、「將第 n 個盤子從 A 移到 C」、「將 n-1 個盤子從 B 移到 C」這三個小問題來解決。  
+所以寫出來的遞迴程式碼會是這樣：
+
+```java
+import java.util.Stack;
+
+public class TowerOfHanoiReal {
+    public static void main(String[] args) {
+        int n = 3; // 盤子數
+        Stack<Integer> towerA = new Stack<>();
+        Stack<Integer> towerB = new Stack<>();
+        Stack<Integer> towerC = new Stack<>();
+
+        // 初始化 A 塔（大盤在下，小盤在上）
+        for (int i = n; i >= 1; i--) {
+            towerA.push(i);
+        }
+
+        System.out.println("=== 初始狀態 ===");
+        printTowers(towerA, towerB, towerC);
+
+        // 進行搬動：從 A 移到 C，用 B 當輔助
+        move(n, towerA, towerC, towerB, "A", "C", "B");
+
+        System.out.println("=== 結束狀態 ===");
+        printTowers(towerA, towerB, towerC);
+    }
+
+    // 真搬動遞迴
+    static void move(int n, Stack<Integer> from, Stack<Integer> to, Stack<Integer> temp, String fromName, String toName, String tempName) {
+        if (n == 1) {
+            int disk = from.pop(); // 拿出最上面的盤子
+            to.push(disk); // 放到目標塔
+            System.out.println("Move disk " + disk + " from " + fromName + " → " + toName);
+            printTowers(from, temp, to);
+            return;
+        }
+
+        // Step 1: 把上面的 n-1 搬到暫存塔
+        move(n - 1, from, temp, to, fromName, tempName, toName);
+
+        // Step 2: 搬最大的那片
+        int disk = from.pop();
+        to.push(disk);
+        System.out.println("Move disk " + disk + " from " + fromName + " → " + toName);
+        printTowers(from, temp, to);
+
+        // Step 3: 把剛剛暫存的 n-1 從 temp 搬回目標塔
+        move(n - 1, temp, to, from, tempName, toName, fromName);
+    }
+
+    static void printTowers(Stack<Integer> A, Stack<Integer> B, Stack<Integer> C) {
+        System.out.println("A: " + A);
+        System.out.println("B: " + B);
+        System.out.println("C: " + C);
+        System.out.println();
+    }
+}
+```
+
+那不靠遞迴的話，整體程式基本如下
+
+```java
+import java.util.Stack;
+
+public class TowerOfHanoiIterative {
+    public static void main(String[] args) {
+        int n = 3; // 盤子數
+        solveIterative(n);
+    }
+
+    // 使用迴圈（非遞迴）解河內塔
+    static void solveIterative(int n) {
+        Stack<Integer> towerA = new Stack<>(); // 起始塔
+        Stack<Integer> towerB = new Stack<>(); // 暫存塔
+        Stack<Integer> towerC = new Stack<>(); // 目標塔
+
+        // 初始化塔 A：把所有盤子放上去（大在下，小在上）
+        for (int i = n; i >= 1; i--) {
+            towerA.push(i);
+        }
+
+        System.out.println("=== 初始狀態 ===");
+        printTowers(towerA, towerB, towerC);
+
+        // 根據盤數奇偶性決定搬動順序：
+        // 奇數：A → C → B（順時針）
+        // 偶數：A → B → C（逆時針）
+        Stack<Integer> src = towerA;
+        Stack<Integer> aux = towerB;
+        Stack<Integer> dest = towerC;
+        char s = 'A', a = 'B', d = 'C';
+
+        if (n % 2 == 0) { // 偶數情況要交換輔助塔和目標塔
+            Stack<Integer> tempStack = dest;
+            dest = aux;
+            aux = tempStack;
+
+            char tempChar = d;
+            d = a;
+            a = tempChar;
+        }
+
+        // 根據數學公式，總移動次數 = 2^n - 1
+        int totalMoves = (int) Math.pow(2, n) - 1;
+
+        // 用迴圈進行所有搬動（不使用遞迴）
+        for (int i = 1; i <= totalMoves; i++) {
+            if (i % 3 == 1) {
+                // 第 1 種情況：A ↔ C
+                moveDiskBetween(src, dest, s, d);
+            } else if (i % 3 == 2) {
+                // 第 2 種情況：A ↔ B
+                moveDiskBetween(src, aux, s, a);
+            } else {
+                // 第 3 種情況：B ↔ C
+                moveDiskBetween(aux, dest, a, d);
+            }
+
+            // 每次搬完都印出目前三根塔的狀態
+            printTowers(towerA, towerB, towerC);
+        }
+
+        System.out.println("=== 結束狀態 ===");
+        printTowers(towerA, towerB, towerC);
+    }
+
+    // 實際搬動兩根塔之間的盤子（每次只移動一片）
+    static void moveDiskBetween(Stack<Integer> from, Stack<Integer> to, char fromName, char toName) {
+        // 先取出兩邊的塔頂盤子
+        Integer fromTop = from.isEmpty() ? null : from.pop();
+        Integer toTop = to.isEmpty() ? null : to.pop();
+
+        // 判斷哪一邊應該放哪一個：
+        if (fromTop == null) {
+            // 起始塔空了，把目標塔的盤子放回起始塔
+            from.push(toTop);
+            System.out.println("Move disk " + toTop + " from " + toName + " → " + fromName);
+        } else if (toTop == null) {
+            // 目標塔空了，直接把起始塔的盤子放過去
+            to.push(fromTop);
+            System.out.println("Move disk " + fromTop + " from " + fromName + " → " + toName);
+        } else if (fromTop > toTop) {
+            // 如果起始塔頂的盤比目標塔頂的還大 → 不合法，所以反向搬
+            from.push(fromTop);
+            from.push(toTop);
+            System.out.println("Move disk " + toTop + " from " + toName + " → " + fromName);
+        } else {
+            // 如果起始塔頂的盤比較小 → 可以直接搬過去
+            to.push(toTop);
+            to.push(fromTop);
+            System.out.println("Move disk " + fromTop + " from " + fromName + " → " + toName);
+        }
+    }
+
+    // 印出三根塔的狀態
+    static void printTowers(Stack<Integer> A, Stack<Integer> B, Stack<Integer> C) {
+        System.out.println("A: " + A);
+        System.out.println("B: " + B);
+        System.out.println("C: " + C);
+        System.out.println();
+    }
+}
+```
+
+從河內塔就可以看出，這是部分使用遞迴去思考會更容易的問題。  
+一般這種用遞迴解決會更輕鬆的問題，不是絕對，但多數已經被數學家定義出公式以及規律的都很適合用遞迴來解決。  
+畢竟遞迴本質是把大問題拆成小問題來解決，那當數學家已經定義好規律，其實就比較容易用遞迴的方式去拆解問題。  
+但以實際軟體開發上來說，遞迴的應用還是偏少，絕多數時候不寫遞迴、靠直觀的方式賺寫程式邏輯除了易讀性佳，效能也會較好。  
+遞迴在軟體開發實務較常用於演算法、系統底層邏輯等任務處理。  
+所以還是說一下，沒有技術是絕對的，case by case，總有是何使用遞迴與不適合的地方。
+
+## 一些迴圈轉遞迴的範例
+
+### 倒數計時
+迴圈版本：
+```java
+void countdownLoop(int n) {
+    for (int i = n; i >= 1; i--) {
+        System.out.println(i);
+    }
+    System.out.println("Liftoff!");
+}
+```
+遞迴版本：
+```java
+void countdownRecursion(int n) {
+    if (n <= 0) {
+        System.out.println("Liftoff!");
+    } else {
+        System.out.println(n);
+        countdownRecursion(n - 1);
+    }
+}
+```
+
+### 計算階乘
+迴圈版本：
+```java
+int factorialLoop(int n) {
+    int result = 1;
+    for (int i = 1; i <= n; i++) {
+        result *= i;
+    }
+    return result;
+}
+```
+遞迴版本：
+```java
+int factorialRecursion(int n) {
+    if (n == 0) {
+        return 1;
+    } else {
+        return n * factorialRecursion(n - 1);
+    }
+}
+```
+
+### 費氏數列
+簡介一下偉大的費氏數列 (Fibonacci Sequence)，或稱斐波那契數列，是數學上相當經典的數列，印象中向日葵種子排序就是依照費氏數列的規律來排列的。  
+可以說費氏數列是闡明自然界中許多現象的數學基礎之一。  
+費氏數列的定義是從 0 和 1 開始，後續的數字都是前兩個數字的和，也就是說其表達會是這樣：0, 1, 1, 2, 3, 5, 8, 13, 21, 34, ...，依此類推。
+
+迴圈版本：
+```java
+int fibonacciLoop(int n) {
+    if (n == 0) return 0;
+    if (n == 1) return 1;
+
+    int a = 0, b = 1, fib = 0;
+    for (int i = 2; i <= n; i++) {
+        fib = a + b;
+        a = b;
+        b = fib;
+    }
+    return fib;
+}
+```
+遞迴版本：
+```java
+int fibonacciRecursion(int n) {
+    if (n == 0) {
+        return 0;
+    } else if (n == 1) {
+        return 1;
+    } else {
+        return fibonacciRecursion(n - 1) + fibonacciRecursion(n - 2);
+    }
+}
+```
+
+### 小結
+從以上幾個簡單範例來看，真搞不懂遞迴的話就記著逆向思考唄。  
+迴圈都是順著來的，所以一般是 `n + 1` (或遞減的 `n - 1`)，當條件不再成立就自然結束。  
+但遞迴是反著來的，所以每次呼叫自己時都是 `n - 1` (遞迴幾乎沒在用 `n + 1`，因為它不是往前推進，而是從大問題一層層拆成小問題)，直到達到基礎情況 (base case) 才結束。
