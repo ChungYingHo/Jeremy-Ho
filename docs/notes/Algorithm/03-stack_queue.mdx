@@ -213,26 +213,28 @@ class ListStack {
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class queueInJava {
+public class QueueInJava {
     public static void main(String[] args) {
         Queue<Integer> queue = new LinkedList<>();
 
-        queue.add(1);
-        queue.add(3);
-        queue.add(2);
-        queue.add(5);
+        // 實務上多用 offer 取代另一個 method add
+        queue.offer(1);
+        queue.offer(3);
+        queue.offer(2);
+        queue.offer(5);
+        queue.offer(4);
 
+        int size = queue.size();
+        System.out.println("The size of queue is: " + size);
         int front = queue.peek();
-        System.out.println("The front is: " + front);
+        System.out.println("The front element value is: " + front);
+        System.out.println("");
 
-        int removeVal = queue.remove();
-        System.out.println("Removed value: " + removeVal);
-
+        // 實務上多用 poll 取代 remove
+        int removedElement =  queue.poll();
         front = queue.peek();
-        System.out.println("The front is: " + front);
-
-        System.out.println("The queue size is: " + queue.size());
-        System.out.println("Is the queue empty? Ans: " + queue.isEmpty());
+        System.out.println("The removed element value is: " + removedElement);
+        System.out.println("The front element value is: " + front);
     }
 }
 ```
@@ -299,32 +301,47 @@ class ArrayQueue {
 
 ### 用 Linked List 實做 Queue
 ```java
-public class QueueOfList {
+public class QueueCreatedByList {
     public static void main(String[] args) {
-        System.out.println("=== LinkedList-based Queue ===");
-        ListQueue queueList = new ListQueue();
-        queueList.enqueue(1);
-        queueList.enqueue(3);
-        queueList.enqueue(2);
-        queueList.enqueue(5);
+        ListQueue listQueue = new ListQueue();
+        int queueSize = listQueue.size();
+        Integer queueFrontValue = listQueue.peek();
+        System.out.println("Size of queue is: " + queueSize);
+        System.out.println("Front value of queue is: " + queueFrontValue);
+        System.out.println("");
 
-        System.out.println("Queue size: " + queueList.size());
-        System.out.println("Front element: " + queueList.peek());
-        System.out.println("Dequeue: " + queueList.dequeue());
-        System.out.println("Dequeue: " + queueList.dequeue());
-        System.out.println("Queue size: " + queueList.size());
-        System.out.println("Is empty? " + queueList.isEmpty());
+        listQueue.offer(1);
+        queueSize = listQueue.size();
+        queueFrontValue = listQueue.peek();
+        System.out.println("Size of queue is: " + queueSize);
+        System.out.println("Front value of queue is: " + queueFrontValue);
+        System.out.println("");
 
-        // 嘗試在空的狀況下 dequeue
-        queueList.dequeue();
-        queueList.dequeue();
-        queueList.dequeue();
+        listQueue.offer(3);
+        queueSize = listQueue.size();
+        queueFrontValue = listQueue.peek();
+        System.out.println("Size of queue is: " + queueSize);
+        System.out.println("Front value of queue is: " + queueFrontValue);
+        System.out.println("");
+
+        listQueue.offer(2);
+        listQueue.offer(5);
+        listQueue.offer(4);
+        queueSize = listQueue.size();
+        System.out.println("Size of queue is: " + queueSize);
+        System.out.println("");
+
+        Integer removedValue = listQueue.poll();
+        System.out.println("Removed value is: " + removedValue);
+        queueSize = listQueue.size();
+        queueFrontValue = listQueue.peek();
+        System.out.println("Size of queue is: " + queueSize);
+        System.out.println("Front value of queue is: " + queueFrontValue);
+        System.out.println("");
     }
 }
 
 class ListQueue {
-    private Node front, rear;
-
     private static class Node {
         int value;
         Node next;
@@ -333,25 +350,57 @@ class ListQueue {
         }
     }
 
-    public void enqueue(int value) {
-        Node newNode = new Node(value);
-        if (rear == null) { // queue 為空
-            front = rear = newNode;
-            return;
-        }
-        rear.next = newNode;
-        rear = newNode;
+    private Node front; // 記錄佇列頭，亦即頭節點
+    private Node tail; // 記錄佇列尾，亦即尾節點
+    private int queueSize = 0;
+
+    // generator 在這裡可有可無，因為上面的宣告預設就是 null
+    public ListQueue() {
+        this.front = null;
+        this.tail = null;
     }
 
-    public Integer dequeue() {
+    public int size() {
+        return queueSize;
+    }
+
+    public boolean isEmpty() {
+        return queueSize == 0;
+    }
+
+    // 插入元素
+    public void offer(int value) {
+        Node newNode = new Node(value);
+
+        if (tail == null) {
+            // queue 為空時執行這邊
+            front = newNode;
+            tail = newNode;
+        } else {
+            // queue 不為空時執行這邊
+            tail.next = newNode; // 舊的尾節點指向新結點
+            tail = newNode; // 紀錄尾節點的變數更新為新節點
+        }
+
+        queueSize++;
+    }
+
+    // 刪除元素
+    public Integer poll() {
         if (isEmpty()) {
             System.out.println("Queue is empty, cannot dequeue.");
             return null;
         } else {
-            int value = front.value;
+            int removedVal = front.value;
             front = front.next;
-            if (front == null) rear = null; // 全部取完
-            return value;
+            queueSize--;
+
+            // 刪到空時把 tail 也設為 null
+            if (front == null) {
+                tail = null;
+            }
+
+            return removedVal;
         }
     }
 
@@ -362,20 +411,6 @@ class ListQueue {
         } else {
             return front.value;
         }
-    }
-
-    public int size() {
-        int count = 0;
-        Node current = front;
-        while (current != null) {
-            count++;
-            current = current.next;
-        }
-        return count;
-    }
-
-    public boolean isEmpty() {
-        return front == null;
     }
 }
 ```

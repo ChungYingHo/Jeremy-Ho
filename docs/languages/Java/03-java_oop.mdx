@@ -84,12 +84,12 @@ class Student {
 }
 ```
 
-## OOP 三大特性
+### OOP 三大特性
 1. 封裝 (Encapsulation)：將物件區分為可被外界使用的特性以及受保護的內部特性。因此封裝有助於維護物件的完整性與安全性 (ex: 資訊的隱藏)。
 2. 繼承 (Inheritance)：一種可以避免重複定義相同屬性與方法的概念。 → 但 child class 依舊可以擁有自己特有的屬性與方法。
 3. 多型 (Polymorphism)：允許物件以不同的形式出現，意即允許物件有同一行為，但有不同的結果。主要透過方法覆寫 (Method Overriding) 與方法重載 (Method Overloading) 來實現多型。 → 簡單來說就是可以利用 parent class 的 method，但 child class 執行出來卻是另一結果。
 
-### 封裝 (Encapsulation)
+## 封裝 (Encapsulation)
 如前面所述，OOP 的封裝是一種將變數 & 方法等做內外部區分的概念，口語化一點來說有點像是隱私權的概念在程式裡的實踐。  
 那在 Java 中，封裝主要是透過**存取修飾詞 (Access Modifiers)** 來達成的。  
 所謂的存取修飾詞，簡單來說就是用來定義變數或方法的**可見範圍**，一共有四種修飾詞：
@@ -165,7 +165,7 @@ class PersonalPNR {
 2. 複用性：透過封裝，可以將物件的內部實現細節隱藏起來，使用者只要會調用公開的方法即可，這樣可以提高重複邏輯的複用性。
 3. 易維護性：封裝使得物件的內部實現細節與外部使用者隔離，所以在調整或修改物件的內部實現時，只要能確保公開的方法或變數不變，外部使用者就不需要做任何修改，這樣可以提高程式碼的易維護性。
 
-### 繼承 (Inheritance)
+## 繼承 (Inheritance)
 既然叫做繼承，那就一定有個親緣關係存在。  
 OOP 的世界裡，其實不需要每個 class 都要開發者詳細定義內部的屬性與方法，只要是有相似性的 class，就可以把它們相似的部分抽出來定義在一個**父類別 (Parent Class，或稱基礎類別)** 裡，然後其他**子類別 (Child Class，或稱衍生類別)** 就可以透過**繼承**這個父類別的屬性與方法，來避免重複定義相同的屬性與方法。
 
@@ -192,25 +192,26 @@ import java.util.Scanner;
 
 public class Inherit_01 {
     public static void main(String[] args) {
+        Flighter flighter = new Flighter();
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("請輸入飛機物件 airplane 之相關資訊: ");
-        String line = scanner.nextLine(); // 洛克希德馬丁 F-16 Chinese-1 A0001 1 3986 像鯊魚
+        System.out.println("請輸入戰鬥機物件 flighter 之相關資訊: ");
+        String line = scanner.nextLine(); // 洛克希德馬丁 F-16 Chinese-1 A0001 1 3986 像鯊魚 20mm火神炮 麻雀飛彈 127mm火箭
+        scanner.close();
 
         String[] parts = line.split(" ");
 
-        String inputManufacturer = parts[0];
-        String inputFlightVehileType = parts[1];
-        String inputFlightVehileId = parts[2];
-        String inputEngineId = parts[3];
-        int inputPilotAmount = Integer.parseInt(parts[4]);
-        int inputFuelContent = Integer.parseInt(parts[5]);
-        String inputFlightVehileDesc = parts[6];
+        flighter.manufacturer = parts[0];
+        flighter.flightVehileType = parts[1];
+        flighter.flightVehileId = parts[2];
+        flighter.setEngineId(parts[3]);
+        flighter.pilotAmount = Integer.parseInt(parts[4]);
+        flighter.fuelContent = Integer.parseInt(parts[5]);
+        flighter.flightVehileDesc = parts[6];
+        flighter.setWeapon(parts[7], parts[8], parts[9]);
 
-        scanner.close();
-
-        Airplane airplane = new Airplane(inputFlightVehileDesc, inputManufacturer, inputFlightVehileType, inputFlightVehileId, inputPilotAmount, inputEngineId, inputFuelContent);
-        airplane.printAirplane();
+        
+        flighter.printAirplane();
 
     }
 }
@@ -228,16 +229,7 @@ class FlightVehile {
 }
 
 class Airplane extends FlightVehile {
-
-    public Airplane(String flightVehileDesc, String manufacturer, String flightVehileType, String flightVehileId, int pilotAmount, String engineId, double fuelContent) {
-        super(flightVehileDesc);
-
-        this.manufacturer = manufacturer;
-        this.flightVehileType = flightVehileType;
-        this.flightVehileId = flightVehileId;
-        this.pilotAmount = pilotAmount;
-        this.engineId = engineId;
-        this.fuelContent = fuelContent;
+    public Airplane(){
     }
 
     public String manufacturer;
@@ -245,10 +237,9 @@ class Airplane extends FlightVehile {
     public String flightVehileId;
     public int pilotAmount;
     protected double fuelContent;
-
     private String engineId;
 
-    public void printAirplane () {
+    public void printAirplane() {
         System.out.println("製造商： " + manufacturer);
         System.out.println("飛機型號： " + flightVehileType);
         System.out.println("飛機編號： " + flightVehileId);
@@ -256,6 +247,34 @@ class Airplane extends FlightVehile {
         System.out.println("飛行員人數： " + pilotAmount);
         System.out.println("油箱容量 (L)： " + fuelContent);
         System.out.println("飛機外觀： " + flightVehileDesc);
+    }
+
+    public void setEngineId (String engine){
+        this.engineId = engine;
+    }
+}
+
+class Flighter extends Airplane {
+
+    public Flighter() {
+    }
+    
+    public String gunName;
+    public String missileName;
+    public String rocketName;
+
+    public void setWeapon(String gunName, String missileName, String rocketName) {
+        this.gunName = gunName;
+        this.missileName = missileName;
+        this.rocketName = rocketName;
+    }
+
+    @Override
+    public void printAirplane() {
+        super.printAirplane();
+        System.out.println("機槍名稱： " + gunName);
+        System.out.println("飛彈名稱： " + missileName);
+        System.out.println("火箭名稱： " + rocketName);
     }
 }
 ```
@@ -267,7 +286,53 @@ class Airplane extends FlightVehile {
 所以撰寫 Java 的良好習慣是，不管有沒有子類別，都建議手動定義一個無參數建構子，以避免這種問題發生。
 :::
 
+### `super` & `this` 關鍵字
+
+```java
+public class Inherit_02 {
+    public static void main(String[] args) {
+        Child child = new Child("Dragon", "Jeremy");
+        child.printName();
+    }
+}
+
+
+class Father {
+
+    public Father() {
+    }
+
+    public Father(String name) {
+        this.name = name;
+    }
+
+    String name;
+}
+
+class Child extends Father {
+
+    public Child() {
+    }
+
+    public Child(String fatherName, String name) {
+        super(fatherName);
+        this.name = name;
+    }
+
+    String name;
+    
+    public void printName() {
+        System.out.println("My name is: " + this.name);
+        System.out.println("My father's name is: " + super.name);
+    }
+}
+```
+
+
 再拿剛剛 PNR 的例子來看，假設今天虎航跟星宇航空也都需要這樣一個個人機票定位資訊的系統，我們大可以把剛剛的 PersonalPNR class 當作是 parent class，然後再建立兩個 child class，分別是 TigerAirPNR 與 StarluxPNR，然後讓這兩個 child class 繼承 PersonalPNR 這個 parent class。
+
+<details>
+<summary>承封裝章節的航空公司例子</summary>
 
 ```java
 class TigerAirPNR extends PersonalPNR {
@@ -308,8 +373,9 @@ public class PnrSystem {
     }
 }
 ```
+</details>
 
-### 多型 (Polymorphism)
+## 多型 (Polymorphism)
 前面講了，多型的概念是允許物件以不同的形式出現，意即允許物件有同一行為，但有不同的結果。  
 這講起來很抽象，但舉個例子應該就理解了：  
 1. 今天虎航跟星宇的手續費不一樣了，已經不是每次改票都 50 元，而是虎航改票手續費是 50 元，星宇則是 100 元。
