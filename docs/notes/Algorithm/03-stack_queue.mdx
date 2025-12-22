@@ -24,11 +24,7 @@ Stack 可以存取多筆資料，但跟 array 不同，他不能用索引值來�
 2. `pop`：將堆疊頂端的資料移除並回傳該資料。
 3. `peek`：回傳堆疊頂端的資料，但不移除該資料。
 
-
-### Java 中的堆疊 class
-這邊只是先放著看看直接用 Java 內建的 Stack class 有多方便。
-
-```java
+```java title="Java 內建 Stack 範例"
 import java.util.Stack;
 
 public class stackInJava {
@@ -51,6 +47,87 @@ public class stackInJava {
         System.out.println("The stack size is: " + stack.size());
         System.out.println("Is the stack empty? Ans: " + stack.isEmpty());
         System.out.println("Is the stack empty? Ans: " + stack.empty());
+    }
+}
+```
+
+### 用 Linked List 實做 Stack
+使用 Linked List 實作 Stack 時，會將鏈結串列的開頭 (head) 作為堆疊頂端 (top)。  
+每次入堆疊 (push) 時，會在鏈結串列的開頭插入新節點；每次出堆疊 (pop)時，則從開頭移除節點。
+
+由於在鏈結串列的開頭插入或刪除節點只需調整指標，時間複雜度為 `O(1)`，不需要像陣列那樣搬移資料，因此效率很高。  
+同時，鏈結串列可以動態擴充節點，非常適合實作可自由增減元素的堆疊結構。
+
+
+```java
+public class StackOfList {
+    public static void main(String[] args) {
+        ListStack stackList = new ListStack();
+        stackList.push(1); // [1]
+        stackList.push(3); // [3,1]
+        stackList.push(2); // [2,3,1]
+        stackList.push(5); // [5,2,3,1]
+
+        System.out.println("Stack size: " + stackList.size());
+        System.out.println("Top element: " + stackList.peek());
+        System.out.println("Pop: " + stackList.pop());
+        System.out.println("Pop: " + stackList.pop());
+        System.out.println("Stack size: " + stackList.size());
+        System.out.println("Is empty? " + stackList.isEmpty());
+
+        // 嘗試在空的狀況下 pop
+        stackList.pop();
+        stackList.pop();
+        stackList.pop(); // 不會拋錯，只會顯示提示訊息
+    }
+}
+
+class ListStack {
+    private Node top;
+    private int stackSize = 0; // 記錄 stack 目前元素數量
+
+    private static class Node {
+        int value;
+        Node next;
+        Node(int value) {
+            this.value = value;
+        }
+    }
+
+    public void push(int value) {
+        Node newNode = new Node(value);
+        newNode.next = top; // 新節點指向目前的 top
+        top = newNode; // 更新 top 為新節點
+        stackSize++;
+    }
+
+    public Integer pop() {
+        if (isEmpty()) {
+            System.out.println("Stack is empty, cannot pop.");
+            return null;
+        } else {
+            int value = top.value;
+            top = top.next;
+            stackSize--;
+            return value;
+        }
+    }
+
+    public Integer peek() {
+        if (isEmpty()) {
+            System.out.println("Stack is empty, no top element.");
+            return null;
+        } else {
+            return top.value;
+        }
+    }
+
+    public int size() {
+        return stackSize;
+    }
+
+    public boolean isEmpty() {
+        return stackSize == 0;
     }
 }
 ```
@@ -122,94 +199,25 @@ class StackArray {
 }
 ```
 
-### 用 Linked List 實做 Stack
-使用 Linked List 實作 Stack 時，會將鏈結串列的開頭 (head) 作為堆疊頂端 (top)。  
-每次入堆疊 (push) 時，會在鏈結串列的開頭插入新節點；每次出堆疊 (pop)時，則從開頭移除節點。
 
-由於在鏈結串列的開頭插入或刪除節點只需調整指標，時間複雜度為 `O(1)`，不需要像陣列那樣搬移資料，因此效率很高。  
-同時，鏈結串列可以動態擴充節點，非常適合實作可自由增減元素的堆疊結構。
-
-
-```java
-public class StackOfList {
-    public static void main(String[] args) {
-        ListStack stackList = new ListStack();
-        stackList.push(1); // [1]
-        stackList.push(3); // [3,1]
-        stackList.push(2); // [2,3,1]
-        stackList.push(5); // [5,2,3,1]
-
-        System.out.println("Stack size: " + stackList.size());
-        System.out.println("Top element: " + stackList.peek());
-        System.out.println("Pop: " + stackList.pop());
-        System.out.println("Pop: " + stackList.pop());
-        System.out.println("Stack size: " + stackList.size());
-        System.out.println("Is empty? " + stackList.isEmpty());
-
-        // 嘗試在空的狀況下 pop
-        stackList.pop();
-        stackList.pop();
-        stackList.pop(); // 不會拋錯，只會顯示提示訊息
-    }
-}
-
-class ListStack {
-    private Node top;
-
-    private static class Node {
-        int value;
-        Node next;
-        Node(int value) {
-            this.value = value;
-        }
-    }
-
-    public void push(int value) {
-        Node newNode = new Node(value);
-        newNode.next = top; // 新節點指向目前的 top
-        top = newNode; // 更新 top 為新節點
-    }
-
-    public Integer pop() {
-        if (isEmpty()) {
-            System.out.println("Stack is empty, cannot pop.");
-            return null;
-        } else {
-            int value = top.value;
-            top = top.next;
-            return value;
-        }
-    }
-
-    public Integer peek() {
-        if (isEmpty()) {
-            System.out.println("Stack is empty, no top element.");
-            return null;
-        } else {
-            return top.value;
-        }
-    }
-
-    public int size() {
-        int count = 0;
-        Node current = top;
-        while (current != null) {
-            count++;
-            current = current.next;
-        }
-        return count;
-    }
-
-    public boolean isEmpty() {
-        return top == null;
-    }
-}
-```
 
 ## 佇列 (Queue)
-### Java 中的佇列 class
+佇列與堆疊剛好相反，佇列的邏輯是依循先進先出 (FIFO, First In First Out) 原則來存取資料。  
+以一個生活中的常見例子來舉例說明佇列就是台灣人特別喜歡的排隊，即新來的人不斷地加入隊伍的尾端，而最早加入隊伍的人會則可以最優先買到東西離開隊伍。  
+對佇列來說，把元素加入佇列尾的動作稱為「入佇列 (enqueue)」，而從佇列頭移除元素的動作稱為「出佇列 (dequeue)」。
 
-```java
+跟 stack 相同，資料結構上的 queue 基本也有三種方法，而在 Java 中，queue class 對應其三種方法分別是 `offer`、`poll`、`peek`：
+1. `push`：將資料放入佇列尾端。在 Java 中對應的方法是 `offer`。
+2. `pop`：將佇列頭端的資料移除並回傳該資料。在 Java 中對應的方法是 `poll`。
+3. `peek`：回傳佇列頭端的資料，但不移除該資料。在 Java 中對應的方法是 `peek`。
+
+:::tip
+根據 [oracle](https://docs.oracle.com/javase/8/docs/api/java/util/Queue.html) 文件，其實 queue class 也有 `add` 和 `remove` 兩個方法，功能分別跟 `offer` 和 `poll` 類似。  
+但實務上多半會用 `offer` 和 `poll` 來取代 `add` 和 `remove`，因為前者在佇列滿或空的狀況下不會拋出例外 (exception)，而是回傳特定值 (例如 `false` 或 `null`) 來表示操作失敗。  
+這種行為在實務上會比較好處理，不會因為佇列滿或空而導致程式崩潰。
+:::
+
+```java title="Java 內建 Queue 範例"
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -239,67 +247,10 @@ public class QueueInJava {
 }
 ```
 
-### 用 Array 實做 Queue
-```java
-import java.util.ArrayList;
-
-public class QueueCreatedByArray {
-
-    public static void main(String[] args) {
-        System.out.println("=== Array-based Queue ===");
-        ArrayQueue queueArr = new ArrayQueue();
-        queueArr.enqueue(1);
-        queueArr.enqueue(3);
-        queueArr.enqueue(2);
-        queueArr.enqueue(5);
-
-        System.out.println("Queue size: " + queueArr.size());
-        System.out.println("Front element: " + queueArr.peek());
-        System.out.println("Dequeue: " + queueArr.dequeue());
-        System.out.println("Queue size: " + queueArr.size());
-        System.out.println("Dequeue: " + queueArr.dequeue());
-        System.out.println("Dequeue: " + queueArr.dequeue());
-        System.out.println("Dequeue: " + queueArr.dequeue());
-        System.out.println("Is empty? " + queueArr.isEmpty());
-    }
-}
-
-class ArrayQueue {
-    private ArrayList<Integer> arr = new ArrayList<>();
-
-    public void enqueue(int val) {
-        arr.add(val); // 放到尾端
-    }
-
-    public Integer dequeue() {
-        if (isEmpty()) {
-            System.out.println("Queue is empty, cannot dequeue.");
-            return null;
-        }
-        int value = arr.get(0); // 取出前端
-        arr.remove(0); // 移除前端
-        return value;
-    }
-
-    public Integer peek() {
-        if (isEmpty()) {
-            System.out.println("Queue is empty, no front element.");
-            return null;
-        }
-        return arr.get(0);
-    }
-
-    public int size() {
-        return arr.size();
-    }
-
-    public boolean isEmpty() {
-        return arr.isEmpty();
-    }
-}
-```
-
 ### 用 Linked List 實做 Queue
+使用 linked list 實做 queue 時，會將鏈結串列的開頭 (head) 作為佇列頭 (front)，而鏈結串列的尾端 (tail) 則作為佇列尾 (rear)。  
+每次入佇列 (offer) 時，會在鏈結串列的尾端插入新節點；每次出佇列 (poll) 時，則從開頭移除節點。
+
 ```java
 public class QueueCreatedByList {
     public static void main(String[] args) {
@@ -414,3 +365,64 @@ class ListQueue {
     }
 }
 ```
+
+### 用 Array 實做 Queue
+```java
+import java.util.ArrayList;
+
+public class QueueCreatedByArray {
+
+    public static void main(String[] args) {
+        System.out.println("=== Array-based Queue ===");
+        ArrayQueue queueArr = new ArrayQueue();
+        queueArr.enqueue(1);
+        queueArr.enqueue(3);
+        queueArr.enqueue(2);
+        queueArr.enqueue(5);
+
+        System.out.println("Queue size: " + queueArr.size());
+        System.out.println("Front element: " + queueArr.peek());
+        System.out.println("Dequeue: " + queueArr.dequeue());
+        System.out.println("Queue size: " + queueArr.size());
+        System.out.println("Dequeue: " + queueArr.dequeue());
+        System.out.println("Dequeue: " + queueArr.dequeue());
+        System.out.println("Dequeue: " + queueArr.dequeue());
+        System.out.println("Is empty? " + queueArr.isEmpty());
+    }
+}
+
+class ArrayQueue {
+    private ArrayList<Integer> arr = new ArrayList<>();
+
+    public void enqueue(int val) {
+        arr.add(val); // 放到尾端
+    }
+
+    public Integer dequeue() {
+        if (isEmpty()) {
+            System.out.println("Queue is empty, cannot dequeue.");
+            return null;
+        }
+        int value = arr.get(0); // 取出前端
+        arr.remove(0); // 移除前端
+        return value;
+    }
+
+    public Integer peek() {
+        if (isEmpty()) {
+            System.out.println("Queue is empty, no front element.");
+            return null;
+        }
+        return arr.get(0);
+    }
+
+    public int size() {
+        return arr.size();
+    }
+
+    public boolean isEmpty() {
+        return arr.isEmpty();
+    }
+}
+```
+
