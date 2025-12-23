@@ -80,10 +80,10 @@ public class BubbleSortExample {
                     int temp = array[j]; // 暫存一下較大的數值
                     array[j] = array[j + 1]; // 把較小的數值前挪
                     array[j + 1] = temp; // 把剛剛存的較大數值丟給右邊
-                }
 
-                // 表示這一次迴圈內依然有需要排序的情況
-                isSwap = true;
+                    // 表示這一次迴圈內依然有需要排序的情況
+                    isSwap = true;
+                }
             }
 
             // 某次迴圈兩兩比較完，發現都沒排序，即可終止後續迴圈
