@@ -5,12 +5,17 @@ tags: [javascript, object]
 keywords: [javascript, object]
 ---
 
-紀錄 JavaScript 物件常用的操作方法。
+:::note
+** Change Log**
+
+- 2023：Initial version
+- 2026/01/06：Fix code examples and refine explanations
+:::
 
 ## 取 key
 1. `Object.keys`，取出物件的鍵。
 ```js
-let bookInfo = {
+const bookInfo = {
   name: 'Hogwarts professors',
   author: 'Jeremy',
   category: 'Fanfiction',
@@ -24,7 +29,7 @@ console.log(key) // ['name', 'author', 'category', 'date']
 ## 取 value
 1. `Object.values`，取出物件的值。
 ```js
-let bookInfo = {
+const bookInfo = {
   name: 'Hogwarts professors',
   author: 'Jeremy',
   category: 'Fanfiction',
@@ -38,7 +43,7 @@ console.log(value) //['Hogwarts professors', 'Jeremy', 'Fanfiction', '2023-10-08
 ## 屬性刪除
 1. `delete`，刪除一條屬性。
 ```js
-let bookInfo = {
+const bookInfo = {
   name: 'Hogwarts professors',
   author: 'Jeremy',
   category: 'Fanfiction',
@@ -52,14 +57,14 @@ console.log(bookInfo) // {name: 'Hogwarts professors', author: 'Jeremy', categor
 ## 迭代
 1. `for-in`，可以視作物件的迴圈。
 ```js
-let bookInfo = {
+const bookInfo = {
   name: 'Hogwarts professors',
   author: 'Jeremy',
   category: 'Fanfiction',
   date: '2023-10-08'
 }
 
-for(let item in bookInfo){
+for(const item in bookInfo){
   console.log(item)
 }
 // name
@@ -69,13 +74,14 @@ for(let item in bookInfo){
 ```
 
 ## 複製
+### 淺拷貝 (Shallow Copy)
 1. `...`，最常見的淺拷貝用法。
 :::warning
 關於淺拷貝，要特別注意它對於深層的內容會有傳址的問題。
 :::
 
 ```js
-let bookInfo = {
+const bookInfo = {
   name: 'Hogwarts professors',
   author: 'Jeremy',
   category: 'Fanfiction',
@@ -85,29 +91,77 @@ let bookInfo = {
 const copy = {...bookInfo}
 ```
 
-2. `assign`，也是淺層複製，也可以用在合併複數物件。
+2. `{...obj1, ...obj2}`，其實就是 `...` 的衍伸，這是合併物件的一個方法。`{...obj1, ...obj2}` 會建立一個新物件，並以後者的屬性覆蓋前者同名的屬性。
+
 ```js
-let bookInfo = {
+const bookInfo = {
+  name: 'Hogwarts professors',
+  author: 'Jeremy',
+  category: 'Fanfiction',
+  date: '2024-01-01'
+}
+
+const newObj = {...bookInfo, ...obj2}
+console.log(newObj)
+// {
+//   name: 'Hogwarts professors',
+//   author: 'Jeremy',
+//   category: 'Fanfiction',
+//   date: '2024-01-01',
+//   author2: 'Joanna',
+//   job: 'designer'
+// }
+```
+
+3. `assign`，也是淺層複製，也可以用在合併複數物件。
+:::tip
+`Object.assign` 的特性用白話講有兩點：
+1. target object (第一個參數) 原本沒有的屬性，會被新增 (來源自 source object，亦即第二個參數)。
+2. target object 原本已存在的屬性，會被 source object 的值覆蓋
+
+這兩個特性有時在開發時有奇效。  
+主要體現在我們想避免替換整個物件導致 reference change 引起各種非預期的問題。  
+舉例來說，我們在 vue 開發時，假設 parent component 有個 form，它是個 reactive 物件，我們夠過 props 給內部的 child component，然後 emit 接收 child component 傳回來的修改值，這時候我們就可以利用 `Object.assign` 把 parent component 的 form 物件更新掉，而不是整個重新賦值，來避免一些諸如「畫面顯示正常，但在某些初始互動時短暫讀到 null 或舊資料」。
+:::
+
+```js
+const bookInfo = {
   name: 'Hogwarts professors',
   author: 'Jeremy',
   category: 'Fanfiction',
   date: '2023-10-08'
 }
 
-let obj2 = {
+const obj2 = {
   author2: 'Joanna',
-  job: 'designer'
+  job: 'designer',
+  date: '2024-01-01' // 注意這裡會覆蓋原本的 date 屬性
 }
 
-bookInfo = Object.assign(bookInfo, obj2)
+Object.assign(bookInfo, obj2)
 
 console.log(bookInfo) 
-// {​name: 'Hogwarts professors', author: 'Jeremy', category: 'Fanfiction', date: '2023-10-08', author2: 'Joanna', job: 'designer'}
+// {
+//   name: 'Hogwarts professors',
+//   author: 'Jeremy',
+//   category: 'Fanfiction',
+//   date: '2024-01-01',
+//   author2: 'Joanna',
+//   job: 'designer'
+// }
 ```
 
-3. `JSON.stringify` 與 `JSON.parse`，這是深層複製的手法，透過先轉成字串讓傳址問題解決再轉回物件。
+:::warning
+結果乍看之下會跟 `{...obj1, ...obj2}` 一樣，可能會想說那這樣寫更簡單不好嗎？  
+但其實他們有個非常巨大的差異在於 `Object.assign` 是對原物件進行修改且不變動 reference，而展開運算子則是建立一個全新的物件，這 reference 是一定會改變的。
+:::
+
+
+### 深拷貝 (Deep Copy)
+
+1. `JSON.stringify` 與 `JSON.parse`，這是一種常見但有限制的深拷貝手法，原理是先將物件序列化為字串，再反序列化成全新的物件，藉此切斷 reference。
 ```js
-let bookInfo = {
+const bookInfo = {
   name: 'Hogwarts professors',
   author: 'Jeremy',
   category: 'Fanfiction',
@@ -121,24 +175,32 @@ console.log(deepCopyBook)
 console.log(bookInfo) 
 ```
 
-4. `{...obj1, ...obj2}`，這是合併物件的一個方法，利用 `assign` 例子中建立的第二個物件來合併看看。
+2. `structuredClone`，這是較新的深層複製方法，功能與 `JSON.stringify` + `JSON.parse` 類似，但支援更多資料類型 (如 Date、Map、Set 等)。
 ```js
-let bookInfo = {
+const bookInfo = {
   name: 'Hogwarts professors',
   author: 'Jeremy',
   category: 'Fanfiction',
   date: '2023-10-08'
 }
 
-const newObj = {...bookInfo, ...obj2}
-console.log(newObj)
-// {​name: 'Hogwarts professors', author: 'Jeremy', category: 'Fanfiction', date: '2023-10-08', author2: 'Joanna', job: 'designer'}
+const deepCopyBook = structuredClone(bookInfo)
+deepCopyBook.author = 'Joanna'
+
+console.log(deepCopyBook)
+console.log(bookInfo) 
 ```
+
+:::note
+`structuredClone` 雖說較新，但他的概念其實存在一段時間了，只是在大概 2021 年才正式成為通用的 web api。  
+這背後原因有包括那個被大家嘲笑的 IE 瀏覽器的退場，也有 `JSON.stringify` 與 `JSON.parse` 的限制性讓大家需要一個更好的解決方案。
+:::
+
 
 ## 查詢
 1. `property in Obj`，這是用來查詢某個屬性是否存在於物件中。
 ```js
-let bookInfo = {
+const bookInfo = {
   name: 'Hogwarts professors',
   author: 'Jeremy',
   category: 'Fanfiction',
@@ -152,6 +214,12 @@ console.log('author' in bookInfo) // true
 ```js
 console.log(bookInfo.hasOwnProperty('author')) // true
 ```
+
+:::warning
+`in` 會檢查原型鏈上的屬性，`hasOwnProperty` 只檢查物件自身屬性，實務上更安全。
+:::
+
+
 3. 可選串聯，新語法，對於深層不存在的屬性會回傳 `undefined` 而不會中斷程式碼運作。
 ```js
 console.log(bookInfo?.author?.name) // undefined
@@ -160,7 +228,7 @@ console.log(bookInfo?.author?.name) // undefined
 ## Object to Array
 1. `Object.entries`，這是把物件轉成陣列的方法。如果要把陣列轉成物件可以用 `Object.fromEntries`。
 ```js
-let bookInfo = {
+const bookInfo = {
   name: 'Hogwarts professors',
   author: 'Jeremy',
   category: 'Fanfiction',

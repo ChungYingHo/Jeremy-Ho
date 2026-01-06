@@ -5,12 +5,17 @@ tags: [javascript, array]
 keywords: [javascript, array]
 ---
 
-紀錄 JavaScript 陣列常用的操作方法。
+:::note
+** Change Log**
+
+- 2023：Initial version
+- 2026/01/06：Fix code examples and refine explanations
+:::
 
 ## 新增元素
 1. `push`：往陣列後加元素
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 numbers.push(9, 10)
 console.log(numbers) // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -18,7 +23,7 @@ console.log(numbers) // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 2. `unshift`：往陣列前方加元素
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 numbers.unshift(-1, 0)
 console.log(numbers) // [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -26,7 +31,7 @@ console.log(numbers) // [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 3. `[]`：直接指定元素添加或更改位置
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 numbers[5] = 'six'
 console.log(numbers) // [1, 2, 3, 4, 5, 'six', 7, 8]
@@ -35,7 +40,7 @@ console.log(numbers) // [1, 2, 3, 4, 5, 'six', 7, 8]
 ## 刪除
 1. `pop`：刪除陣列後方一個元素並回傳刪掉的值
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 const removeNum = numbers.pop()
 console.log(removeNum)  // 8
@@ -44,7 +49,7 @@ console.log(numbers) // [1, 2, 3, 4, 5, 6, 7]
 
 2. `shift`：刪除陣列前方一個元素並回傳刪掉的值
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 const removeNum = numbers.shift()
 console.log(removeNum)  // 1
@@ -53,16 +58,22 @@ console.log(numbers) // [2, 3, 4, 5, 6, 7, 8]
 
 3. `delete`：刪除陣列指定位置元素，但不影響陣列長度
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 delete numbers[5]
 console.log(numbers) // [1, 2, 3, 4, 5, <empty>, 7, 8]
 ```
 
+:::warning
+`delete` 會留下空洞（hole），通常不建議用於陣列，實務上多半使用 `splice` 或產生新陣列。  
+但 `delete` 如果放在 object 的應用上就有是不錯的選擇。
+:::
+
+
 ## 裁切
 1. `splice(start, delete, insert)`：對原陣列直接做裁切並傳回裁切的部分。接受三個參數，第一個是要刪除或插入的「索引位置」；第二個是「刪除的元素數」，0 是不刪除只插入，不填是刪除索引位置後面所有的元素；第三個是要「插入的值」。
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 const spliceValue = numbers.splice(5, 2, 'six', 'seven')
 console.log(spliceValue) //[6, 7]
@@ -71,7 +82,7 @@ console.log(numbers) // [1, 2, 3, 4, 5, 'six', 'seven', 8]
 
 2. `slice(start, end)`：不修改原陣列，而是會回傳新陣列 (原陣列中的一部分)。接受兩個參數，第一個是「開始的位置」；第二個是「結束的位置」，不代入參數就會提取到最後一筆資料，代入負數表示提取到倒數第幾個資料；都不帶參數會複製一個完整陣列。
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 const newNumbers = numbers.slice(2, 5)
 console.log(newNumbers) // [3, 4, 5]
@@ -79,17 +90,17 @@ console.log(newNumbers) // [3, 4, 5]
 
 3. `copyWithin(index, start, end)`：會修改原陣列的操作方式。語法內容是把 `start` 到 `end` 位置中的內容複製下來，然後從 `index` 的位置貼上覆蓋原本的內容。
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 numbers.copyWithin(1, 5, 8)
-console.log(newNumbers) // [1, 6, 7, 8, 5, 6, 7, 8]
+console.log(numbers) // [1, 6, 7, 8, 5, 6, 7, 8]
 ```
 
 ## 排序
 1. `sort`：會操作原陣列。參數可以接受自己寫的函式，也建議自己簡短寫一個函式，因為不帶參數的 `sort` 表現有點一言難盡...。
 ```js
 // 先創個混亂排序陣列
-let newNumbers = [10, 5, 8, 2, 4, 1, 0]
+const newNumbers = [10, 5, 8, 2, 4, 1, 0]
 
 // 單純用 sort() 不帶參數
 newNumbers.sort()
@@ -111,7 +122,7 @@ console.log(newNumbers) //[0, 1, 2, 4, 5, 8, 10]
 
 2. `reverse`：將陣列倒轉
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 numbers.reverse()
 console.log(numbers) // [8, 7, 6, 5, 4, 3, 2, 1]
@@ -123,7 +134,7 @@ console.log(numbers) // [8, 7, 6, 5, 4, 3, 2, 1]
     - `index`：當前元素的索引位置
     - `array`：正在遍歷的陣列
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 const filterNum = numbers.filter((item)=>{
   return item > 5
@@ -146,7 +157,7 @@ console.log(filterNum) // [1, 1, 1, 1]
 
 2. `find`：跟 `filter` 類似，但返回的是符合後方條件的第一個值。現在代入跟上面 `filter` 一樣的條件
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 const findNum = numbers.find((item)=>{
   return item > 5
@@ -156,14 +167,14 @@ console.log(findNum) // 6
 
 3. `indexOf`：查詢某元素的陣列索引位置。帶兩個參數，第一個是「查尋的元素」，第二個是要「開始查詢的位置」。
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 const index = numbers.indexOf(6)
 console.log(index)  // 5
 ```
 4. `includes`：查詢陣列中是否帶有某元素。所帶參數跟indexOf一樣
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 console.log(numbers.includes(6)) // true
 ```
@@ -171,12 +182,12 @@ console.log(numbers.includes(6)) // true
 ## 迭代
 1. `forEach`：可以看做是陣列的迴圈，不會修改原陣列也不會回傳任何值，就僅僅是依開發者想要對陣列中的元素做什麼操作
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
-let doubleNumbers = []
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const doubleNumbers = []
 
 numbers.forEach((number)=>{
-  let newNum = number * 2
-  return doubleNumbers.push(newNum)
+  const newNum = number * 2
+  doubleNumbers.push(newNum)
 })
 
 console.log(doubleNumbers) // [2, 4, 6, 8, 10, 12, 14, 16]
@@ -184,7 +195,7 @@ console.log(doubleNumbers) // [2, 4, 6, 8, 10, 12, 14, 16]
 
 2. `map`：跟`forEach`不一樣，它會回傳一個新陣列。上述的內容改成 `map` 會變這樣
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 const doubleNumbers = numbers.map((number)=>{
   return number * 2
@@ -201,7 +212,7 @@ console.log(doubleNumbers) // [2, 4, 6, 8, 10, 12, 14, 16]
         - `array`：當前操作的陣列。
     - initialValue：預設值，不提供會默認第一個元素的值為預設值。
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 const sum = numbers.reduce((x, y)=>{
   return x + y
@@ -212,7 +223,7 @@ console.log(sum) // 36
 
 4. `every`：用來檢查陣列中的元素是否都滿足特定條件，如果只想要部分滿足可以改成 `some`。
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
 console.log(numbers.every(number => number > 6)) // false，不是每個數字都大於6
 console.log(numbers.some(number => number > 6)) // true，有一些數字大於6
@@ -221,7 +232,7 @@ console.log(numbers.some(number => number > 6)) // true，有一些數字大於6
 ## 刪除重複
 先來建立一個有重複數字的陣列。
 ```js
-let numbers = [1, 2, 3, 4, 4, 4, 5, 6, 7, 8, 8, 8]
+const numbers = [1, 2, 3, 4, 4, 4, 5, 6, 7, 8, 8, 8]
 ```
 1. `filter`：
 ```js
@@ -233,21 +244,22 @@ console.log(newNumbers) // [1, 2, 3, 4, 5, 6, 7, 8]
 ```
 2. `set`：快速解決重複的方法，對原陣列直接執行操作不產生新陣列
 ```js
-numbers = [...new Set(numbers)]
+const numbers = [1, 2, 3, 4, 4, 4, 5, 6, 7, 8, 8, 8]
+const uniqueNumbers = [...new Set(numbers)]
 
-console.log(numbers) // [1, 2, 3, 4, 5, 6, 7, 8]
+console.log(uniqueNumbers) // [1, 2, 3, 4, 5, 6, 7, 8]
 ```
 :::info
 推薦使用 `set` 來刪除重複
 :::
 
 ## 合併
-1. `concat`：坦白說，也可以用 `+` 號
+1. `concat`：用來合併陣列，會回傳新陣列
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
-let secondNumbers = [9, 10, 11]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const secondNumbers = [9, 10, 11]
 
-let newNumbers = numbers.concat(secondNumbers)
+const newNumbers = numbers.concat(secondNumbers)
 
 console.log(newNumbers) // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 ```
@@ -255,16 +267,16 @@ console.log(newNumbers) // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 ## 陣列轉字串
 1. `join`：裡面帶分隔符，不指定會以逗號隔開
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 
-let string = numbers.join()
-console.log(string) // 1,2,3,4,5,6,7,8
+const string1 = numbers.join()
+console.log(string1) // 1,2,3,4,5,6,7,8
 
-let string = numbers.join('')
-console.log(string) // 12345678
+const string2 = numbers.join('')
+console.log(string2) // 12345678
 
-let string = numbers.join(' ') // 帶空格
-console.log(string) // 1 2 3 4 5 6 7 8 
+const string3 = numbers.join(' ') // 帶空格
+console.log(string3) // 1 2 3 4 5 6 7 8 
 ```
 
 ## 實務上遇到前輩使用的方法
@@ -278,28 +290,72 @@ console.log(string) // 1 2 3 4 5 6 7 8
 所以 `Array.from` 可以做什麼事？稍微列了一些例子：
 1. 陣列複製
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
-let copy = Array.from(numbers)
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const copy = Array.from(numbers)
 console.log(copy)  // [1, 2, 3, 4, 5, 6, 7, 8]
 ```
 2. 創建指定長度的陣列
 ```js
-let length = 5
-let newArray = Array.from({length}, (v, i) => i)
+const length = 5
+const newArray = Array.from({length}, (v, i) => i)
 console.log(newArray) // [0, 1, 2, 3, 4]
 ```
 3. 對陣列做處理
 ```js
-let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
-let doubleNumbers = Array.from(numbers, (number) => number * 2)
+const numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+const doubleNumbers = Array.from(numbers, (number) => number * 2)
 console.log(doubleNumbers) // [2, 4, 6, 8, 10, 12, 14, 16]
 ```
 4. 可迭代資料轉陣列
 ```js
-let string = 'hello'
-let stringArray = Array.from(string)
+const string = 'hello'
+const stringArray = Array.from(string)
 console.log(stringArray) // ['h', 'e', 'l', 'l', 'o']
 ```
+
+## Summary
+### 會修改原陣列的方法
+一般這類方法因為直接對原資料出手，所以使用上需謹慎。  
+實務做法一般配合先複製一份原陣列來使用，避免直接改到原資料。
+
+| 方法 | 說明 |
+| --- | --- |
+| push | 從尾端新增元素 |
+| pop | 從尾端刪除一個元素 |
+| unshift | 從前端新增元素 |
+| shift | 從前端刪除一個元素 |
+| splice | 插入、刪除或取代元素 |
+| sort | 排序陣列 |
+| reverse | 反轉陣列 |
+| copyWithin | 複製指定區段並覆蓋原內容 |
+| fill | 以固定值填滿指定區段 |
+| delete | 刪除元素（留下 hole，不建議用於陣列） |
+
+### 不會修改原陣列的方法
+這類方法通常是回傳一個新陣列，或是回傳特定值，使用上相對安全很多。  
+因此一般資料操作多半會使用這類方法。
+
+| 方法 | 說明 |
+| --- | --- |
+| map | 轉換每個元素並回傳新陣列 |
+| filter | 篩選元素並回傳新陣列 |
+| slice | 回傳陣列的子集合 |
+| concat | 合併陣列並回傳新陣列 |
+| flat | 攤平巢狀陣列並回傳新陣列 |
+| flatMap | map + flat（回傳新陣列） |
+| reduce | 將陣列聚合成單一值 |
+| find | 回傳第一個符合條件的元素 |
+| findIndex | 回傳第一個符合條件的索引 |
+| indexOf | 查詢元素索引 |
+| includes | 檢查是否包含指定元素 |
+| join | 將陣列轉成字串 |
+| toString | 將陣列轉成字串 |
+| every | 檢查是否全部符合條件 |
+| some | 檢查是否有部分符合條件 |
+| entries | 回傳 iterator（不修改原陣列） |
+| keys | 回傳索引 iterator |
+| values | 回傳值 iterator |
+| Array.from | 建立新陣列 |
 
 
 ## Reference
