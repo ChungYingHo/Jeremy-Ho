@@ -10,6 +10,7 @@ keywords: [javascript, callback, promise, async/await]
 
 - 2023：Initial version
 - 2026/01/14：Update the whole article structure and content.
+- 2026/01/27：Update the info about call stack and callback queue.
 :::
 
 :::info
@@ -40,16 +41,53 @@ keywords: [javascript, callback, promise, async/await]
 2. Web API
 3. Callback queue
 
+### Call stack
 Call stack 其實是 JS engine 的一部分，所以在非同步誕生之前它就已經活在同步裡了。  
 學過資料結構的都知道，stack 是一種 LIFO (Last In First Out) 的結構，意思是說最後進去的東西會最先被取出來。  
-具體來說是，被調用的函式在執行時，JS engine 會建立一個對應的 execution context (執行上下文)，並將該 execution context push 進 call stack。  
-當函式內部再調用其他函式時，新的 execution context 會依序被 push 進 stack。  
-最後被 pop 出來的 execution context，會是最先被 push 進 stack 的那一個。  
-在同步執行模型下，由於 JavaScript 是單執行緒語言，call stack 的執行順序在多數情況下，會與程式碼撰寫的順序高度一致。  
-因此我們常聽到 JS 的運作是「由上而下」隨著程式碼的撰寫順序執行的 (但其實大多數語言也都是這樣)。
+具體來說是，被調用的函式在執行時，JS engine 會建立一個對應的執行上下文 (execution context)，並將該執行上下文 push 進 call stack。  
+當函式內部有再調用其他函式時，新的執行上下文會依序被 push 進 stack。  
+最後被 pop 出來的執行上下文，會是最先被 push 進 stack 的那一個。
 
 ![Call stack](./img/04_call_stack.png)
 
+:::info
+這是一個關於 JS 運行機制的題外話。  
+上面說到會進 call stack 的是「函式」，這是鐵則，而且一次進去就是一個函式，以及它相關的執行上下文。  
+簡單例子來看：
+
+```js
+function A() {
+  console.log('Inside A')
+  B()
+}
+
+function B() {
+  console.log('Inside B')
+}
+
+console.log('Hello World')
+A()
+console.log('Greeting')
+```
+
+我將上述範例進入 call stack 的過程拆成下面步驟：
+1. `console.log('Hello World')` 進入 call stack，執行完畢後離開 call stack。
+2. `A()` 進入 call stack，執行 `console.log('Inside A')`，接著呼叫 `B()`。這時 `B()` 作為 `A()` 相關的執行上下文，亦被 push 進 call stack。
+3. `B()` 進入 call stack，執行 `console.log('Inside B')`，執行完畢後離開 call stack。
+4. `A()` 執行完畢後離開 call stack。
+5. `console.log('Greeting')` 進入 call stack，執行完畢後離開 call stack。
+
+所以 call stack 在任一時間點只會有「一條正在執行的呼叫路徑」，但可以同時存在多個尚未結束的函式執行上下文 (對 `A()` 來說，`B()` 還沒執行前就是尚未結束的上下文)。  
+這一方面也解釋了為何寫 code 的順序會跟 call stack 息息相關。
+
+或許會有人問，那變數宣告會進 call stack 嗎？  
+這是一個好問題，我也問過這樣的問題，答案是不會。  
+對於 JS engine 來說，它在執行一段 code 時 (module)，在初始會經過一個叫 Global Execution Context (全域執行上下文) 的建立過程，這個過程會先掃描整段 code 裡的變數宣告與函式宣告，並將它們註冊到對應的記憶體空間 (lexical / variable environment)。  
+在 GEC 建立完後，JS engine 才會開始從上到下執行程式碼，而真正進入 call stack 的，只有函式呼叫的部分。
+:::
+
+
+### Web API & Callback queue
 Web API 跟 Callback queue 才是非同步誕生的關鍵，但他們本身並不是 JS engine 的一部分，而是瀏覽器或 NodeJS 這種 JavaScript 執行環境提供的功能。  
 這裡解惑一下，沒人規定 JavaScript 只能用 NodeJS 來執行喔，NodeJS 只是提供一個環境而且絕大多數 web developer 愛用它開發，不然還有一些小眾的執行環境 (像是 Deno) 可以用。  
 所以嚴格來說，JavaScript 語言本身並不負責實際的非同步等待與 I/O 操作 (JS 還是有提供像 `Promise` 這樣的非同步語言抽象的~)，而是必須搭配適當的執行環境 (像是瀏覽器、NodeJS) 才能完成非同步行為。
@@ -63,6 +101,30 @@ Web API 是指什麼？
 而 event loop 這時就閃亮登場，它會負責協調「等待 Call stack 空閒，並安排 callback 回到 Call stack 去執行」。  
 簡單來說，event loop 會像個守衛一樣持續監控 Call stack 的狀態，當 Call stack 為空時，便從佇列中取出下一個可執行的 callback，並將其推入 Call stack 中交由 JS engine 執行。  
 至此，我們完成一次偉大的非同步流程。
+
+:::info
+Callback queue 其實現在嚴謹一點會被分成兩個佇列：macrotask queue 與 microtask queue。  
+一般來說 callback queue 指的就是 macrotask queue，而 microtask queue 則是與它平行存在的另一個佇列，兩者在執行優先權上有所不同。  
+但為何基本上只講 callback queue？  
+第一是許多文章面向的是 JS 初學者，第二是在實務裡遇到也甚少會出現同時要處理 microtask 與 macrotask 的情況。  
+
+> microtask 的執行優先權高於 macrotask
+
+而在非同步中，microtask 跟 macrotask 的話分大致如下：
+1. macrotask：`setTimeout`、`setInterval`、`setImmediate`
+2. microtask：`Promise.then`、`async/await`
+
+所以如果有一段 code 如下：
+```js
+setTimeout(() => {
+  console.log("Timeout")
+}, 0)
+Promise.resolve().then(() => {
+  console.log("Promise")
+})
+```
+那麼即使 `setTimeout` 的延遲時間是 0，`Promise` 的 callback 還是會先被執行，因為它屬於 microtask，而 `setTimeout` 屬於 macrotask。
+:::
 
 ![async flow](./img/04_async.png)
 
@@ -156,7 +218,8 @@ Promise 是 JavaScript 在語言層級提供的一種非同步流程抽象，用
 3. rejected：處理失敗
 
 Promise 會透過 `then` 來接收成功的結果，並串接下一步的處理流程；若發生錯誤，則可透過 `catch` 來統一處理失敗的情況。  
-因此，Promise 的使用方式通常會長得像這樣：`A().then(B).catch(handleError)`。
+然後最後一般會用 `finally` 來處理不論成功或失敗都會執行的邏輯。
+因此，Promise 的使用方式通常會長得像這樣的鏈式邏輯：`A().then(B).catch(handleError).finally(cleanup)`。
 
 把前一段的程式碼改成 promise 會像這樣：
 ```js
@@ -228,6 +291,14 @@ async function myAsyncFunction() {
 
 
 ```js
+function fetchDataPromise() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve('DATA_FROM_SERVER')
+    }, 1000)
+  })
+}
+
 function wait(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
